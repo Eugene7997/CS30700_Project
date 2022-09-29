@@ -1,25 +1,40 @@
+import React, {Component, ScrollAnimation, useRef} from 'react';
+
+
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
 
+
+function App() { 
+  const example1 = useRef(null);
+  const example2 = useRef(null);
+  const example3 = useRef(null);
+
+  const scrollTosection = (elementRef) => {
+    window.scrollTo({
+      top: elementRef.current.offsetTop,
+      behavior: 'smooth',
+    })
+  }
+
+    return (
+      <div className='App'>
+        <div className='argus'>
+          <ul>
+            <li onClick={() => scrollTosection(example1)} className="link">Argus</li>
+          </ul>
+        </div>
+        <div className='example1'>
+          <li>Example1</li>
+        </div><div className='example2'>
+          <li>Example2</li>
+        </div><div className='example3'>
+          <li>Example3</li>
+        </div>
+      </div>
+    )
+  
+}
+ 
 export default App;
