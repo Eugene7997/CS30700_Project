@@ -1,29 +1,7 @@
-.App {
-  text-align: center;
-}
-
-.link {
-  text-decoration: none;
-  display: inline;
-  padding: 20px 20px;
-  font-weight: 700;
-  font-size: large;
-  cursor: pointer;
-}
-
-.argus {
-  height: 600 px;
-  background-color: aqua;
-}
-.example1 {
-  height: 600 px;
-  background-color:red;
-}
-.example2 {
-  height: 600 px;
-  background-color: aquamarine;
-}
-.example3 {
-  height: 600 px;
-  background-color:yellow;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Enconde Sans Expanded', 
+  sans-serif;
 }
