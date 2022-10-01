@@ -2,6 +2,20 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Initial Set up
+
+Navigate to the project directory folder named argus.
+
+```bash
+cd CS30700_Project/frontend/argus
+```
+
+Type the following command into bash.
+
+```bash
+npm install
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
