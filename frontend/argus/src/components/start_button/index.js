@@ -1,13 +1,13 @@
 
 import React from 'react'
 import { Button } from 'react-scroll'
+import { useNavigate } from "react-router-dom";
 
 
-
-const apps = () => {
-    const handleClick = () => {
-        alert("hello");
-        console.log('div clicked');
+const Start = () => {
+    let Navi = useNavigate();
+    const Navito = () => {
+        Navi("application")
     }
 
     return (
@@ -19,7 +19,7 @@ const apps = () => {
         justifyContent: 'center',
         marginTop: '30%'
     }}>
-       <button type='button' onClick={handleClick} style={{
+       <button type='button' onClick={Navito} style={{
         fontSize: '60px',
         backgroundColor: 'transparent',
         borderBlockColor: 'transparent',
@@ -33,4 +33,4 @@ const apps = () => {
   )
 }
 
-export default apps
+export default Start

@@ -1,10 +1,12 @@
 import React from 'react'
 import Arugslogo from './logo.png'
+import { useNavigate } from "react-router-dom";
+
 
 const Head = () => {
-    const handleClick = () => {
-        alert("hello");
-        console.log('div clicked');
+    let navigate = useNavigate();
+    const toAbout = () => {
+        navigate("/about")
     }
   return (
     <div style={{
@@ -25,7 +27,7 @@ const Head = () => {
             <img src={Arugslogo} alt="Logo" height={60} width={60} />
             <h1 style={{marginLeft: '10px', color: 'white'}}>Argus</h1>
         </div>
-        <div onClick={() => handleClick()} style={{color:'white', marginRight: '20px'}}>
+        <div onClick={toAbout} style={{color:'white', marginRight: '20px'}}>
             About Us
         </div>
     </div>

@@ -1,7 +1,7 @@
 import React from 'react'
 import img from "./bg.jpg"
 import Head from '../header'
-import Apps from '../apps'
+import Apps from '../start_button'
 
 
 const Iphone = () => {
