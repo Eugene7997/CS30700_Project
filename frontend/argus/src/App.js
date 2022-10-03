@@ -2,16 +2,19 @@ import React, {Component, ScrollAnimation, useRef} from 'react';
 
 
 import './App.css';
-import Navbar from './components/Navbar';
+
 import { BrowserRouter as Router} from 'react-router-dom'
+
+import Iphone from './components/Iphone'
+import header from './components/header'
 
 
 
 function App() { 
     return (
-      <Router>
-        <Navbar />
-      </Router>
+      <Iphone>
+        
+      </Iphone>
     )
   
 }
