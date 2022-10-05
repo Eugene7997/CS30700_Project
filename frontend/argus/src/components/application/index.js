@@ -5,13 +5,19 @@ import '../../App.css';
 import React from 'react'
 import Head from '../header'
 
+import img from "./bg.jpg"
+
 const Application = () => {
   return (
-    <div>
-      <div style = {{
-          backgroundColor: 'black',
-          opacity: '0.8'
-      }}>
+    <div style = {{
+      backgroundImage: `url(${img})`,
+      backgroundSize: 'cover',
+      backgroundRepeat: `no-repeat`,
+      height: '100vh',
+      backgroundPosition: 'center',
+    }}>
+
+      <div>
         <Head />
       </div>
       
@@ -28,6 +34,7 @@ const Application = () => {
           </Marker>
         </MapContainer>
       </div>
+
     </div>
   )
 }
