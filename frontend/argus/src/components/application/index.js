@@ -8,30 +8,40 @@ import L from "leaflet";
 import img from "./bg.jpg"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import useFetch from "react-fetch-hook"
+
+
 
 
 //function to search location by name
-const Search = (props) => {
+const Search = (props)  => {
+  const [temp,setTemp] = useState(null);
     const map = useMap()
     const { provider } = props
-    // const [position, setPosition] = useState(null);
-    // const [bbox, setBbox] = useState([]);
-    // const result = provider.search({query: provider});
-    // provider.search({ query: '...' }).then(function (result) {
-    //   alert(result)
-    // });
-    // function searchEventHandler(result) { alert('hi')}
-    // const provider = new OpenStreetMapProvider();
-    // const results = provider.search({ query: input.value });
+    
+    function Temperature (x,y) {
+      return fetch(`https://api.open-meteo.com/v1/forecast?latitude=${y}&longitude=${x}&current_weather=true`)
+      .then((res) => res.json())
+      .then((json) => {
+      console.log(JSON.parse(JSON.stringify(json)).current_weather.temperature);
+      setTemp(JSON.parse(JSON.stringify(json)).current_weather.temperature)
+      alert(temp)
+      // return temp;
+      // return JSON.parse(JSON.stringify(json)).current_weather.temperature;
+      // let response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${y}&longitude=${x}&current_weather=true`)
+      // let data = await response.json()
+      // alert(JSON.stringify(JSON.parse(data)))
+      // return JSON.stringify(JSON.parse(data))
+    })}
+
     useEffect(() => {
-      
         const searchControl = new GeoSearchControl({
             provider,
             autoComplete: true,
-            // style: 'button',
-            showPopup: false,
-            // resultFormat: ({result}) => result,
-            popupFormat: ({query, result}) => "x: "+result.x + " y: " + result.y,
+            showPopup: true,
+            popupFormat: ({query, result}) => 
+              Temperature(result.x,result.y).then(response => alert(response))
+            
             // marker: {
             //   // optional: L.Marker    - default L.Icon.Default
             //   icon: new L.Icon.Default(),
