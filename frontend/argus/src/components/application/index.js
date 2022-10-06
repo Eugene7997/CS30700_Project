@@ -9,39 +9,34 @@ import img from "./bg.jpg"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import useFetch from "react-fetch-hook"
+import axios from 'axios'
 
 
 
 
 //function to search location by name
 const Search = (props)  => {
-  const [temp,setTemp] = useState(null);
+    const [x, setX] = useState(0);
+    const [y, setY] = useState(0);
+    const {isLoading, error, data } = useFetch(`https://api.open-meteo.com/v1/forecast?latitude=${y}&longitude=${x}&current_weather=true`)
     const map = useMap()
     const { provider } = props
     
-    function Temperature (x,y) {
-      return fetch(`https://api.open-meteo.com/v1/forecast?latitude=${y}&longitude=${x}&current_weather=true`)
-      .then((res) => res.json())
-      .then((json) => {
-      console.log(JSON.parse(JSON.stringify(json)).current_weather.temperature);
-      setTemp(JSON.parse(JSON.stringify(json)).current_weather.temperature)
-      alert(temp)
-      // return temp;
-      // return JSON.parse(JSON.stringify(json)).current_weather.temperature;
-      // let response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${y}&longitude=${x}&current_weather=true`)
-      // let data = await response.json()
-      // alert(JSON.stringify(JSON.parse(data)))
-      // return JSON.stringify(JSON.parse(data))
-    })}
 
-    useEffect(() => {
+    //retrieve the temperature data from API
+    const Temp = (x,y) => {
+      setX(x);
+      setY(y);
+      return (JSON.parse(JSON.stringify(data)).current_weather.temperature);
+    }
+
+    //search the location by location_label
+    useEffect(()  => {
         const searchControl = new GeoSearchControl({
             provider,
             autoComplete: true,
             showPopup: true,
-            popupFormat: ({query, result}) => 
-              Temperature(result.x,result.y).then(response => alert(response))
-            
+            popupFormat: ({query, result}) => "Temperature: " + Temp(result.x, result.y).toString()
             // marker: {
             //   // optional: L.Marker    - default L.Icon.Default
             //   icon: new L.Icon.Default(),
@@ -116,8 +111,9 @@ const Application = () => {
               You are here <br />
               Temp: 0
             </Popup> */}
-            <CurrentLocation />
             <Search provider={new OpenStreetMapProvider()} />
+            <CurrentLocation />
+            
           {/* </Marker> */}
         </MapContainer>
       </div>

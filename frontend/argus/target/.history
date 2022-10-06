@@ -1,0 +1,2 @@
+run "var x = new Arr[Int](3); 1"
+npm install axios
