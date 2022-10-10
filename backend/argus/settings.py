@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import pymysql
+
 pymysql.install_as_MySQLdb()
 #from arg.core import *
 
@@ -54,10 +55,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.corsheaders.middleware.CorsMiddleware"
+    "corsheaders.middleware.CorsMiddleware", 
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "argus.urls"
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 TEMPLATES = [
     {
@@ -75,7 +79,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "argus.wsgi.application"
+#WSGI_APPLICATION = "argus.wsgi.application"
 
 
 # Database
