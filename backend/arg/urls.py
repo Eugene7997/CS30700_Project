@@ -11,5 +11,6 @@ router.register(r'datapoint', DatapointViewSet)
 #URLConf
 urlpatterns = [
      path('hello/', views.say_hello),
-     path('', include(router.urls))
+     path('', include(router.urls)),
+     path('api/', views.api_home)
 ]

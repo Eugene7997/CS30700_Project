@@ -27,6 +27,7 @@ To run the Django REST API on your personal machine:
         pip install Django
         pip install djangorestframework
         pip install mysqlclient
+        pip install pymysql
 
 4. navigate to /backend/ directory and run: python manage.py migrate
     (this step might not work, message me if it doesn't and I'll give you the fix)
