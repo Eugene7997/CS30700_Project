@@ -17,6 +17,7 @@ const Search = (props)  => {
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
     const [lab, setLabel] = useState(null);
+    const [country, setCountry] = useState(null);
     const map = useMap()
     const { provider } = props
 
@@ -32,6 +33,7 @@ const Search = (props)  => {
       const dd = await apicall.json();
       console.log(
         "Label: " + lab + "\n"
+      + "Country: " + country + "\n"
       + "Temp: " + dd.main.temp + "\n"
       + "Temp (feels like): " + dd.main.feels_like + "\n"
       + "Temp (min): " + dd.main.temp_min + "\n"
@@ -56,6 +58,8 @@ const Search = (props)  => {
               setX(result.x);
               setY(result.y);
               setLabel(result.label);
+              const cntry = result.label.split(", ") 
+              setCountry(cntry[cntry.length-1])
               return result.label;
             }
             
