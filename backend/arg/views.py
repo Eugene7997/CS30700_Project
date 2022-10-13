@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from django.http import JsonResponse
+from geopy.geocoders import Nominatim
 
 from arg.serializers import RegionSerializer, DatapointSerializer, EnvironmentalActivitySerializer
 from arg.models import Region, Datapoint, EnvironmentalActivity
@@ -30,6 +31,15 @@ class EnvironmentalActivityViewSet(viewsets.ModelViewSet):
     serializer_class = EnvironmentalActivitySerializer
 
 def api_home(request, *args, **kwargs):
+    lat = 0
+    lon = 0
+    # TODO: (Sahiti) setup request to take latitude and longitude as inputs
+    
+
+    Geolocator = Nominatim(user_agent="geoapiExercises")
     reg = Region.objects.get(region_id=1)
 
-    return JsonResponse({"temp": reg.latitude})
+    temp = 0
+    #TODO: (Adam) given latitude and longitude, find temperature of corresponding region
+
+    return JsonResponse({"temp": temp})
