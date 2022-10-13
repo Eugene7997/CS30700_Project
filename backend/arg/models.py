@@ -16,28 +16,24 @@ class UserLocation(ModelForm):
         fields = ('latitude', 'longitude')
 
 class Region(models.Model):
-    region_id = models.AutoField(primary_key=True)
-    region_name = models.CharField(max_length=30)
-    latitude = models.IntegerField()
-    longitude = models.IntegerField()
+    region_name = models.CharField(max_length=30, primary_key=True)
+    latitude = models.IntegerField(default=0)
+    longitude = models.IntegerField(default=0)
 
 class SubRegion(models.Model):
-    subregion_id = models.AutoField(primary_key=True)
-    subregion_name = models.CharField(max_length=50)
-    region_id = models.ForeignKey(Region, on_delete=models.CASCADE)
+    subregion_name = models.CharField(max_length=50, primary_key=True)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
 
 class EnvironmentalActivity(models.Model):
-    ea_id = models.AutoField(primary_key=True)
-    ea_name = models.CharField(max_length=50)
+    ea_name = models.CharField(max_length=50, primary_key=True)
 
 class Datapoint(models.Model):
     dp_id = models.AutoField(primary_key=True)
-    region_id = models.ForeignKey(Region, on_delete=models.CASCADE)
-    ea_id = models.ForeignKey(EnvironmentalActivity, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    ea = models.ForeignKey(EnvironmentalActivity, on_delete=models.CASCADE)
     dp_datetime = models.DateTimeField()
     is_future = models.BooleanField()
     value = models.FloatField()
 
 class UntrackedRegion(models.Model):
-    untrackedregion_id = models.AutoField(primary_key=True)
-    untrackedregion_name = models.CharField(max_length=50)
+    untrackedregion_name = models.CharField(max_length=50, primary_key=True)

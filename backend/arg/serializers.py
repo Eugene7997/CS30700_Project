@@ -4,24 +4,24 @@ from arg.models import Region, Datapoint, EnvironmentalActivity, SubRegion, Untr
 class RegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Region
-        fields = ('region_id', 'region_name', 'latitude', 'longitude')
+        fields = ('region_name', 'latitude', 'longitude')
 
 class EnvironmentalActivitySerializer(serializers.ModelSerializer):
     class Meta:
         model = EnvironmentalActivity
-        fields = ('ea_id', 'ea_name')
+        fields = ('ea_name')
 
 class DatapointSerializer(serializers.ModelSerializer):
     class Meta:
         model = Datapoint
-        fields = ('dp_id', 'region_id', 'ea_id', 'dp_datetime', 'is_future', 'value')
+        fields = ('dp_id', 'region', 'ea', 'dp_datetime', 'is_future', 'value')
 
 class SubRegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubRegion
-        fields = ('subregion_id', 'subregion_name', "region_id")
+        fields = ('subregion_name', "region")
 
 class UntrackedRegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = UntrackedRegion
-        fields = ('untrackedregion_id', 'untrackedregion_name')
+        fields = ('untrackedregion_name',)
