@@ -1,8 +1,19 @@
+
 from django.db import models
+from django.forms import ModelForm
 
 # MySQL password: 307team19argus
 # Create your models here.
 
+
+# Import your UserLocation model
+
+
+# Create your forms here
+class UserLocation(ModelForm):
+    class Meta:
+        #model = UserLocation
+        fields = ('latitude', 'longitude')
 
 class Region(models.Model):
     region_id = models.IntegerField(primary_key=True)

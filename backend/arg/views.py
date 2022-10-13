@@ -11,6 +11,8 @@ from django.forms.models import model_to_dict
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from geopy.geocoders import Nominatim
+from django.forms import Form
 
 # Create your views here.
 # request -> response
@@ -37,24 +39,34 @@ class EnvironmentalActivityViewSet(viewsets.ModelViewSet):
 
 
 @api_view(["GET", "POST"])
-def api_home(request, *args, **kwargs):
-    #request -> HttpRequest -> Django
 
+def api_home(request, *args, **kwargs):
+    lat = 0
+    lon = 0
+    # TODO: (Sahiti) setup request to take latitude and longitude as inputs
     if request.method == 'GET':
-        reg = Region.objects.all()
+        queryset = Region.objects.all()
+        lat = float(queryset.get('lag', None))
+        lon = float(queryset.get('lng', None))
         serializer = RegionSerializer(reg, many=True)
         return Response(serializer.data)
-    
     if request.method == 'POST':
         serializer = RegionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             lat = serializer.data.region_name
+            lon = serializer.data.region_name
             return Response(lat, status=status.HTTP_201_CREATED)
     #return JsonResponse({"region": serializer.data.region_name})
-        
-    #reg = Region.objects.get(latitude=8)
-    #serializer = RegionSerializer(data=request)
+
+    Geolocator = Nominatim(user_agent="geoapiExercises")
+    reg = Region.objects.get(region_id=1)
+
+    temp = 0
+    #TODO: (Adam) given latitude and longitude, find temperature of corresponding region
+
+    return JsonResponse({"temp": temp})
+
     
     
 
