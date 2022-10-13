@@ -6,6 +6,11 @@ from django.http import JsonResponse
 
 from arg.serializers import RegionSerializer, DatapointSerializer, EnvironmentalActivitySerializer
 from arg.models import Region, Datapoint, EnvironmentalActivity
+from django.forms.models import model_to_dict
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
 # Create your views here.
 # request -> response
@@ -29,7 +34,28 @@ class EnvironmentalActivityViewSet(viewsets.ModelViewSet):
     queryset = EnvironmentalActivity.objects.all()
     serializer_class = EnvironmentalActivitySerializer
 
-def api_home(request, *args, **kwargs):
-    reg = Region.objects.get(region_id=1)
 
-    return JsonResponse({"temp": reg.latitude})
+
+@api_view(["GET", "POST"])
+def api_home(request, *args, **kwargs):
+    #request -> HttpRequest -> Django
+
+    if request.method == 'GET':
+        reg = Region.objects.all()
+        serializer = RegionSerializer(reg, many=True)
+        return Response(serializer.data)
+    
+    if request.method == 'POST':
+        serializer = RegionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            lat = serializer.data.region_name
+            return Response(lat, status=status.HTTP_201_CREATED)
+    #return JsonResponse({"region": serializer.data.region_name})
+        
+    #reg = Region.objects.get(latitude=8)
+    #serializer = RegionSerializer(data=request)
+    
+    
+
+    
