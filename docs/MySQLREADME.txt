@@ -16,7 +16,7 @@ To run the Django REST API on your personal machine:
     b. double click the "djangodatabase" schema in the left menu, it should become bold
     c. In the "Query 1" tab, paste the following commands:
 
-        create user dbadmin identified by '12345';
+        create user dbadmin identified by 'password12345';
         grant all on djangodatabase.* to 'dbadmin'@'%';
         flush privileges
     
