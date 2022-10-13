@@ -9,7 +9,7 @@ class RegionSerializer(serializers.ModelSerializer):
 class EnvironmentalActivitySerializer(serializers.ModelSerializer):
     class Meta:
         model = EnvironmentalActivity
-        fields = ('ea_name')
+        fields = ('ea_name',)
 
 class DatapointSerializer(serializers.ModelSerializer):
     class Meta:

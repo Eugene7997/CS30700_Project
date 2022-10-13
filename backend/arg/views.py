@@ -92,7 +92,7 @@ def latlon_to_temp(lat, lon):
     except:
         try: 
             # see if country is a sub region
-            reg = SubRegion.objects.get(subregion_name=country).region_id
+            reg = SubRegion.objects.get(subregion_name=country).region
             if(DEBUG_MODE):
                 print("region: ")
                 print(reg.region_name)
