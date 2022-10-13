@@ -42,7 +42,14 @@ class EnvironmentalActivityViewSet(viewsets.ModelViewSet):
 class SubRegionViewSet(viewsets.ModelViewSet):
     queryset = SubRegion.objects.all()
     serializer_class = SubRegionSerializer
-
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        subregion = request.data['subregion_name']
+        UntrackedRegion.objects.filter(untrackedregion_name=subregion).delete()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 class UntrackedRegionViewSet(viewsets.ModelViewSet):
     queryset = UntrackedRegion.objects.all()
     serializer_class = UntrackedRegionSerializer
