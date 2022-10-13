@@ -31,13 +31,16 @@ class EnvironmentalActivityViewSet(viewsets.ModelViewSet):
     serializer_class = EnvironmentalActivitySerializer
 
 def api_home(request, *args, **kwargs):
-    lat = 0
-    lon = 0
+    lat = 51.507351
+    lon = -0.127758
     # TODO: (Sahiti) setup request to take latitude and longitude as inputs
     
 
-    Geolocator = Nominatim(user_agent="geoapiExercises")
-    reg = Region.objects.get(region_id=1)
+    geolocator = Nominatim(user_agent="geoapiExercises")
+    location = geolocator.reverse(str(lat)+","+str(lon))
+    loc_dic = location.raw['address']
+    country = loc_dic['country']
+    reg = Region.objects.get(region_name=country)
 
     temp = 0
     #TODO: (Adam) given latitude and longitude, find temperature of corresponding region
