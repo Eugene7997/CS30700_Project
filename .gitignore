@@ -1,1 +1,5 @@
 frontend/argus/package-lock.json
+backend/.venv
+backend/.vscode
+backend/arg/__pycache__
+backend/argus/__pycache__

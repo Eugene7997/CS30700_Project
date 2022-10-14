@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import pymysql
+import os
+
+pymysql.install_as_MySQLdb()
+#from arg.core import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +30,7 @@ SECRET_KEY = "django-insecure-+y)e1ke!wbp0ygr56^o)z7735=2f(%nw!#5j0xc(%uk7&!jy0u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,7 +42,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'arg'
+    "rest_framework",
+    "django.core.management",
+    "corsheaders",
+    'arg',
 ]
 
 MIDDLEWARE = [
@@ -48,9 +56,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware", 
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "argus.urls"
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 TEMPLATES = [
     {
@@ -68,7 +80,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "argus.wsgi.application"
+#WSGI_APPLICATION = "argus.wsgi.application"
 
 
 # Database
@@ -79,12 +91,12 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "djangodatabase",
         "USER": "dbadmin",
-        "PASSWORD": "12345",
-        "HOST": "localhost",
+        "PASSWORD": "password12345",
+        "HOST": "127.0.0.1",
         "PORT": "3306"
     }
 }
-
+#db = MySQLdb.connect(host="127.0.0.1",user="db_username",passwd="db_password",db="db_name") 
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -110,11 +122,22 @@ USE_I18N = True
 
 USE_TZ = True
 
+ALLOW_ALL = 'django.contrib.cors_origin_allow_all'
+
+ALLOW_ALL = True
+
+REST = "rest_framework"
+
+REST = {
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny']
+}
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
