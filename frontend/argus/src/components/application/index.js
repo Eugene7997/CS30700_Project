@@ -1,8 +1,9 @@
+
 // react-learn JS libraries
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import '../../App.css';
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
 import L from "leaflet";
 import img from "./bg.jpg"
@@ -10,21 +11,60 @@ import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
 
+
 //function to search location by name
-const Search = (props) => {
+const Search = (props)  => {
+    const [x, setX] = useState(0);
+    const [y, setY] = useState(0);
+    const [lab, setLabel] = useState(null);
     const map = useMap()
     const { provider } = props
 
     useEffect(() => {
+      Fetchdata();
+    }, [x,y])
+
+
+    //retrieve the temperature and weather data when user searched location
+    const Fetchdata = async() => {
+      const APIKEY = "37cde85ed34605798aa360d4c26dc586"
+      const apicall = await fetch(`//api.openweathermap.org/data/2.5/weather?lat=${y}&lon=${x}&appid=${APIKEY}&units=metric`)
+      const dd = await apicall.json();
+      console.log(
+        "Label: " + lab + "\n"
+      + "Temp: " + dd.main.temp + "\n"
+      + "Temp (feels like): " + dd.main.feels_like + "\n"
+      + "Temp (min): " + dd.main.temp_min + "\n"
+      + "Temp (max): " + dd.main.temp_max + "\n"
+      + "Pressure: " + dd.main.pressure +"\n"
+      + "Temp: " + dd.main.temp +"\n"
+      + "Temp: " + dd.main.temp + "\n"
+      + "Weather: " + dd.weather[0].main+ "\n"
+      + "Detailed weather: " + dd.weather[0].description);
+      
+      
+    }
+
+    //search the location by location_label
+    useEffect(()  => {
         const searchControl = new GeoSearchControl({
             provider,
-        })
-
-        map.addControl(searchControl) // this is how you add a control in vanilla leaflet
+            autoComplete: true,
+            showPopup: false,
+            showMarker: true,
+            popupFormat: ({query, result}) => {
+              setX(result.x);
+              setY(result.y);
+              setLabel(result.label);
+              return result.label;
+            }
+            
+        }).addTo(map)
         return () => map.removeControl(searchControl)
     }, [props])
 
-    return null // don't want anything to show up from this comp
+
+    return  null // don't want anything to show up from this comp
 }
 
 //function to retrieve user's current location
@@ -37,6 +77,7 @@ const CurrentLocation = () => {
     useEffect(() => {
       map.locate().on("locationfound", function (e) {
         setPosition(e.latlng);
+        // alert(e.latlng);
         map.flyTo(e.latlng, map.getZoom());
         const radius = e.accuracy;
         const circle = L.circle(e.latlng, radius);
@@ -53,7 +94,6 @@ const CurrentLocation = () => {
             <b>SW lat</b>: {bbox[1]} <br />
             <b>NE lng</b>: {bbox[2]} <br />
             <b>NE lat</b>: {bbox[3]}
-            
           </Popup>
         </Marker>
       );
@@ -65,7 +105,6 @@ const Application = () => {
   return (
     <div style = {{
       backgroundImage: `url(${img})`,
-      backgroundSize: 'cover',
       backgroundRepeat: `no-repeat`,
       height: '100vh',
       backgroundPosition: 'center',
@@ -81,14 +120,8 @@ const Application = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {/* <Marker position={[51.505, -0.09]}> */}
-            {/* <Popup>
-              You are here <br />
-              Temp: 0
-            </Popup> */}
-            <CurrentLocation />
             <Search provider={new OpenStreetMapProvider()} />
-          {/* </Marker> */}
+            <CurrentLocation />
         </MapContainer>
       </div>
 
@@ -96,4 +129,4 @@ const Application = () => {
   )
 }
 
-export default Application
+export default Application;

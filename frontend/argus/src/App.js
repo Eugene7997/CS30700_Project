@@ -9,6 +9,7 @@ import Home from './components/Home'
 // import header from './components/header'
 import About from './components/About'
 import Application from './components/application'
+import Modal from './components/application/Modal/'
 
 
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="application" element={<Application />} />
+          <Route path="modal" element={<Modal />} />
         </Routes>
       </div>
     )
