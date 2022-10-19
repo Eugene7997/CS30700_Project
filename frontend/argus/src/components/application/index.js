@@ -105,10 +105,6 @@ const {BaseLayer} = LayersControl
 
 const Application = () => {
 
-  const handleMapTileButtonClick = () => {
-    console.log("Hello")
-  }
-
   return (
     <div style = {{
       backgroundImage: `url(${img})`,
@@ -150,9 +146,6 @@ const Application = () => {
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
         </MapContainer>
-      </div>
-      <div>
-        <button><img src={streetMapTileIcon} alt="my button" onClick={handleMapTileButtonClick}/></button>
       </div>
     </div>
   )
