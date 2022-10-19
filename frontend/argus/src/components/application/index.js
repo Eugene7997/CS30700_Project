@@ -1,6 +1,6 @@
 
 // react-learn JS libraries
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl } from 'react-leaflet'
 import '../../App.css';
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
@@ -98,6 +98,7 @@ const CurrentLocation = () => {
       );
 }
 
+const {BaseLayer} = LayersControl
 
 const Application = () => {
 
@@ -119,22 +120,30 @@ const Application = () => {
       
       <div id="map">    
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true}>
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
-            subdomains={['mt1','mt2','mt3']}
-          />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-            subdomains={['mt1','mt2','mt3']}
-          />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}"
-            subdomains='abcd'
-            ext= 'png'
-          />
+          <LayersControl>
+            <BaseLayer checked name="Street">
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+                subdomains={['mt1','mt2','mt3']}
+              />
+            </BaseLayer>
+            <BaseLayer name="Satellite"> 
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+                subdomains={['mt1','mt2','mt3']}
+              />
+            </BaseLayer>
+            <BaseLayer name="Minimalist">
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}"
+                subdomains='abcd'
+                ext= 'png'
+              />
+            </BaseLayer>
+          </LayersControl>
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
         </MapContainer>
