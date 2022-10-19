@@ -6,7 +6,10 @@ import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
 import L from "leaflet";
 import img from "./bg.jpg"
-import mapTileImg from "./mario.jpg"
+import streetMapTileIcon from "./streetMapImg.jpg"
+import satelliteMapTileIcon from "./satelliteMapImg.png"
+import minimalistMapIcon from "./minimalistMapImg.png"
+
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
 
@@ -121,21 +124,21 @@ const Application = () => {
       <div id="map">    
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true}>
           <LayersControl>
-            <BaseLayer checked name="Street">
+            <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}> 
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                 subdomains={['mt1','mt2','mt3']}
               />
             </BaseLayer>
-            <BaseLayer name="Satellite"> 
+            <BaseLayer name={`<img src=${satelliteMapTileIcon} alt="satellite" width=100/>`}> 
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
                 subdomains={['mt1','mt2','mt3']}
               />
             </BaseLayer>
-            <BaseLayer name="Minimalist">
+            <BaseLayer name={`<img src=${minimalistMapIcon} alt="minimalist" width=100/>`}> 
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}"
@@ -149,7 +152,7 @@ const Application = () => {
         </MapContainer>
       </div>
       <div>
-        <button><img src={mapTileImg} alt="my button" onClick={handleMapTileButtonClick}/></button>
+        <button><img src={streetMapTileIcon} alt="my button" onClick={handleMapTileButtonClick}/></button>
       </div>
     </div>
   )
