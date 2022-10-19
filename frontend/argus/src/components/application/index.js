@@ -121,11 +121,22 @@ const Application = () => {
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+            subdomains={['mt1','mt2','mt3']}
+          />
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
             subdomains={['mt1','mt2','mt3']}
           />
-            <Search provider={new OpenStreetMapProvider()} />
-            <CurrentLocation />
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}"
+            subdomains='abcd'
+            ext= 'png'
+          />
+          <Search provider={new OpenStreetMapProvider()} />
+          <CurrentLocation />
         </MapContainer>
       </div>
       <div>
