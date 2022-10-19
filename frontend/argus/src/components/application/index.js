@@ -2,12 +2,11 @@
 // react-learn JS libraries
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import '../../App.css';
-
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
 import L from "leaflet";
 import img from "./bg.jpg"
-import { LatLng } from "leaflet"
+import mapTileImg from "./mario.jpg"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
 
@@ -102,6 +101,10 @@ const CurrentLocation = () => {
 
 const Application = () => {
 
+  const handleMapTileButtonClick = () => {
+    console.log("Hello")
+  }
+
   return (
     <div style = {{
       backgroundImage: `url(${img})`,
@@ -124,7 +127,9 @@ const Application = () => {
             <CurrentLocation />
         </MapContainer>
       </div>
-
+      <div>
+        <button><img src={mapTileImg} alt="my button" onClick={handleMapTileButtonClick}/></button>
+      </div>
     </div>
   )
 }
