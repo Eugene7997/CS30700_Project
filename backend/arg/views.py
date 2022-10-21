@@ -56,6 +56,8 @@ class UntrackedRegionViewSet(viewsets.ModelViewSet):
 
 @api_view(["GET", "POST"])
 
+
+
 def api_home(request, *args, **kwargs):
     temp = 0
     if request.method == 'GET':
@@ -64,7 +66,7 @@ def api_home(request, *args, **kwargs):
         lat = request.data.get('latitude')
         lon = request.data.get('longitude')
         temp = latlon_to_temp(lat, lon)
-        return JsonResponse(temp)
+        return JsonResponse(temp, 'frontend/components/application/index.js')
     #return JsonResponse({"region": serializer.data.region_name})
 
 def latlon_to_temp(lat, lon):

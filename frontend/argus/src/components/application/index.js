@@ -45,6 +45,7 @@ const Search = (props)  => {
       
     }
 
+      
     //search the location by location_label
     useEffect(()  => {
         const searchControl = new GeoSearchControl({
@@ -53,7 +54,7 @@ const Search = (props)  => {
             showPopup: false,
             showMarker: true,
             popupFormat: ({query, result}) => {
-              setX(result.x);
+              setX(result.x); 
               setY(result.y);
               setLabel(result.label);
               return result.label;
@@ -66,6 +67,26 @@ const Search = (props)  => {
 
     return  null // don't want anything to show up from this comp
 }
+
+ const response = fetch('http://127.0.0.1:8000/arg/api/', {
+        method: 'POST',
+        body: JSON.stringify({
+            LatLng
+        }),
+        headers: {
+          'Accept': 'application/json, text/plain',
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+
+ }).then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.log("Error detected: " + error));
+  
+   
+
+
+      
+      
 
 //function to retrieve user's current location
 const CurrentLocation = () => {
