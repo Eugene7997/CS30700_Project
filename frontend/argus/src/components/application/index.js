@@ -9,7 +9,7 @@ import img from "./bg.jpg"
 import streetMapTileIcon from "./streetMapImg.jpg"
 import satelliteMapTileIcon from "./satelliteMapImg.png"
 import minimalistMapIcon from "./minimalistMapImg.png"
-
+import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
 
