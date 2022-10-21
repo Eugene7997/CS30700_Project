@@ -1,13 +1,15 @@
 
 // react-learn JS libraries
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl } from 'react-leaflet'
 import '../../App.css';
-
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
 import L from "leaflet";
 import img from "./bg.jpg"
-import { LatLng } from "leaflet"
+import streetMapTileIcon from "./streetMapImg.jpg"
+import satelliteMapTileIcon from "./satelliteMapImg.png"
+import minimalistMapIcon from "./minimalistMapImg.png"
+
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
 
@@ -120,6 +122,7 @@ const CurrentLocation = () => {
       );
 }
 
+const {BaseLayer} = LayersControl
 
 const Application = () => {
 
@@ -137,15 +140,34 @@ const Application = () => {
       
       <div id="map">    
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true}>
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-            <Search provider={new OpenStreetMapProvider()} />
-            <CurrentLocation />
+          <LayersControl>
+            <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}> 
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+                subdomains={['mt1','mt2','mt3']}
+              />
+            </BaseLayer>
+            <BaseLayer name={`<img src=${satelliteMapTileIcon} alt="satellite" width=100/>`}> 
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+                subdomains={['mt1','mt2','mt3']}
+              />
+            </BaseLayer>
+            <BaseLayer name={`<img src=${minimalistMapIcon} alt="minimalist" width=100/>`}> 
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}"
+                subdomains='abcd'
+                ext= 'png'
+              />
+            </BaseLayer>
+          </LayersControl>
+          <Search provider={new OpenStreetMapProvider()} />
+          <CurrentLocation />
         </MapContainer>
       </div>
-
     </div>
   )
 }
