@@ -1,6 +1,6 @@
 
 // react-learn JS libraries
-import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl, GeoJSON } from 'react-leaflet'
 import '../../App.css';
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
@@ -11,8 +11,7 @@ import satelliteMapTileIcon from "./satelliteMapImg.png"
 import minimalistMapIcon from "./minimalistMapImg.png"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
-
-
+import geoDatas from '../chloropleth_map/annualTemperatureOfCountyUSA.json'
 
 //function to search location by name
 const Search = (props)  => {
@@ -166,6 +165,7 @@ const Application = () => {
           </LayersControl>
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
+          {geoDatas && <GeoJSON data = {geoDatas}/>}
         </MapContainer>
       </div>
     </div>
