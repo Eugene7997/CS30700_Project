@@ -68,7 +68,9 @@ const Search = (props)  => {
     return  null // don't want anything to show up from this comp
 }
 
- const response = fetch('http://127.0.0.1:8000/arg/api/', {
+
+//creating react post request and fetching data from django
+const response = fetch('http://127.0.0.1:8000/arg/api/', {
         method: 'POST',
         body: JSON.stringify({
             LatLng
@@ -78,8 +80,9 @@ const Search = (props)  => {
           'Content-Type': 'application/json; charset=utf-8'
         }
 
+
  }).then(response => response.json())
-    .then(data => console.log(data))
+    .then(data => console.log(JSON.stringify(data)))
     .catch(error => console.log("Error detected: " + error));
   
    
