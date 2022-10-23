@@ -126,6 +126,60 @@ const {BaseLayer} = LayersControl
 
 const Application = () => {
 
+  const [onSelect, setOnSelect] = useState({});
+
+  const highlightChloropleth = (e => {
+    var layer = e.target
+    layer.setStyle({
+      weight: 1,
+      color: "black",
+      fillOpacity: 1
+    })
+  })
+  const resetHighlight= (e =>{
+    e.target.setStyle(chloropleth_style(e.target.feature));
+  })
+
+  const onEachFeature= (feature, layer)=> {
+    console.log(feature)
+    const name = feature.properties.NAME
+    const temp_celsius = feature.properties.tempchg_c
+    layer.bindPopup(`<strong>name: ${name} <br/> temp change in celsius: ${temp_celsius} </strong>`)
+    layer.on({
+        mouseover: highlightChloropleth,
+        mouseout: resetHighlight,
+    });
+  }
+
+  const mapPolygonColorToDensity=(value => {
+    return value > 1
+        ? '#a50f15'
+        : value > 0.75
+        ? '#de2d26'
+        : value > 0.50
+        ? '#fb6a4a'
+        : value > 0.25
+        ? '#fc9272'
+        : value > 0
+        ? '#fcbba1'
+        : '#fee5d9';
+  })
+
+  const chloropleth_style = (feature => {
+    return ({
+        fillColor: mapPolygonColorToDensity(feature.properties.tempchg),
+        weight: 1,
+        opacity: 1,
+        color: 'white',
+        dashArray: '2',
+        fillOpacity: 0.5
+    });
+  }); 
+
+  const mapStyle = {
+    margin: '0 auto',
+  }
+
   return (
     <div style = {{
       backgroundImage: `url(${img})`,
@@ -138,7 +192,7 @@ const Application = () => {
       </div>
       
       <div id="map">    
-        <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true}>
+        <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true} style={mapStyle}>
           <LayersControl>
             <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}> 
               <TileLayer
@@ -165,7 +219,8 @@ const Application = () => {
           </LayersControl>
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
-          {geoDatas && <GeoJSON data = {geoDatas}/>}
+          {geoDatas &&
+           (<GeoJSON data = {geoDatas} onEachFeature={onEachFeature} style = {chloropleth_style}/>)}
         </MapContainer>
         <Chloropleth_legends/>
       </div>
