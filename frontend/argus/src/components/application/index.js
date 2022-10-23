@@ -12,6 +12,7 @@ import minimalistMapIcon from "./minimalistMapImg.png"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import geoDatas from '../chloropleth_map/annualTemperatureOfCountyUSA.json'
+import Chloropleth_legends from '../chloropleth_map/chloropleth_legends';
 
 //function to search location by name
 const Search = (props)  => {
@@ -132,7 +133,6 @@ const Application = () => {
       height: '100vh',
       backgroundPosition: 'center',
     }}>
-
       <div>
         <Head />
       </div>
@@ -167,6 +167,7 @@ const Application = () => {
           <CurrentLocation />
           {geoDatas && <GeoJSON data = {geoDatas}/>}
         </MapContainer>
+        <Chloropleth_legends/>
       </div>
     </div>
   )
