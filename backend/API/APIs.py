@@ -7,6 +7,10 @@
 import requests
 import json
 import arrow
+from django.http import JsonResponse
+import reverse_geocode
+from arg.serializers import RegionSerializer, DatapointSerializer, EnvironmentalActivitySerializer, SubRegionSerializer, UntrackedRegionSerializer
+from arg.models import Region, Datapoint, EnvironmentalActivity, SubRegion, UntrackedRegion
 
 
 # Humidity
@@ -34,6 +38,7 @@ parse_json
 
 
 parse_json['coord']
+
 
 
 # In[14]:
