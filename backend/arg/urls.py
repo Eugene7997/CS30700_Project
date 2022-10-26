@@ -14,6 +14,6 @@ router.register(r'untrackedregion', UntrackedRegionViewSet)
 #URLConf
 urlpatterns = [
      path('hello/', views.say_hello),
-     path('', views.latlon_to_temp),
-     path('api/', views.api_home)
+     path('', include(router.urls)),
+     path('api/', include(router.urls))
 ]

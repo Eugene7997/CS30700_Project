@@ -11,6 +11,7 @@ import satelliteMapTileIcon from "./satelliteMapImg.png"
 import minimalistMapIcon from "./minimalistMapImg.png"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import axios from "axios";
 
 
 
@@ -23,30 +24,48 @@ const Search = (props)  => {
     const { provider } = props
 
     useEffect(() => {
-      Fetchdata();
+      //Fetchdata();
+      //getData();
+      //resp();
     }, [x,y])
 
 
     //retrieve the temperature and weather data when user searched location
-    const Fetchdata = async() => {
-      const APIKEY = "37cde85ed34605798aa360d4c26dc586"
-      const apicall = await fetch(`//api.openweathermap.org/data/2.5/weather?lat=${y}&lon=${x}&appid=${APIKEY}&units=metric`)
-      const dd = await apicall.json();
-      console.log(
-        "Label: " + lab + "\n"
-      + "Temp: " + dd.main.temp + "\n"
-      + "Temp (feels like): " + dd.main.feels_like + "\n"
-      + "Temp (min): " + dd.main.temp_min + "\n"
-      + "Temp (max): " + dd.main.temp_max + "\n"
-      + "Pressure: " + dd.main.pressure +"\n"
-      + "Temp: " + dd.main.temp +"\n"
-      + "Temp: " + dd.main.temp + "\n"
-      + "Weather: " + dd.weather[0].main+ "\n"
-      + "Detailed weather: " + dd.weather[0].description);
+    //const Fetchdata = async() => {
+     // const APIKEY = "37cde85ed34605798aa360d4c26dc586"
+      //const apicall = await fetch(`//api.openweathermap.org/data/2.5/weather?lat=${y}&lon=${x}&appid=${APIKEY}&units=metric`)
+      //const dd = await apicall.json();
+      //console.log(
+    //    "Label: " + lab + "\n"
+    //  + "Temp: " + dd.main.temp + "\n"
+     // + "Temp (feels like): " + dd.main.feels_like + "\n"
+     // + "Temp (min): " + dd.main.temp_min + "\n"
+     // + "Temp (max): " + dd.main.temp_max + "\n"
+     // + "Pressure: " + dd.main.pressure +"\n"
+    //  + "Temp: " + dd.main.temp +"\n"
+    //  + "Temp: " + dd.main.temp + "\n"
+    //  + "Weather: " + dd.weather[0].main+ "\n"
+    //  + "Detailed weather: " + dd.weather[0].description);
       
       
-    }
+   // }
 
+    //const getData = () => {
+      //axios.get(`http://127.0.0.1:8000/arg/api/`).then(res => this.setState({ students: res.value }));
+    //};
+
+    //creating react post request and fetching data from django
+const response = fetch('http://127.0.0.1:8000/arg/api/', {
+  method: 'GET',
+  headers: {
+    'Accept': 'application/json, text/plain',
+    'Content-Type': 'application/json; charset=utf-8'
+  }
+
+
+}).then(response => response.json())
+.then(data => console.log(JSON.stringify(data)))
+.catch(error => console.log("Error detected: " + error));
       
     //search the location by location_label
     useEffect(()  => {
@@ -71,21 +90,7 @@ const Search = (props)  => {
 }
 
 
-//creating react post request and fetching data from django
-const response = fetch('http://127.0.0.1:8000/arg/api/', {
-        method: 'POST',
-        body: JSON.stringify({
-            LatLng
-        }),
-        headers: {
-          'Accept': 'application/json, text/plain',
-          'Content-Type': 'application/json; charset=utf-8'
-        }
 
-
- }).then(response => response.json())
-    .then(data => console.log(JSON.stringify(data)))
-    .catch(error => console.log("Error detected: " + error));
   
    
 
