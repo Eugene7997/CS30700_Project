@@ -1,6 +1,7 @@
 from django.urls import include, path
 from . import views 
 from rest_framework import routers
+#from .views import index
 from arg.views import RegionViewSet, EnvironmentalActivityViewSet, DatapointViewSet, SubRegionViewSet, UntrackedRegionViewSet
 
 router = routers.DefaultRouter()
@@ -13,6 +14,6 @@ router.register(r'untrackedregion', UntrackedRegionViewSet)
 #URLConf
 urlpatterns = [
      path('hello/', views.say_hello),
-     path('', include(router.urls)),
+     path('', views.latlon_to_temp),
      path('api/', views.api_home)
 ]

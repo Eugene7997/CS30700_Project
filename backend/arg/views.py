@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from django.http import JsonResponse
 import reverse_geocode
+from django.db.models import Min, Max
 
 from arg.serializers import RegionSerializer, DatapointSerializer, EnvironmentalActivitySerializer, SubRegionSerializer, UntrackedRegionSerializer
 from arg.models import Region, Datapoint, EnvironmentalActivity, SubRegion, UntrackedRegion
@@ -58,7 +59,7 @@ class UntrackedRegionViewSet(viewsets.ModelViewSet):
 
 def api_home(request, *args, **kwargs):
     temp = 0
-    #humidity = 0
+    humidity = 0
     if request.method == 'GET':
         return JsonResponse({"error": "only send latitude/longitude post requests to this URL"})
     if request.method == 'POST':
@@ -89,11 +90,11 @@ def latlon_to_temp(lat, lon):
         print("country:")
         print(country)
     try:
-         #see if country is a primary region
+        # see if country is a primary region
         reg = Region.objects.get(region_name=country)
     except:
         try: 
-             #see if country is a sub region
+            # see if country is a sub region
             reg = SubRegion.objects.get(subregion_name=country).region
             if(DEBUG_MODE):
                 print("region: ")
@@ -105,7 +106,10 @@ def latlon_to_temp(lat, lon):
                 untracked.save()
             return {'error': 'region not tracked in database'}
     try:
-        dp = Datapoint.objects.get(region_id = reg)
+        filtered = Datapoint.objects.filter(region = reg, is_future = 0)
+        most_recent = filtered.aggregate(Max('dp_datetime'))['dp_datetime__max']
+        dp = filtered.get(dp_datetime = most_recent)
+        
     except:
         return {'error': 'no data for this region'}
     return {'temperature': dp.value}

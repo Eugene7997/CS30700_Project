@@ -1,12 +1,14 @@
 
 // react-learn JS libraries
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl } from 'react-leaflet'
 import '../../App.css';
-
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
 import L, { latLng, latLngBounds } from "leaflet";
 import img from "./bg.jpg"
+import streetMapTileIcon from "./streetMapImg.jpg"
+import satelliteMapTileIcon from "./satelliteMapImg.png"
+import minimalistMapIcon from "./minimalistMapImg.png"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
@@ -64,6 +66,7 @@ const response = fetch('http://127.0.0.1:8000/arg/api/', {
 .then(data => console.log(JSON.stringify(data)))
 .catch(error => console.log("Error detected: " + error));
 
+      
     //search the location by location_label
     useEffect(()  => {
         const searchControl = new GeoSearchControl({
@@ -72,7 +75,7 @@ const response = fetch('http://127.0.0.1:8000/arg/api/', {
             showPopup: false,
             showMarker: true,
             popupFormat: ({query, result}) => {
-              setX(result.x);
+              setX(result.x); 
               setY(result.y);
               setLabel(result.label);
               return result.label;
@@ -85,6 +88,26 @@ const response = fetch('http://127.0.0.1:8000/arg/api/', {
 
     return  null // don't want anything to show up from this comp
 }
+
+ const response = fetch('http://127.0.0.1:8000/arg/api/', {
+        method: 'POST',
+        body: JSON.stringify({
+            LatLng
+        }),
+        headers: {
+          'Accept': 'application/json, text/plain',
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+
+ }).then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.log("Error detected: " + error));
+  
+   
+
+
+      
+      
 
 //function to retrieve user's current location
 const CurrentLocation = () => {
@@ -118,6 +141,7 @@ const CurrentLocation = () => {
       );
 }
 
+const {BaseLayer} = LayersControl
 
 const Application = () => {
 
@@ -135,15 +159,34 @@ const Application = () => {
       
       <div id="map">    
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true}>
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-            <Search provider={new OpenStreetMapProvider()} />
-            <CurrentLocation />
+          <LayersControl>
+            <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}> 
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+                subdomains={['mt1','mt2','mt3']}
+              />
+            </BaseLayer>
+            <BaseLayer name={`<img src=${satelliteMapTileIcon} alt="satellite" width=100/>`}> 
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+                subdomains={['mt1','mt2','mt3']}
+              />
+            </BaseLayer>
+            <BaseLayer name={`<img src=${minimalistMapIcon} alt="minimalist" width=100/>`}> 
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}"
+                subdomains='abcd'
+                ext= 'png'
+              />
+            </BaseLayer>
+          </LayersControl>
+          <Search provider={new OpenStreetMapProvider()} />
+          <CurrentLocation />
         </MapContainer>
       </div>
-
     </div>
   )
 }
