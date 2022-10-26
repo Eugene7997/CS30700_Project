@@ -74,9 +74,16 @@ def generate_placeholder_data():
     return data
 
 
+def test_example():
+    print("scheduling works!")
+
+#schedule.every(1).seconds.do(test_example)
+#update_db()
+
 schedule.every(1).hours.do(update_db)
 
 while True:
     schedule.run_pending()
     time.sleep(1)
+
 
