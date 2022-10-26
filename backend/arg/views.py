@@ -140,7 +140,9 @@ def latlon_to_humidity(lat, lon):
                 untracked.save()
             return {'error': 'region not tracked in database'}
     try:
-        dp = Datapoint.objects.get(region_id = reg)
+        filtered = Datapoint.objects.filter(region = reg, is_future = 0)
+        most_recent = filtered.aggregate(Max('dp_datetime'))['dp_datetime__max']
+        dp = filtered.get(dp_datetime = most_recent)
     except:
         return {'error': 'no data for this region'}
     return {'humidity': dp.value}
