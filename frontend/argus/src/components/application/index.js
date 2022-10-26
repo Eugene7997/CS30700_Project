@@ -5,7 +5,7 @@ import '../../App.css';
 
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
-import L from "leaflet";
+import L, { latLng, latLngBounds } from "leaflet";
 import img from "./bg.jpg"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
@@ -21,29 +21,48 @@ const Search = (props)  => {
     const { provider } = props
 
     useEffect(() => {
-      Fetchdata();
+      //Fetchdata();
     }, [x,y])
 
 
     //retrieve the temperature and weather data when user searched location
-    const Fetchdata = async() => {
-      const APIKEY = "37cde85ed34605798aa360d4c26dc586"
-      const apicall = await fetch(`//api.openweathermap.org/data/2.5/weather?lat=${y}&lon=${x}&appid=${APIKEY}&units=metric`)
-      const dd = await apicall.json();
-      console.log(
-        "Label: " + lab + "\n"
-      + "Temp: " + dd.main.temp + "\n"
-      + "Temp (feels like): " + dd.main.feels_like + "\n"
-      + "Temp (min): " + dd.main.temp_min + "\n"
-      + "Temp (max): " + dd.main.temp_max + "\n"
-      + "Pressure: " + dd.main.pressure +"\n"
-      + "Temp: " + dd.main.temp +"\n"
-      + "Temp: " + dd.main.temp + "\n"
-      + "Weather: " + dd.weather[0].main+ "\n"
-      + "Detailed weather: " + dd.weather[0].description);
+    //const Fetchdata = async() => {
+     // const APIKEY = "37cde85ed34605798aa360d4c26dc586"
+     // const apicall = await fetch(`//api.openweathermap.org/data/2.5/weather?lat=${y}&lon=${x}&appid=${APIKEY}&units=metric`)
+      //const dd = await apicall.json();
+     // console.log(
+      //  "Label: " + lab + "\n"
+     // + "Temp: " + dd.main.temp + "\n"
+     // + "Temp (feels like): " + dd.main.feels_like + "\n"
+     // + "Temp (min): " + dd.main.temp_min + "\n"
+     // + "Temp (max): " + dd.main.temp_max + "\n"
+     // + "Pressure: " + dd.main.pressure +"\n"
+     // + "Temp: " + dd.main.temp +"\n"
+     // + "Temp: " + dd.main.temp + "\n"
+     // + "Weather: " + dd.weather[0].main+ "\n"
+     // + "Detailed weather: " + dd.weather[0].description);
       
       
-    }
+   // }
+
+   let data = {
+    'latitude': y,
+    'longitude': x
+   }
+
+  //creating react post request and fetching data from django
+const response = fetch('http://127.0.0.1:8000/arg/api/', {
+  method: 'POST',
+  body : JSON.stringify(data),
+  headers: {
+    'Accept': 'application/json, text/plain',
+    'Content-Type': 'application/json; charset=utf-8'
+  }
+
+
+}).then(response => response.json())
+.then(data => console.log(JSON.stringify(data)))
+.catch(error => console.log("Error detected: " + error));
 
     //search the location by location_label
     useEffect(()  => {
