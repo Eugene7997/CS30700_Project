@@ -23,12 +23,12 @@ const Search = (props)  => {
     const { provider } = props
 
     useEffect(() => {
-      //Fetchdata();
+      Fetchdata();
     }, [x,y])
 
 
     //retrieve the temperature and weather data when user searched location
-    //const Fetchdata = async() => {
+    const Fetchdata = async() => {
      // const APIKEY = "37cde85ed34605798aa360d4c26dc586"
      // const apicall = await fetch(`//api.openweathermap.org/data/2.5/weather?lat=${y}&lon=${x}&appid=${APIKEY}&units=metric`)
       //const dd = await apicall.json();
@@ -44,27 +44,26 @@ const Search = (props)  => {
      // + "Weather: " + dd.weather[0].main+ "\n"
      // + "Detailed weather: " + dd.weather[0].description);
       
-      
-   // }
-
-   let data = {
-    'latitude': y,
-    'longitude': x
+     const response = await fetch('http://127.0.0.1:8000/arg/api/', {
+      method: 'POST',
+      body : JSON.stringify({'latitude': y, 'longitude': x}),
+      headers: {
+        'Accept': 'application/json, text/plain',
+        'Content-Type': 'application/json; charset=utf-8'
+      }
+    })
+    const res = await response.json();
+    console.log(x + "+" + y)
+    console.log(res)
    }
 
+  //  let data = {
+  //   'latitude': y,
+  //   'longitude': x
+  //  }
+
   //creating react post request and fetching data from django
-const response = fetch('http://127.0.0.1:8000/arg/api/', {
-  method: 'POST',
-  body : JSON.stringify(data),
-  headers: {
-    'Accept': 'application/json, text/plain',
-    'Content-Type': 'application/json; charset=utf-8'
-  }
 
-
-}).then(response => response.json())
-.then(data => console.log(JSON.stringify(data)))
-.catch(error => console.log("Error detected: " + error));
 
       
     //search the location by location_label
