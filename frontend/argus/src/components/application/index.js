@@ -53,7 +53,7 @@ const Search = (props)  => {
       }
     })
     const res = await response.json();
-    console.log(x + "+" + y)
+    console.log("Coordinate: " +x + "+" + y)
     console.log(res)
    }
 
