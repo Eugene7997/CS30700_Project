@@ -4,13 +4,14 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl } from 'r
 import '../../App.css';
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
-import L, { latLng, latLngBounds } from "leaflet";
+import L, { latLng, latLngBounds, map } from "leaflet";
 import img from "./bg.jpg"
 import streetMapTileIcon from "./streetMapImg.jpg"
 import satelliteMapTileIcon from "./satelliteMapImg.png"
 import minimalistMapIcon from "./minimalistMapImg.png"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+// import { ControlledLayerItem } from './LayerControl2';
 
 
 
@@ -26,12 +27,34 @@ const Search = (props)  => {
       Fetchdata();
     }, [x,y])
 
+//     useEffect(() => {
+//       var command = L.control({position: 'topright'});
+// command.onAdd = function (map) {
+//     var div = L.DomUtil.create('div');
+//     div.innerHTML = `
+//     <div class="leaflet-control-layers leaflet-control-layers-expanded">
+//       <form>
+//         <input class="leaflet-control-layers-overlays" id="command" 
+//           onclick=toggleFunction(this.checked) type="checkbox">
+//           Toggle
+//         </input>
+//       </form>
+//     </div>`; 
+//     return div;
+// };
+// command.addTo(map);
+// return () => map.removeControl(command)
+//     },[])
+    
+
+    
+
 
     //retrieve the temperature and weather data when user searched location
     const Fetchdata = async() => {
-     // const APIKEY = "37cde85ed34605798aa360d4c26dc586"
-     // const apicall = await fetch(`//api.openweathermap.org/data/2.5/weather?lat=${y}&lon=${x}&appid=${APIKEY}&units=metric`)
-      //const dd = await apicall.json();
+    //  const APIKEY = "37cde85ed34605798aa360d4c26dc586"
+    //  const apicall = await fetch(`//api.openweathermap.org/data/2.5/weather?lat=${y}&lon=${x}&appid=${APIKEY}&units=metric`)
+    //   const dd = await apicall.json();
      // console.log(
       //  "Label: " + lab + "\n"
      // + "Temp: " + dd.main.temp + "\n"
@@ -44,27 +67,18 @@ const Search = (props)  => {
      // + "Weather: " + dd.weather[0].main+ "\n"
      // + "Detailed weather: " + dd.weather[0].description);
       
-     const response = await fetch('http://127.0.0.1:8000/arg/api/', {
-      method: 'POST',
-      body : JSON.stringify({'latitude': y, 'longitude': x}),
-      headers: {
-        'Accept': 'application/json, text/plain',
-        'Content-Type': 'application/json; charset=utf-8'
-      }
-    })
-    const res = await response.json();
-    console.log("Coordinate: " +x + "+" + y)
-    console.log(res)
+    //  const response = await fetch('http://127.0.0.1:8000/arg/api/', {
+    //   method: 'POST',
+    //   body : JSON.stringify({'latitude': y, 'longitude': x}),
+    //   headers: {
+    //     'Accept': 'application/json, text/plain',
+    //     'Content-Type': 'application/json; charset=utf-8'
+    //   }
+    // })
+    // const res = await response.json();
+    console.log("Coordinate: " +x + ", " + y)
+    // console.log(res)
    }
-
-  //  let data = {
-  //   'latitude': y,
-  //   'longitude': x
-  //  }
-
-  //creating react post request and fetching data from django
-
-
       
     //search the location by location_label
     useEffect(()  => {
@@ -84,23 +98,24 @@ const Search = (props)  => {
         return () => map.removeControl(searchControl)
     }, [props])
 
+    
 
     return  null // don't want anything to show up from this comp
 }
 
- const response = fetch('http://127.0.0.1:8000/arg/api/', {
-        method: 'POST',
-        body: JSON.stringify({
-            LatLng
-        }),
-        headers: {
-          'Accept': 'application/json, text/plain',
-          'Content-Type': 'application/json; charset=utf-8'
-        }
+//  const response = fetch('http://127.0.0.1:8000/arg/api/', {
+//         method: 'POST',
+//         body: JSON.stringify({
+//             LatLng
+//         }),
+//         headers: {
+//           'Accept': 'application/json, text/plain',
+//           'Content-Type': 'application/json; charset=utf-8'
+//         }
 
- }).then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.log("Error detected: " + error));
+//  }).then(response => response.json())
+//     .then(data => console.log(data))
+//     .catch(error => console.log("Error detected: " + error));
   
    
 
@@ -143,7 +158,7 @@ const CurrentLocation = () => {
 const {BaseLayer} = LayersControl
 
 const Application = () => {
-
+  
   return (
     <div style = {{
       backgroundImage: `url(${img})`,
@@ -154,9 +169,26 @@ const Application = () => {
 
       <div>
         <Head />
+        
       </div>
-      
-      <div id="map">    
+      <div id="map">
+      <form>
+                <div style={{
+                  marginTop: 10,
+                  marginBottom: 10,
+                  width: '100%'
+                }}>
+                    <div onClick={() => null}>
+                        <select>
+                            <option>Temperature</option>
+                            <option>Sea Level</option>
+                            <option>GHG</option>
+                            <option>Humidity</option>
+                        </select>
+                        <div class="overSelect" />
+                    </div>
+                </div>
+          </form>
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true}>
           <LayersControl>
             <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}> 
@@ -165,6 +197,7 @@ const Application = () => {
                 url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                 subdomains={['mt1','mt2','mt3']}
               />
+              
             </BaseLayer>
             <BaseLayer name={`<img src=${satelliteMapTileIcon} alt="satellite" width=100/>`}> 
               <TileLayer
@@ -181,9 +214,12 @@ const Application = () => {
                 ext= 'png'
               />
             </BaseLayer>
+            
           </LayersControl>
+          
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
+          
         </MapContainer>
       </div>
     </div>
