@@ -106,7 +106,8 @@ def latlon_to_temp(lat, lon):
                 untracked.save()
             return {'error': 'region not tracked in database'}
     try:
-        filtered = Datapoint.objects.filter(region = reg, is_future = 0)
+        temp = EnvironmentalActivity.objects.get(ea_name="temperature")
+        filtered = Datapoint.objects.filter(region = reg, ea=temp, is_future = 0)
         most_recent = filtered.aggregate(Max('dp_datetime'))['dp_datetime__max']
         dp = filtered.get(dp_datetime = most_recent)
         
@@ -144,7 +145,8 @@ def latlon_to_humidity(lat, lon):
                 untracked.save()
             return {'error': 'region not tracked in database'}
     try:
-        filtered = Datapoint.objects.filter(region = reg, is_future = 0)
+        humi = EnvironmentalActivity.objects.get(ea_name="humidity")
+        filtered = Datapoint.objects.filter(region = reg, ea=humi, is_future = 0)
         most_recent = filtered.aggregate(Max('dp_datetime'))['dp_datetime__max']
         dp = filtered.get(dp_datetime = most_recent)
     except:
