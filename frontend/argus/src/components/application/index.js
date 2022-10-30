@@ -11,9 +11,9 @@ import satelliteMapTileIcon from "./satelliteMapImg.png"
 import minimalistMapIcon from "./minimalistMapImg.png"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
-// import { ControlledLayerItem } from './LayerControl2';
 
 
+window.choice = "temperature";
 
 //function to search location by name
 const Search = (props)  => {
@@ -67,16 +67,16 @@ const Search = (props)  => {
      // + "Weather: " + dd.weather[0].main+ "\n"
      // + "Detailed weather: " + dd.weather[0].description);
       
-    //  const response = await fetch('http://127.0.0.1:8000/arg/api/', {
-    //   method: 'POST',
-    //   body : JSON.stringify({'latitude': y, 'longitude': x}),
-    //   headers: {
-    //     'Accept': 'application/json, text/plain',
-    //     'Content-Type': 'application/json; charset=utf-8'
-    //   }
-    // })
-    // const res = await response.json();
-    console.log("Coordinate: " +x + ", " + y)
+     const response = await fetch('http://127.0.0.1:8000/arg/api/', {
+      method: 'POST',
+      body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice}),
+      headers: {
+        'Accept': 'application/json, text/plain',
+        'Content-Type': 'application/json; charset=utf-8'
+      }
+    })
+    const res = await response.json();
+    console.log("Coordinate: " +x + ", " + y + " + " + window.choice)
     // console.log(res)
    }
       
@@ -158,7 +158,9 @@ const CurrentLocation = () => {
 const {BaseLayer} = LayersControl
 
 const Application = () => {
-  
+  const handleChange = (e) => {
+    console.log(e.target.value)
+  }
   return (
     <div style = {{
       backgroundImage: `url(${img})`,
@@ -178,12 +180,12 @@ const Application = () => {
                   marginBottom: 10,
                   width: '100%'
                 }}>
-                    <div onClick={() => null}>
-                        <select>
-                            <option>Temperature</option>
-                            <option>Sea Level</option>
-                            <option>GHG</option>
-                            <option>Humidity</option>
+                    <div>
+                        <select onChange={(event) => window.choice = event.target.value}>
+                            <option value="temperature">Temperature</option>
+                            <option value="sea">Sea Level</option>
+                            <option value="GHG">GHG</option>
+                            <option value="humid">Humidity</option>
                         </select>
                         <div class="overSelect" />
                     </div>
