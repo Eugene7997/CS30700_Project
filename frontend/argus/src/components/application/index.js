@@ -76,7 +76,7 @@ const Search = (props)  => {
       }
     })
     const res = await response.json();
-    console.log("Coordinate: " +x + ", " + y + " + " + window.choice)
+    console.log("Coordinate: " +x + ", " + y + " + " + JSON.stringify(res))
     // console.log(res)
    }
       
