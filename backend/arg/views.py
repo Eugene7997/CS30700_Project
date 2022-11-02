@@ -61,6 +61,7 @@ def api_home(request, *args, **kwargs):
     temp = 0
     humidity = 0
     GHG = 0
+    sea = 0
     if request.method == 'GET':
         return JsonResponse({"error": "only send latitude/longitude post requests to this URL"})
     if request.method == 'POST':
@@ -75,6 +76,9 @@ def api_home(request, *args, **kwargs):
         if (request.data.get('EA') == 'GHG'):
             GHG = latlon_to_ghg(lat, lon)
             return JsonResponse({"Greenhouse Gases": GHG})
+        if (request.data.get('EA') == 'sea'):
+            sea = latlon_to_sea(lat, lon)
+            return JsonResponse({"Rising Sea Level": sea})
     #return JsonResponse({"region": serializer.data.region_name})
 
 def latlon_to_temp(lat, lon):
@@ -120,7 +124,8 @@ def latlon_to_temp(lat, lon):
         
     except:
         return {'error': 'no data for this region'}
-    return {'temperature': dp.value}
+    return {country: dp.value} ##temperature:value
+
 
 def latlon_to_humidity(lat, lon):
     if lat is None:
@@ -158,7 +163,7 @@ def latlon_to_humidity(lat, lon):
         dp = filtered.get(dp_datetime = most_recent)
     except:
         return {'error': 'no data for this region'}
-    return {'humidity': dp.value}
+    return {country: dp.value} ##humidity:value
 
 
 def latlon_to_ghg(lat, lon):
@@ -197,4 +202,45 @@ def latlon_to_ghg(lat, lon):
         dp = filtered.get(dp_datetime = most_recent)
     except:
         return {'error': 'no data for this region'}
-    return {'Greenhouse Gases': dp.value}
+    return {country: dp.value} ##greenhouse gases:value
+
+
+
+
+def latlon_to_sea(lat, lon):
+    if lat is None:
+        return {'error': 'latitude field required'}
+    if lon is None:
+        return {'error': 'longitude field required'}
+    if type(lat) != type(1) and type(lat) != type(1.):
+        return {'error': 'latitude must be a number datatype'}
+    if type(lon) != type(1) and type(lon) != type(1.):
+        return {'error': 'longitude must be a number datatype'}
+    if lat > 90 or lat < -90:
+        return {'error': 'latitude range is -90 to 90'}
+    if lon > 180 or lon < -180:
+        return {'error': 'longitude range is -180 to 180'}
+    coordinates = (lat, lon),
+    loc = reverse_geocode.search(coordinates)
+    country = loc[0]['country']
+    try:
+        # see if country is a primary region
+        reg = Region.objects.get(region_name=country)
+    except:
+        try: 
+            # see if country is a sub region
+            reg = SubRegion.objects.get(subregion_name=country).region
+        except:
+            if not UntrackedRegion.objects.filter(untrackedregion_name=country).exists():
+                untracked = UntrackedRegion()
+                untracked.untrackedregion_name = country
+                untracked.save()
+            return {'error': 'region not tracked in database'}
+    try:
+        sea = EnvironmentalActivity.objects.get(ea_name="sea")
+        filtered = Datapoint.objects.filter(region = reg, ea=sea, is_future = 0)
+        most_recent = filtered.aggregate(Max('dp_datetime'))['dp_datetime__max']
+        dp = filtered.get(dp_datetime = most_recent)
+    except:
+        return {'error': 'no data for this region'}
+    return {country: dp.value} ##rising sea levels:value
