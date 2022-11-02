@@ -20,13 +20,19 @@ const Search = (props)  => {
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
     const [lab, setLabel] = useState(null);
+    const [ea, setEA] = useState(window.choice)
     const map = useMap()
     const { provider } = props
 
-    useEffect(() => {
-      Fetchdata();
-    }, [x,y])
+    
 
+    useEffect(() => {
+      // console.log("("+x+", "+y+")")
+      // console.log("EA: " + window.choice)
+      // setEA(window.choice)
+      Fetchdata();
+    }, [x,y, ea])
+    
 //     useEffect(() => {
 //       var command = L.control({position: 'topright'});
 // command.onAdd = function (map) {
@@ -52,21 +58,6 @@ const Search = (props)  => {
 
     //retrieve the temperature and weather data when user searched location
     const Fetchdata = async() => {
-    //  const APIKEY = "37cde85ed34605798aa360d4c26dc586"
-    //  const apicall = await fetch(`//api.openweathermap.org/data/2.5/weather?lat=${y}&lon=${x}&appid=${APIKEY}&units=metric`)
-    //   const dd = await apicall.json();
-     // console.log(
-      //  "Label: " + lab + "\n"
-     // + "Temp: " + dd.main.temp + "\n"
-     // + "Temp (feels like): " + dd.main.feels_like + "\n"
-     // + "Temp (min): " + dd.main.temp_min + "\n"
-     // + "Temp (max): " + dd.main.temp_max + "\n"
-     // + "Pressure: " + dd.main.pressure +"\n"
-     // + "Temp: " + dd.main.temp +"\n"
-     // + "Temp: " + dd.main.temp + "\n"
-     // + "Weather: " + dd.weather[0].main+ "\n"
-     // + "Detailed weather: " + dd.weather[0].description);
-      
      const response = await fetch('http://127.0.0.1:8000/arg/api/', {
       method: 'POST',
       body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice}),
@@ -76,8 +67,11 @@ const Search = (props)  => {
       }
     })
     const res = await response.json();
-    console.log("Coordinate: " +x + ", " + y + " + " + JSON.stringify(res))
-    // console.log(res)
+    if( x != 0 && y != 0){
+      console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + " " + JSON.stringify(res))
+    L.marker([y,x]).bindPopup(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res)).addTo(map)
+    }
+    
    }
       
     //search the location by location_label
@@ -86,7 +80,7 @@ const Search = (props)  => {
             provider,
             autoComplete: true,
             showPopup: false,
-            showMarker: true,
+            showMarker: false,
             popupFormat: ({query, result}) => {
               setX(result.x); 
               setY(result.y);
