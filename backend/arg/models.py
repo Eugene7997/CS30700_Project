@@ -33,7 +33,7 @@ class Datapoint(models.Model):
     ea = models.ForeignKey(EnvironmentalActivity, on_delete=models.CASCADE)
     dp_datetime = models.DateTimeField()
     is_future = models.BooleanField()
-    value = models.FloatField()
+    value = models.FloatField(null = True)
 
 class UntrackedRegion(models.Model):
     untrackedregion_name = models.CharField(max_length=50, primary_key=True)
