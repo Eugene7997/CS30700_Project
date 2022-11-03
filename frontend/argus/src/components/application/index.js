@@ -31,7 +31,7 @@ const Search = (props)  => {
     }, [x,y, ea])
     
 
-    //retrieve the temperature and weather data when user searched location
+    //retrieve the EA data when user searched location
     const Fetchdata = async() => {
      const response = await fetch('http://127.0.0.1:8000/arg/api/', {
       method: 'POST',
@@ -43,10 +43,17 @@ const Search = (props)  => {
     })
     const res = await response.json();
     if( x != 0 && y != 0){
-      console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + " " + JSON.stringify(res))
-    L.marker([y,x]).bindPopup(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res)).addTo(map)
+      console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
+      var measurement = null;
+      if(window.choice == "temperature"){
+        measurement = "°C"
+      }else if(window.choice == "humid"){
+        measurement = "%"
+      }else{
+        measurement = ""
+      }
+      L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24)+ "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + JSON.stringify(res).replaceAll("{","").replaceAll("\"", "").replaceAll("}","").replace(":", "(").replace(":", "): ") + measurement).addTo(map)
     }
-    
    }
       
     //search the location by location_label
