@@ -4,7 +4,7 @@ import json
 import time
 
 regions = [('North America', 42, -71), ('South America', -9, -55), ('Europe', 55, 15), ('Africa', -9, 35), ('Asia', 34, 100), ('Oceania', -23, 140), ('Antarctica', -83, 135)]
-eas = ['temperature', 'humidity', 'co2', 'sea level']
+eas = ['temperature', 'humidity', 'co2', 'sea level', 'ozone', 'no2']
 subregions = [('Canada', 'North America'), ('Tanzania, United Republic of', 'Africa'), ('Antarctica', 'Antarctica'),
               ('China', 'Asia'), ('Denmark', 'Europe'), ('United States', 'North America'), ('Australia', 'Oceania'), ('Brazil', 'South America')]
 
