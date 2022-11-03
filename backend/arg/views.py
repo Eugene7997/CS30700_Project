@@ -112,7 +112,6 @@ def latlon_to_temp(lat, lon):
     coordinates = (lat, lon),
     loc = reverse_geocode.search(coordinates)
     country = loc[0]['country']
-    print(country)
     try:
         country = country_name_to_country_alpha2(country)
         country = country_alpha2_to_continent_code(country)
@@ -166,6 +165,12 @@ def latlon_to_humidity(lat, lon):
     loc = reverse_geocode.search(coordinates)
     country = loc[0]['country']
     try:
+        country = country_name_to_country_alpha2(country)
+        country = country_alpha2_to_continent_code(country)
+        country = cont_alpha2_to_name(country)
+    except:
+        country = "Antarctica"
+    try:
         # see if country is a primary region
         reg = Region.objects.get(region_name=country)
     except:
@@ -204,6 +209,12 @@ def latlon_to_ghg(lat, lon):
     coordinates = (lat, lon),
     loc = reverse_geocode.search(coordinates)
     country = loc[0]['country']
+    try:
+        country = country_name_to_country_alpha2(country)
+        country = country_alpha2_to_continent_code(country)
+        country = cont_alpha2_to_name(country)
+    except:
+        country = "Antarctica"
     try:
         # see if country is a primary region
         reg = Region.objects.get(region_name=country)
@@ -245,6 +256,12 @@ def latlon_to_sea(lat, lon):
     coordinates = (lat, lon),
     loc = reverse_geocode.search(coordinates)
     country = loc[0]['country']
+    try:
+        country = country_name_to_country_alpha2(country)
+        country = country_alpha2_to_continent_code(country)
+        country = cont_alpha2_to_name(country)
+    except:
+        country = "Antarctica"
     try:
         # see if country is a primary region
         reg = Region.objects.get(region_name=country)
