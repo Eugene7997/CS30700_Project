@@ -27,34 +27,9 @@ const Search = (props)  => {
     
 
     useEffect(() => {
-      // console.log("("+x+", "+y+")")
-      // console.log("EA: " + window.choice)
-      // setEA(window.choice)
       Fetchdata();
     }, [x,y, ea])
     
-//     useEffect(() => {
-//       var command = L.control({position: 'topright'});
-// command.onAdd = function (map) {
-//     var div = L.DomUtil.create('div');
-//     div.innerHTML = `
-//     <div class="leaflet-control-layers leaflet-control-layers-expanded">
-//       <form>
-//         <input class="leaflet-control-layers-overlays" id="command" 
-//           onclick=toggleFunction(this.checked) type="checkbox">
-//           Toggle
-//         </input>
-//       </form>
-//     </div>`; 
-//     return div;
-// };
-// command.addTo(map);
-// return () => map.removeControl(command)
-//     },[])
-    
-
-    
-
 
     //retrieve the temperature and weather data when user searched location
     const Fetchdata = async() => {

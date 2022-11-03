@@ -16,11 +16,26 @@ from rest_framework import status
 from geopy.geocoders import Nominatim
 from django.forms import Form
 
+from pycountry_convert import country_alpha2_to_continent_code, country_name_to_country_alpha2
+
 # Create your views here.
 # request -> response
 # request handler 
 
 DEBUG_MODE = 1
+def cont_alpha2_to_name(input):
+    if 'NA' == input:
+        return "North America"
+    elif 'OC' == input:
+        return 'Oceania'
+    elif 'AF' == input:
+        return 'Africa'
+    elif 'EU' == input:
+        return 'Europe'
+    elif 'SA' == input:
+        return 'South America'
+    elif 'AS' == input:
+        return 'Asia'
 
 def say_hello(request):
     #pull data from db
@@ -97,6 +112,13 @@ def latlon_to_temp(lat, lon):
     coordinates = (lat, lon),
     loc = reverse_geocode.search(coordinates)
     country = loc[0]['country']
+    print(country)
+    try:
+        country = country_name_to_country_alpha2(country)
+        country = country_alpha2_to_continent_code(country)
+        country = cont_alpha2_to_name(country)
+    except:
+        country = "Antarctica"
     if(DEBUG_MODE):
         print("country:")
         print(country)

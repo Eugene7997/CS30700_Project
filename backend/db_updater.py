@@ -82,8 +82,8 @@ def test_example():
 
 schedule.every(1).hours.do(update_db)
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
 
-
+update_db()
