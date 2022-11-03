@@ -1,6 +1,6 @@
 
 // react-learn JS libraries
-import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl, LayerGroup, Circle } from 'react-leaflet'
 import '../../App.css';
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
@@ -21,9 +21,14 @@ const Search = (props)  => {
     const [lab, setLabel] = useState(null);
     const map = useMap()
     const { provider } = props
+    
+    const [co2Value, setCo2Value] = useState(0)
+    const [no2Value, setNo2Value] = useState(0)
+    const [ozoneValue, setOzoneValue] = useState(0)
 
     useEffect(() => {
       //Fetchdata();
+      Fetchdata2();
     }, [x,y])
 
 
@@ -43,9 +48,29 @@ const Search = (props)  => {
      // + "Temp: " + dd.main.temp + "\n"
      // + "Weather: " + dd.weather[0].main+ "\n"
      // + "Detailed weather: " + dd.weather[0].description);
-      
-      
-   // }
+    // }
+
+   const Fetchdata2 = async() => {
+    // Eric's key
+    const response = await fetch(`https://api.co2signal.com/v1/latest?lon=${x}&lat=${y}&auth-token=S3Hlk9xkYNaGmqYn8G1JoIH0QPiJsn55`)
+    const response2 = await fetch(`https://api.ambeedata.com/latest/by-lat-lng?lat=${y}&lng=${x}&x-api-key=b1637cd664e7dce01cbd651b44e311e27b269c4717eb903fe290388116354b69`)
+
+    // const response = await fetch(`https://api.co2signal.com/v1/latest?lon=${x}&lat=${y}&auth-token=GKntl9oAJF4H0asImg3MpjSXiIdmLAcU`)
+    // const response2 = await fetch(`https://api.ambeedata.com/latest/by-lat-lng?lat=${y}&lng=${x}&x-api-key=97b6df2236ea4855729d070695e4dfa664a62b0e8f0e432ca94f78de78e7ee7d`)
+    const res = await response.json();
+    const res2 = await response2.json();
+    
+    const temp1 = res['data'].carbonIntensity
+    const temp2 = res2['stations'][0].OZONE
+    const temp3 = ['stations'][0].NO2
+    console.log("carbon intensity: ", temp1)
+    console.log("Ozone: ", temp2)
+    console.log("NO2: ", temp3)
+    
+    setCo2Value(temp1)
+    setNo2Value(temp2)
+    setOzoneValue(temp3) 
+  }
 
    let data = {
     'latitude': y,
@@ -53,22 +78,23 @@ const Search = (props)  => {
    }
 
   //creating react post request and fetching data from django
-const response = fetch('http://127.0.0.1:8000/arg/api/', {
-  method: 'POST',
-  body : JSON.stringify(data),
-  headers: {
-    'Accept': 'application/json, text/plain',
-    'Content-Type': 'application/json; charset=utf-8'
-  }
+  const response = fetch('http://127.0.0.1:8000/arg/api/', {
+    method: 'POST',
+    body : JSON.stringify(data),
+    headers: {
+      'Accept': 'application/json, text/plain',
+      'Content-Type': 'application/json; charset=utf-8'
+    }
 
 
-}).then(response => response.json())
-.then(data => console.log(JSON.stringify(data)))
-.catch(error => console.log("Error detected: " + error));
+  }).then(response => response.json())
+  .then(data => console.log(JSON.stringify(data)))
+  .catch(error => console.log("Error detected: " + error));
 
       
     //search the location by location_label
     useEffect(()  => {
+        
         const searchControl = new GeoSearchControl({
             provider,
             autoComplete: true,
@@ -78,15 +104,46 @@ const response = fetch('http://127.0.0.1:8000/arg/api/', {
               setX(result.x); 
               setY(result.y);
               setLabel(result.label);
-              return result.label;
+              return result.label+`<br/>${no2Value}`;
+              // return result.label;
             }
             
         }).addTo(map)
         return () => map.removeControl(searchControl)
     }, [props])
 
-
-    return  null // don't want anything to show up from this comp
+    // return  null // don't want anything to show up from this comp
+    return (
+      <LayersControl>
+        <LayersControl.Overlay name="CO2">
+            <LayerGroup>
+              <Marker position = {[x,y]}>
+                <Popup>
+                  {co2Value} {x} {y}
+                </Popup>
+              </Marker>
+            </LayerGroup>
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="Ozone">
+          <LayerGroup >
+            <Marker position = {[x,y]}>
+              <Popup>
+                {ozoneValue} {x} {y}
+              </Popup>
+            </Marker>
+          </LayerGroup>
+        </LayersControl.Overlay>
+        <LayersControl.Overlay name="NO2">
+          <LayerGroup>
+            <Marker position = {[x,y]}>
+              <Popup>
+                {no2Value} {x} {y}
+              </Popup>
+            </Marker>
+          </LayerGroup>
+        </LayersControl.Overlay>
+      </LayersControl>
+    )
 }
 
  const response = fetch('http://127.0.0.1:8000/arg/api/', {
@@ -135,7 +192,7 @@ const CurrentLocation = () => {
             <b>SW lng</b>: {bbox[0]} <br />
             <b>SW lat</b>: {bbox[1]} <br />
             <b>NE lng</b>: {bbox[2]} <br />
-            <b>NE lat</b>: {bbox[3]}
+            <b>NE lat</b>: {bbox[3]} <br />
           </Popup>
         </Marker>
       );
