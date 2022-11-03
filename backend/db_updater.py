@@ -8,6 +8,7 @@ import datetime
 import random
 from api_calls import *
 
+
 def update_db():
     print("updating...")
     data = fetch_data()
@@ -54,8 +55,25 @@ def fetch_data():
             lon = region_tuple[2]
             eas = [ea_tuple[0] for ea_tuple in db_eas]
             print("getting data for region: " + region)
-            api_data = call_api(eas, lat, lon)
-            data[region] = api_data
+            parser = api_parser()
+            ea_map = {
+                'temperature': parser.temperature,
+                'humidity': parser.humidity,
+                'co2': parser.co2,
+                'sea level': parser.sea_level,
+                'ozone': parser.ozone,
+                'no2': parser.no2
+            }
+            data[region] = {}
+            for ea in eas: 
+                print("fetching data for " + ea)
+                if ea in lat_lon_overrides[region].keys():
+                    ovr_lat = lat_lon_overrides[region][ea][0]
+                    ovr_lon = lat_lon_overrides[region][ea][1]
+                    data[region][ea] = ea_map[ea](ovr_lat, ovr_lon)
+                else:
+                    data[region][ea] = ea_map[ea](lat, lon)
+                print(data[region][ea])
         connection.close()
         return data
     return None
@@ -70,9 +88,6 @@ def fill_gaps():
             print("missing " + ea + " in " + region)
 
     
-    
-
-
 def get_missing_datapoints():
     has_missing_points = False
     try: 

@@ -28,6 +28,7 @@ To run the Django REST API on your personal machine:
         pip install djangorestframework
         pip install pymysql
         pip install mysqlclient
+        pip install mysql-connector-python
     there may be other libraries you have to pip install here that I don't remember, 
     so if you get a moduleerror for a specific module when running a python script, you just have to pip install it
 

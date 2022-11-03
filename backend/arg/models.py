@@ -17,8 +17,8 @@ class UserLocation(ModelForm):
 
 class Region(models.Model):
     region_name = models.CharField(max_length=30, primary_key=True)
-    latitude = models.IntegerField(default=0)
-    longitude = models.IntegerField(default=0)
+    latitude = models.FloatField(default=0)
+    longitude = models.FloatField(default=0)
 
 class SubRegion(models.Model):
     subregion_name = models.CharField(max_length=50, primary_key=True)
