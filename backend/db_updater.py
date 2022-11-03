@@ -65,6 +65,10 @@ def fill_gaps():
     missing_points = get_missing_datapoints()
     if missing_points is None:
         return
+    for region in missing_points.keys():
+        for ea in missing_points[region].keys():
+            print("missing " + ea + " in " + region)
+
     
     
 

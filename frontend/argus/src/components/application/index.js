@@ -53,7 +53,7 @@ const Search = (props)  => {
    }
 
   //creating react post request and fetching data from django
-const response = fetch('http://127.0.0.1:8000/arg/api/', {
+const response = fetch('http://localhost:8000/arg/api/', {
   method: 'POST',
   body : JSON.stringify(data),
   headers: {
