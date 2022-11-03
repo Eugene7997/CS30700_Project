@@ -51,6 +51,7 @@ class SubRegionViewSet(viewsets.ModelViewSet):
         UntrackedRegion.objects.filter(untrackedregion_name=subregion).delete()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        
 class UntrackedRegionViewSet(viewsets.ModelViewSet):
     queryset = UntrackedRegion.objects.all()
     serializer_class = UntrackedRegionSerializer
@@ -85,6 +86,8 @@ def latlon_to_temp(lat, lon):
         return {'error': 'longitude range is -180 to 180'}
     coordinates = (lat, lon),
     loc = reverse_geocode.search(coordinates)
+    print("got loc: ")
+    print(loc)
     country = loc[0]['country']
     if(DEBUG_MODE):
         print("country:")

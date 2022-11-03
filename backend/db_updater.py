@@ -30,6 +30,7 @@ def update_db():
                 val = [region, ea, now, 0, ea_val]
                 cursor.execute(query, val)
         connection.commit()
+    #fill_gaps()
 
 def fetch_data():
     try:
@@ -58,6 +59,51 @@ def fetch_data():
         return data
     return None
 
+
+def fill_gaps():
+    missing_points = get_missing_datapoints()
+    if missing_points is None:
+        return
+    
+    
+
+
+def get_missing_datapoints():
+    has_missing_points = False
+    try: 
+        connection = mysql.connector.connect(host='localhost',
+                                             database='djangodatabase',
+                                             user='dbadmin',
+                                             password='password12345')
+    except Exception as e:
+        print("error while connecting to MySQL")
+        return None
+    if connection.is_connected():
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM arg_region;")
+        supported_regions = cursor.fetchall()
+        cursor.execute("SELECT * FROM arg_environmentalactivity;")
+        supported_eas = cursor.fetchall()
+        now = datetime.datetime.now()
+        time_cutoff = now - datetime.timedelta(days=1)
+        cursor.execute("SELECT * FROM arg_datapoint WHERE dp_datetime > %s and is_future = 0;", [time_cutoff])
+        datapoints_past_day = cursor.fetchall()
+        missing_points = {}
+        for region_tuple in supported_regions:
+            region = region_tuple[0]
+            missing_points[region] = {}
+            for ea_tuple in supported_eas:
+                ea = ea_tuple[0]
+                # get all of the times for the region/ea pair in the database
+                existing_hours = [point_tuple[1].hour for point_tuple in datapoints_past_day if (point_tuple[4] == ea and point_tuple[5] == region)]
+                #get every hour from the past day that needs to be filled
+                non_existing_hours = [a for a in range(24) if a not in existing_hours]
+                if not has_missing_points and len(non_existing_hours) > 0:
+                    has_missing_points = True
+                missing_points[region][ea] = non_existing_hours
+        if not has_missing_points:
+            return None
+        return missing_points
         
 
 def generate_placeholder_data():
@@ -74,16 +120,12 @@ def generate_placeholder_data():
     return data
 
 
-def test_example():
-    print("scheduling works!")
-
-#schedule.every(1).seconds.do(test_example)
-#update_db()
-
+'''
 schedule.every(1).hours.do(update_db)
 
 while True:
     schedule.run_pending()
     time.sleep(1)
+'''
 
-
+update_db()
