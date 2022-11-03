@@ -17,6 +17,8 @@ from geopy.geocoders import Nominatim
 from django.forms import Form
 
 from pycountry_convert import country_alpha2_to_continent_code, country_name_to_country_alpha2
+import requests
+import json
 
 # Create your views here.
 # request -> response
@@ -170,6 +172,9 @@ def latlon_to_humidity(lat, lon):
         country = cont_alpha2_to_name(country)
     except:
         country = "Antarctica"
+    if(DEBUG_MODE):
+        print("country:")
+        print(country)
     try:
         # see if country is a primary region
         reg = Region.objects.get(region_name=country)
@@ -215,6 +220,9 @@ def latlon_to_ghg(lat, lon):
         country = cont_alpha2_to_name(country)
     except:
         country = "Antarctica"
+    if(DEBUG_MODE):
+        print("country:")
+        print(country)
     try:
         # see if country is a primary region
         reg = Region.objects.get(region_name=country)
@@ -229,13 +237,24 @@ def latlon_to_ghg(lat, lon):
                 untracked.save()
             return {'error': 'region not tracked in database'}
     try:
-        ghg = EnvironmentalActivity.objects.get(ea_name="GHG")
+        ghg = EnvironmentalActivity.objects.get(ea_name="co2")
         filtered = Datapoint.objects.filter(region = reg, ea=ghg, is_future = 0)
         most_recent = filtered.aggregate(Max('dp_datetime'))['dp_datetime__max']
         dp = filtered.get(dp_datetime = most_recent)
     except:
         return {'error': 'no data for this region'}
-    return {country: dp.value} ##greenhouse gases:value
+
+    #API for O3 and NO2
+    API = '37cde85ed34605798aa360d4c26dc586'
+    response = requests.get('http://api.openweathermap.org/data/2.5/air_pollution?lat=44.34&lon=10.99&appid=37cde85ed34605798aa360d4c26dc586')
+    res = response.text
+    parse_json = json.loads(res)
+    
+    ozone = parse_json['list'][0]['components']['o3'] # ozone
+    no2 = parse_json['list'][0]['components']['no2'] # NO2
+    co2 = dp.value # co2
+    final = "CO2: " + str(dp.value) + " Ozone(O3): " + str(ozone) + " NO2: " + str(no2)
+    return {country: final} ##greenhouse gases:value
 
 
 
@@ -262,6 +281,9 @@ def latlon_to_sea(lat, lon):
         country = cont_alpha2_to_name(country)
     except:
         country = "Antarctica"
+    if(DEBUG_MODE):
+        print("country:")
+        print(country)
     try:
         # see if country is a primary region
         reg = Region.objects.get(region_name=country)
@@ -276,7 +298,7 @@ def latlon_to_sea(lat, lon):
                 untracked.save()
             return {'error': 'region not tracked in database'}
     try:
-        sea = EnvironmentalActivity.objects.get(ea_name="sea")
+        sea = EnvironmentalActivity.objects.get(ea_name="sea level")
         filtered = Datapoint.objects.filter(region = reg, ea=sea, is_future = 0)
         most_recent = filtered.aggregate(Max('dp_datetime'))['dp_datetime__max']
         dp = filtered.get(dp_datetime = most_recent)
