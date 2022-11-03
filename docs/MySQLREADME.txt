@@ -28,12 +28,16 @@ To run the Django REST API on your personal machine:
         pip install djangorestframework
         pip install pymysql
         pip install mysqlclient
+    there may be other libraries you have to pip install here that I don't remember, 
+    so if you get a moduleerror for a specific module when running a python script, you just have to pip install it
 
-4. navigate to /backend/ directory and run: python manage.py migrate
+4. navigate to /backend/ directory and run: 
+        python manage.py makemigrations
+        python manage.py migrate
     (this step might not work, message me if it doesn't and I'll give you the fix)
 
 5. Run and test API
     a. in the command line, type: python manage.py runserver 0.0.0.0:8000
         (exclude the 0.0.0.0:8000 if you just want it to run on localhost port 8000)
-    b. In your browser, put this link: http://127.0.0.1:8000/argus_test/region/
+    b. In your browser, put this link: http://127.0.0.1:8000/arg/region/
     c. play around with adding data to database

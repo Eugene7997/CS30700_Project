@@ -53,6 +53,7 @@ def fetch_data():
             lat = region_tuple[1]
             lon = region_tuple[2]
             eas = [ea_tuple[0] for ea_tuple in db_eas]
+            print("getting data for region: " + region)
             api_data = call_api(eas, lat, lon)
             data[region] = api_data
         connection.close()
