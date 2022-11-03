@@ -53,7 +53,7 @@ const Search = (props)  => {
    }
 
   //creating react post request and fetching data from django
-const response = fetch('http://localhost:8000/arg/api/', {
+const response = fetch('http://' + window.require('os').hostname() + ':8000/arg/api/', {
   method: 'POST',
   body : JSON.stringify(data),
   headers: {
@@ -89,7 +89,7 @@ const response = fetch('http://localhost:8000/arg/api/', {
     return  null // don't want anything to show up from this comp
 }
 
- const response = fetch('http://localhost:8000/arg/api/', {
+ const response = fetch('http://' + window.require('os').hostname() + ':8000/arg/api/', {
         method: 'POST',
         body: JSON.stringify({
             LatLng
