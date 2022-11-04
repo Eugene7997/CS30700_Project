@@ -230,15 +230,3 @@ elif mode == 'hourly':
 else:
     print("mode \"" + mode + "\" is not recognized.")
     print("Run \"db_updater.py help\" for a list of modes")
-
-connection = mysql.connector.connect(host='localhost',
-                                     database='djangodatabase',
-                                     user='dbadmin',
-                                     password='password12345')
-
-cursor = connection.cursor()
-start_date = datetime.datetime(2022, 11, 2, 20)
-end_date = datetime.datetime(2022, 11, 3, 19)
-cursor.execute("DELETE FROM arg_datapoint WHERE dp_datetime >= %s AND dp_datetime < %s;", [start_date, end_date])
-connection.commit()
-connection.close()
