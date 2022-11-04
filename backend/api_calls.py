@@ -10,6 +10,7 @@ lat_lon_overrides = {
         'sea level': [-1.167, -48.467],
         'ozone': [-15.833, -47.9],
         'no2': [-15.833, -47.9],
+        'co2': [-12.046374, -77.042793],
     },
     'Europe': {
         'ozone': [52.5213, 13.4096],
@@ -34,6 +35,9 @@ lat_lon_overrides = {
     },
     'Antarctica': {
         'sea level': [-64.333, -62.983],
+        'co2': [-34.603722, -58.381592],
+        'ozone': [-22.2139, -65.2528],
+        'no2': [-22.2139, -65.2528],
     },
     
 }
@@ -63,7 +67,7 @@ class api_parser:
         return self.temp_humid_response['main']['humidity']
 
     def co2(self, lat, lon):
-        return None # comment this out when doing important demo tests
+        #return None # comment this out when doing important demo tests
         co2_URL = "https://api.co2signal.com/v1/latest?lon={1}&lat={0}".format(lat, lon)
         co2_headers = {'auth-token': 'S3Hlk9xkYNaGmqYn8G1JoIH0QPiJsn55'}
         r = requests.get(url=co2_URL, headers=co2_headers)

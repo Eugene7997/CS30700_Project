@@ -9,6 +9,7 @@ import random
 from api_calls import *
 import sys
 
+
 def update_db(backfill = True):
     print("updating...")
     data = fetch_data()
@@ -33,6 +34,7 @@ def update_db(backfill = True):
         connection.commit()
     if backfill:
         fill_gaps()
+
 
 def fetch_data():
     try:
@@ -88,7 +90,7 @@ def fill_gaps():
         for ea in missing_points[region].keys():
             print("missing " + ea + " in " + region + ": " + str(missing_points[region][ea]))
 
-    
+
 def get_missing_datapoints():
     has_missing_points = False
     try: 
@@ -125,7 +127,7 @@ def get_missing_datapoints():
         if not has_missing_points:
             return None
         return missing_points
-        
+
 
 def generate_placeholder_data():
     regions = ['North America', 'South America', 'Europe', 'Africa', 'Asia', 'Oceania', 'Antarctica']
