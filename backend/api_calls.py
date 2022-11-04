@@ -105,7 +105,6 @@ class api_parser:
         sea_level_URL = "https://www.worldtides.info/api/v3?heights&date={0}&lat={1}&lon={2}&key=2ff4df9a-2263-4c2c-a8b8-e8c11d46331f".format(datetime.datetime.now().date(), lat, lon)
         r = requests.get(url=sea_level_URL).json()
         if not 'heights' in r.keys():
-            print(r.keys())
             return None
         return r['heights'][0]['height']
     
@@ -116,7 +115,6 @@ class api_parser:
             r = requests.get(url=ozone_URL, headers=ozone_headers)
             self.ozone_no2_response = r.json()
         if not 'stations' in self.ozone_no2_response.keys():
-            print(self.ozone_no2_response.keys())
             return None
         return self.ozone_no2_response['stations'][0]['OZONE']
 
@@ -141,8 +139,6 @@ class api_backfill:
             self.temp_humid_response = r.json()
         hourly = self.temp_humid_response['days'][0]['hours']
         temps = {int(hour['datetime'][0:2]): hour['temp'] for hour in hourly}
-        print("temps list: ")
-        print(temps)
         return temps
     
     def humidity(self, lat, lon, start, end):
@@ -153,6 +149,4 @@ class api_backfill:
         hourly = self.temp_humid_response['days'][0]['hours']
         # formatted like {0:10, 1:15, 2:27.3, 3:0.4} where each key is an hour and each value is a humidity
         humids = {int(hour['datetime'][0:2]) : hour['humidity'] for hour in hourly}
-        print("humids list:")
-        print(humids)
         return humids

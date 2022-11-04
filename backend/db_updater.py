@@ -12,7 +12,7 @@ import sys
 LOCAL_UTC_OFFSET = -4 # change this to -5 when edt turns to est
 
 def update_db(backfill = True):
-    print("updating...")
+    print("updating at: " + str(datetime.datetime.now()) + " EDT")
     data = fetch_data()
     try:
         connection = mysql.connector.connect(host='localhost',
@@ -58,7 +58,6 @@ def fetch_data():
             lat = region_tuple[1]
             lon = region_tuple[2]
             eas = [ea_tuple[0] for ea_tuple in db_eas]
-            print("getting data for region: " + region)
             parser = api_parser() #make sure you only define one of these per region, otherwise time saving features will break
             ea_map = {
                 'temperature': parser.temperature,
@@ -70,14 +69,12 @@ def fetch_data():
             }
             data[region] = {}
             for ea in eas: 
-                print("fetching data for " + ea)
                 if ea in lat_lon_overrides[region].keys():
                     ovr_lat = lat_lon_overrides[region][ea][0]
                     ovr_lon = lat_lon_overrides[region][ea][1]
                     data[region][ea] = ea_map[ea](ovr_lat, ovr_lon)
                 else:
                     data[region][ea] = ea_map[ea](lat, lon)
-                print(data[region][ea])
         connection.close()
         return data
     return None
