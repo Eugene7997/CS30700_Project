@@ -63,13 +63,15 @@ const Search = (props)  => {
     const temp1 = res['data'].carbonIntensity
     const temp2 = res2['stations'][0].OZONE
     const temp3 = ['stations'][0].NO2
+
     console.log("carbon intensity: ", temp1)
     console.log("Ozone: ", temp2)
     console.log("NO2: ", temp3)
     
     setCo2Value(temp1)
     setNo2Value(temp2)
-    setOzoneValue(temp3) 
+    setOzoneValue(temp3)
+
   }
 
    let data = {
@@ -91,8 +93,7 @@ const Search = (props)  => {
   .then(data => console.log(JSON.stringify(data)))
   .catch(error => console.log("Error detected: " + error));
 
-      
-    //search the location by location_label
+
     useEffect(()  => {
         
         const searchControl = new GeoSearchControl({
@@ -101,11 +102,10 @@ const Search = (props)  => {
             showPopup: false,
             showMarker: true,
             popupFormat: ({query, result}) => {
-              setX(result.x); 
-              setY(result.y);
+              setX(result.y); 
+              setY(result.x);
               setLabel(result.label);
-              return result.label+`<br/>${no2Value}`;
-              // return result.label;
+              return result.label;
             }
             
         }).addTo(map)
@@ -117,29 +117,35 @@ const Search = (props)  => {
       <LayersControl>
         <LayersControl.Overlay name="CO2">
             <LayerGroup>
-              <Marker position = {[x,y]}>
-                <Popup>
-                  {co2Value} {x} {y}
-                </Popup>
-              </Marker>
+              {(x!=0 && y!=0) &&
+                <Marker position = {[x,y]}>
+                  <Popup>
+                    CO2 value : {co2Value} {console.log("CO2 value : ",co2Value)}
+                  </Popup>
+                </Marker>
+              }
             </LayerGroup>
         </LayersControl.Overlay>
         <LayersControl.Overlay name="Ozone">
           <LayerGroup >
-            <Marker position = {[x,y]}>
-              <Popup>
-                {ozoneValue} {x} {y}
-              </Popup>
-            </Marker>
+            {(x!=0 && y!=0) &&
+              <Marker position = {[x,y]}>
+                <Popup>
+                  Ozone value: {ozoneValue} {console.log("Ozone value : ",ozoneValue)}
+                </Popup>
+              </Marker>
+            }
           </LayerGroup>
         </LayersControl.Overlay>
         <LayersControl.Overlay name="NO2">
           <LayerGroup>
-            <Marker position = {[x,y]}>
-              <Popup>
-                {no2Value} {x} {y}
-              </Popup>
-            </Marker>
+            {(x!=0 && y!=0) &&
+              <Marker position = {[x,y]}>
+                <Popup>
+                  NO2 value : {no2Value} {console.log("NO2 value : ",no2Value)}
+                </Popup>
+              </Marker>
+            }
           </LayerGroup>
         </LayersControl.Overlay>
       </LayersControl>
@@ -158,12 +164,7 @@ const Search = (props)  => {
 
  }).then(response => response.json())
     .then(data => console.log(data))
-    .catch(error => console.log("Error detected: " + error));
-  
-   
-
-
-      
+    .catch(error => console.log("Error detected: " + error));      
       
 
 //function to retrieve user's current location
