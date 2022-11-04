@@ -49,8 +49,10 @@ const Search = (props)  => {
         measurement = "°C"
       }else if(window.choice == "humid"){
         measurement = "%"
+      }else if(window.choice == "sea"){
+        measurement = "inch"
       }else{
-        measurement = ""
+        measurement = " (tons)"
       }
       L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24)+ "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + JSON.stringify(res).replaceAll("{","").replaceAll("\"", "").replaceAll("}","").replace(":", "(").replace(":", "): ") + measurement).addTo(map)
     }
