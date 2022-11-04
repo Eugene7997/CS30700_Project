@@ -7,9 +7,9 @@ import mysql.connector
 import datetime
 import random
 from api_calls import *
+import sys
 
-
-def update_db():
+def update_db(backfill = True):
     print("updating...")
     data = fetch_data()
     try:
@@ -31,7 +31,8 @@ def update_db():
                 val = [region, ea, now, 0, ea_val]
                 cursor.execute(query, val)
         connection.commit()
-    #fill_gaps()
+    if backfill:
+        fill_gaps()
 
 def fetch_data():
     try:
@@ -85,7 +86,7 @@ def fill_gaps():
         return
     for region in missing_points.keys():
         for ea in missing_points[region].keys():
-            print("missing " + ea + " in " + region)
+            print("missing " + ea + " in " + region + ": " + str(missing_points[region][ea]))
 
     
 def get_missing_datapoints():
@@ -139,13 +140,33 @@ def generate_placeholder_data():
                  data[region][ea] = -1
     return data
 
+args = sys.argv
 
-'''
-schedule.every(1).hours.do(update_db)
+if len(args) < 2:
+    print("Not enough arguments. Format: db_updater.py [mode]")
+    print("Run \"db_updater.py help\" for a list of modes")
+    exit(0)
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
-'''
+mode = args[1].lower()
 
-update_db()
+if mode == 'help':
+    print("\n\n     -------------------------  Modes  --------------------------\n")
+    print("     help  -  lists the possible modes")
+    print("     once  -  updates the database once, including back-filling")
+    print(" oncenobf  -  updates the database once with no back-filling")
+    print(" backfill  -  just runs the back-filling feature of the python script")
+    print("   hourly  -  intended production mode, updates the database hourly with back-filling\n\n")
+elif mode == 'once':
+    update_db()
+elif mode == 'oncenobf':
+    update_db(backfill = False)
+elif mode == 'backfill':
+    fill_gaps()
+elif mode == 'hourly':
+    schedule.every(1).hours.do(update_db)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+else:
+    print("mode \"" + mode + "\" is not recognized.")
+    print("Run \"db_updater.py help\" for a list of modes")

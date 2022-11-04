@@ -63,6 +63,7 @@ class api_parser:
         return self.temp_humid_response['main']['humidity']
 
     def co2(self, lat, lon):
+        return None # comment this out when doing important demo tests
         co2_URL = "https://api.co2signal.com/v1/latest?lon={1}&lat={0}".format(lat, lon)
         co2_headers = {'auth-token': 'S3Hlk9xkYNaGmqYn8G1JoIH0QPiJsn55'}
         r = requests.get(url=co2_URL, headers=co2_headers)
