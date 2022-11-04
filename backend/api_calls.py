@@ -2,7 +2,7 @@ import requests
 import datetime
 import mysql.connector
 import reverse_geocode
-
+from geopy.geocoders import Nominatim
 
 lat_lon_overrides = {
     'North America': {},
@@ -41,7 +41,6 @@ lat_lon_overrides = {
     },
     
 }
-
 
 class api_parser:
     def __init__(self):
@@ -131,24 +130,29 @@ class api_parser:
             return None
         return self.ozone_no2_response['stations'][0]['NO2']
         
-
-def call_api(eas, lat, lon):
-    parser = api_parser(lat, lon)
-    ea_map = {
-        'temperature': parser.temperature,
-        'humidity': parser.humidity,
-        'co2': parser.co2,
-        'sea level': parser.sea_level,
-        'ozone': parser.ozone,
-        'no2': parser.no2
-    }
-    responses = {}
-    for ea in eas:
-        print("getting data for ea: " + ea)
-        if ea not in ea_map.keys(): # skip any eas that aren't accounted for in the function map
-            print("Skipping update for unsupported EA: " + ea)
-            continue
-        responses[ea] = ea_map[ea]()
-        print(responses[ea])
-    return responses
-
+class api_backfill:
+    def __init__(self):
+        self.temp_humid_response = None
+    
+    def temperature(self, lat, lon, start, end):
+        url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{0}%2C{1}/{2}/{3}?unitGroup=us&key=CMQ8N7SN9FBHRMXSDKK86GYYN&include=hours".format(lat, lon, start.date(), end.date())
+        if self.temp_humid_response is None:
+            r = requests.get(url=url)
+            self.temp_humid_response = r.json()
+        hourly = self.temp_humid_response['days'][0]['hours']
+        temps = {int(hour['datetime'][0:2]): hour['temp'] for hour in hourly}
+        print("temps list: ")
+        print(temps)
+        return temps
+    
+    def humidity(self, lat, lon, start, end):
+        url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{0}%2C{1}/{2}/{3}?unitGroup=us&key=CMQ8N7SN9FBHRMXSDKK86GYYN&include=hours".format(lat, lon, start.date(), end.date())
+        if self.temp_humid_response is None:
+            r = requests.get(url=url)
+            self.temp_humid_response = r.json()
+        hourly = self.temp_humid_response['days'][0]['hours']
+        # formatted like {0:10, 1:15, 2:27.3, 3:0.4} where each key is an hour and each value is a humidity
+        humids = {int(hour['datetime'][0:2]) : hour['humidity'] for hour in hourly}
+        print("humids list:")
+        print(humids)
+        return humids
