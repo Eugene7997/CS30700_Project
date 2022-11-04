@@ -222,6 +222,7 @@ elif mode == 'oncenobf':
 elif mode == 'backfill':
     fill_gaps()
 elif mode == 'hourly':
+    print("Running in hourly mode. First database update will be in 1 hour.")
     schedule.every(1).hours.do(update_db)
     while True:
         schedule.run_pending()
