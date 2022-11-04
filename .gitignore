@@ -4,4 +4,3 @@ backend/.vscode
 backend/__pycache__
 backend/arg/__pycache__
 backend/argus/__pycache__
-backend/arg/migrations
