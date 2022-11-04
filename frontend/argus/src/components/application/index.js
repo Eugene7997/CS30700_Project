@@ -28,24 +28,24 @@ const Search = (props)  => {
 
 
     //retrieve the temperature and weather data when user searched location
-    //const Fetchdata = async() => {
-     // const APIKEY = "37cde85ed34605798aa360d4c26dc586"
-     // const apicall = await fetch(`//api.openweathermap.org/data/2.5/weather?lat=${y}&lon=${x}&appid=${APIKEY}&units=metric`)
-      //const dd = await apicall.json();
-     // console.log(
-      //  "Label: " + lab + "\n"
-     // + "Temp: " + dd.main.temp + "\n"
-     // + "Temp (feels like): " + dd.main.feels_like + "\n"
-     // + "Temp (min): " + dd.main.temp_min + "\n"
-     // + "Temp (max): " + dd.main.temp_max + "\n"
-     // + "Pressure: " + dd.main.pressure +"\n"
-     // + "Temp: " + dd.main.temp +"\n"
-     // + "Temp: " + dd.main.temp + "\n"
-     // + "Weather: " + dd.weather[0].main+ "\n"
-     // + "Detailed weather: " + dd.weather[0].description);
+    const Fetchdata = async() => {
+     const APIKEY = "37cde85ed34605798aa360d4c26dc586"
+     const apicall = await fetch(`//api.openweathermap.org/data/2.5/weather?lat=${y}&lon=${x}&appid=${APIKEY}&units=metric`)
+      const dd = await apicall.json();
+     console.log(
+       "Label: " + lab + "\n"
+     + "Temp: " + dd.main.temp + "\n"
+     + "Temp (feels like): " + dd.main.feels_like + "\n"
+     + "Temp (min): " + dd.main.temp_min + "\n"
+     + "Temp (max): " + dd.main.temp_max + "\n"
+     + "Pressure: " + dd.main.pressure +"\n"
+     + "Temp: " + dd.main.temp +"\n"
+     + "Temp: " + dd.main.temp + "\n"
+     + "Weather: " + dd.weather[0].main+ "\n"
+     + "Detailed weather: " + dd.weather[0].description);
       
       
-   // }
+   }
 
    let data = {
     'latitude': y,
@@ -144,8 +144,6 @@ const CurrentLocation = () => {
 const {BaseLayer} = LayersControl
 
 const Application = () => {
-
-  const [onSelect, setOnSelect] = useState({});
 
   const highlightChloropleth = (e => {
     var layer = e.target
