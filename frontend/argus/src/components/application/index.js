@@ -83,8 +83,8 @@ const Search = (props)  => {
       showPopup: false,
       showMarker: true,
       popupFormat: ({query, result}) => {
-        setX(result.x); 
-        setY(result.y);
+        setX(result.y); 
+        setY(result.x);
         setLabel(result.label)
         return result.label
       }
@@ -99,7 +99,7 @@ const Search = (props)  => {
           {(x!=0 && y!=0) &&
             <Marker position = {[x,y]}>
               <Popup>
-                CO2 value : {co2Value} {x} {y} {console.log("CO2 value : ",co2Value)}
+                CO2 value : {co2Value} {console.log("CO2 value : ",co2Value)}
               </Popup>
             </Marker>
           }
@@ -110,7 +110,7 @@ const Search = (props)  => {
           {(x!=0 && y!=0) &&
             <Marker position = {[x,y]}>
               <Popup>
-                Ozone value: {ozoneValue} {x} {y} {console.log("Ozone value : ",ozoneValue)}
+                Ozone value: {ozoneValue} {console.log("Ozone value : ",ozoneValue)}
               </Popup>
             </Marker>
           }
@@ -121,7 +121,7 @@ const Search = (props)  => {
           {(x!=0 && y!=0) &&
             <Marker position = {[x,y]}>
               <Popup>
-                NO2 value : {no2Value} {x} {y} {console.log("NO2 value : ",no2Value)}
+                NO2 value : {no2Value} {console.log("NO2 value : ",no2Value)}
               </Popup>
             </Marker>
           }
