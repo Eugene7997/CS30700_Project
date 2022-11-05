@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl, GeoJSON,
 import '../../App.css';
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
-import L, { latLng, latLngBounds } from "leaflet";
+import L, { latLng, latLngBounds, map } from "leaflet";
 import img from "./bg.jpg"
 import streetMapTileIcon from "./streetMapImg.jpg"
 import satelliteMapTileIcon from "./satelliteMapImg.png"
@@ -14,11 +14,14 @@ import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import geoDatas from '../chloropleth_map/annualTemperatureOfCountyUSA.json'
 import Chloropleth_legends from '../chloropleth_map/chloropleth_legends';
 
+window.choice = "temperature";
+
 //function to search location by name
 const Search = (props)  => {
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
     const [lab, setLabel] = useState(null);
+    const [ea, setEA] = useState(window.choice)
     const map = useMap()
     const { provider } = props
     
@@ -26,10 +29,12 @@ const Search = (props)  => {
     const [no2Value, setNo2Value] = useState(0)
     const [ozoneValue, setOzoneValue] = useState(0)
 
+    
+
     useEffect(() => {
-      //Fetchdata();
+      Fetchdata();
       Fetchdata2();
-    }, [x,y])
+    }, [x,y,ea])
 
    const Fetchdata2 = async() => {
     // Eric's key
@@ -57,36 +62,46 @@ const Search = (props)  => {
     setNo2Value(temp3)
   }
 
-  let data = {
-    'latitude': y,
-    'longitude': x
-  }
-
-  //creating react post request and fetching data from django
-  const response = fetch('http://127.0.0.1:8000/arg/api/', {
-    method: 'POST',
-    body : JSON.stringify(data),
-    headers: {
-      'Accept': 'application/json, text/plain',
-      'Content-Type': 'application/json; charset=utf-8'
+  //retrieve the EA data when user searched location
+  const Fetchdata = async() => {
+    const response = await fetch('http://127.0.0.1:8000/arg/api/', {
+      method: 'POST',
+      body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice}),
+      headers: {
+        'Accept': 'application/json, text/plain',
+        'Content-Type': 'application/json; charset=utf-8'
+      }
+    })
+    const res = await response.json();
+    
+    if( x != 0 && y != 0){
+      console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
+      var measurement = null;
+      if(window.choice == "temperature"){
+        measurement = "°C"
+      } else if (window.choice == "humid"){
+        measurement = "%"
+      } else if (window.choice == "sea"){
+        measurement = "inch"
+      } else {
+        measurement = " (tons)"
+      }
+      L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24)+ "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + JSON.stringify(res).replaceAll("{","").replaceAll("\"", "").replaceAll("}","").replace(":", "(").replace(":", "): ") + measurement).addTo(map)
     }
-
-  }).then(response => response.json())
-    .then(data => console.log(JSON.stringify(data)))
-    .catch(error => console.log("Error detected: " + error))
-  
+  }
+      
   //search the location by location_label
   useEffect(()  => {
     const searchControl = new GeoSearchControl({
       provider,
       autoComplete: true,
       showPopup: false,
-      showMarker: true,
+      showMarker: false,
       popupFormat: ({query, result}) => {
-        setX(result.y); 
-        setY(result.x);
-        setLabel(result.label)
-        return result.label
+        setX(result.x); 
+        setY(result.y);
+        setLabel(result.label);
+        return result.label;
       }
     }).addTo(map)
     return () => map.removeControl(searchControl)
@@ -97,7 +112,7 @@ const Search = (props)  => {
       <LayersControl.Overlay name="CO2">
         <LayerGroup>
           {(x!=0 && y!=0) &&
-            <Marker position = {[x,y]}>
+            <Marker position = {[y,x]}>
               <Popup>
                 CO2 value : {co2Value} {console.log("CO2 value : ",co2Value)}
               </Popup>
@@ -108,7 +123,7 @@ const Search = (props)  => {
       <LayersControl.Overlay name="Ozone">
         <LayerGroup >
           {(x!=0 && y!=0) &&
-            <Marker position = {[x,y]}>
+            <Marker position = {[y,x]}>
               <Popup>
                 Ozone value: {ozoneValue} {console.log("Ozone value : ",ozoneValue)}
               </Popup>
@@ -119,7 +134,7 @@ const Search = (props)  => {
       <LayersControl.Overlay name="NO2">
         <LayerGroup>
           {(x!=0 && y!=0) &&
-            <Marker position = {[x,y]}>
+            <Marker position = {[y,x]}>
               <Popup>
                 NO2 value : {no2Value} {console.log("NO2 value : ",no2Value)}
               </Popup>
@@ -130,19 +145,6 @@ const Search = (props)  => {
     </LayersControl>
   )
 }
-
-const response = fetch('http://127.0.0.1:8000/arg/api/', {
-  method: 'POST',
-  body: JSON.stringify({
-    LatLng
-  }),
-  headers: {
-    'Accept': 'application/json, text/plain',
-    'Content-Type': 'application/json; charset=utf-8'
-  }
-}).then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.log("Error detected: " + error))
 
 //function to retrieve user's current location
 const CurrentLocation = () => {
@@ -232,6 +234,10 @@ const Application = () => {
     margin: '0 auto',
   }
 
+  const handleChange = (e) => {
+    console.log(e.target.value)
+  }
+
   return (
     <div style = {{
       backgroundImage: `url(${img})`,
@@ -242,8 +248,24 @@ const Application = () => {
       <div>
         <Head />
       </div>
-      
-      <div id="map">    
+      <div id="map">
+      <form>
+                <div style={{
+                  marginTop: 10,
+                  marginBottom: 10,
+                  width: '100%'
+                }}>
+                    <div>
+                        <select onChange={(event) => window.choice = event.target.value}>
+                            <option value="temperature">Temperature</option>
+                            <option value="sea">Sea Level</option>
+                            <option value="GHG">GHG</option>
+                            <option value="humid">Humidity</option>
+                        </select>
+                        <div class="overSelect" />
+                    </div>
+                </div>
+          </form>
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true} style={mapStyle}>
           <LayersControl>
             <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}> 
@@ -252,6 +274,7 @@ const Application = () => {
                 url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                 subdomains={['mt1','mt2','mt3']}
               />
+              
             </BaseLayer>
             <BaseLayer name={`<img src=${satelliteMapTileIcon} alt="satellite" width=100/>`}> 
               <TileLayer
@@ -268,7 +291,9 @@ const Application = () => {
                 ext= 'png'
               />
             </BaseLayer>
+            
           </LayersControl>
+          
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
           {geoDatas &&
