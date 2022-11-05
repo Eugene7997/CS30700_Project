@@ -4,12 +4,8 @@ import requests
 import pandas as pd
 import json
 import numpy as np
-import os
-
-import sklearn 
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn import preprocessing
+from matplotlib import pyplot
+from prophet import Prophet
 
 # Temperature
 
@@ -68,57 +64,3 @@ prediction = model.predict(te_x)
 print(np.mean(prediction-te_y)**2)
 
 pd.DataFrame({"actual":te_y, "prediction":prediction, "diff":(te_y-prediction)})
-
-# Earthquake and Tsunami
-from turtle import color
-import pandas as pd
-import numpy as np
-import os
-import requests
-import json
-from prophet import Prophet
-import io
-from global_land_mask import globe
-import matplotlib
-import matplotlib.pyplot as plt
-import folium
-
-
-url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.csv"
-
-#response = requests.request("GET", url)
-r = requests.get(url)  
-df = pd.read_csv(io.StringIO(r.text))
-
-
-lan = df['latitude'].tolist()
-long = df['longitude'].tolist()
-mag = df['mag'].tolist()
-
-tsun = []
-
-for i in range(len(lan)):
-    if globe.is_land(lan[i], long[i]) == True:
-        tsun.append('red')
-    else:
-        tsun.append('blue')
-
-# create a new map object
-m = folium.Map(location=(0, 0), zoom_start=2)
-
-for i in range(len(lan)):
-    folium.Circle(
-        location=[lan[i], long[i]],
-        radius=mag[i] * 50000,
-        fill_opacity=0.1,
-        color = tsun[i], 
-        opacity=0.3,  
-        fill_color= tsun[i], 
-
-    ).add_to(m)
-
-# save our map to an interactive html file
-"""
-HTML file creation for testing:
-m.save('earthquakes.html')
-"""
