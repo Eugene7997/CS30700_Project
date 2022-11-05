@@ -201,16 +201,33 @@ def generate_placeholder_data():
 
 args = sys.argv
 
-def test_example():
-    print("scheduling works!")
 
-#schedule.every(1).seconds.do(test_example)
-#update_db()
+if len(args) < 2:
+    print("Not enough arguments. Format: db_updater.py [mode]")
+    print("Run \"db_updater.py help\" for a list of modes")
+    exit(0)
 
-schedule.every(1).hours.do(update_db)
+mode = args[1].lower()
 
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
-
-update_db()
+if mode == 'help':
+    print("\n\n     -------------------------  Modes  --------------------------\n")
+    print("     help  -  lists the possible modes")
+    print("     once  -  updates the database once, including back-filling")
+    print(" oncenobf  -  updates the database once with no back-filling")
+    print(" backfill  -  just runs the back-filling feature of the python script")
+    print("   hourly  -  intended production mode, updates the database hourly with back-filling\n\n")
+elif mode == 'once':
+    update_db()
+elif mode == 'oncenobf':
+    update_db(backfill = False)
+elif mode == 'backfill':
+    fill_gaps()
+elif mode == 'hourly':
+    print("Running in hourly mode. First database update will be in 1 hour.")
+    schedule.every(1).hours.do(update_db)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+else:
+    print("mode \"" + mode + "\" is not recognized.")
+    print("Run \"db_updater.py help\" for a list of modes")
