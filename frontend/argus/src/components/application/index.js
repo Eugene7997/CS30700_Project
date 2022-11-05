@@ -92,44 +92,43 @@ const Search = (props)  => {
     return () => map.removeControl(searchControl)
   }, [props])
 
-  return  null // don't want anything to show up from this comp
   return (
-      <LayersControl>
-        <LayersControl.Overlay name="CO2">
-            <LayerGroup>
-              {(x!=0 && y!=0) &&
-                <Marker position = {[x,y]}>
-                  <Popup>
-                    CO2 value : {co2Value} {console.log("CO2 value : ",co2Value)}
-                  </Popup>
-                </Marker>
-              }
-            </LayerGroup>
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="Ozone">
-          <LayerGroup >
-            {(x!=0 && y!=0) &&
-              <Marker position = {[x,y]}>
-                <Popup>
-                  Ozone value: {ozoneValue} {console.log("Ozone value : ",ozoneValue)}
-                </Popup>
-              </Marker>
-            }
-          </LayerGroup>
-        </LayersControl.Overlay>
-        <LayersControl.Overlay name="NO2">
-          <LayerGroup>
-            {(x!=0 && y!=0) &&
-              <Marker position = {[x,y]}>
-                <Popup>
-                  NO2 value : {no2Value} {console.log("NO2 value : ",no2Value)}
-                </Popup>
-              </Marker>
-            }
-          </LayerGroup>
-        </LayersControl.Overlay>
-      </LayersControl>
-    )
+    <LayersControl>
+      <LayersControl.Overlay name="CO2">
+        <LayerGroup>
+          {(x!=0 && y!=0) &&
+            <Marker position = {[x,y]}>
+              <Popup>
+                CO2 value : {co2Value} {x} {y} {console.log("CO2 value : ",co2Value)}
+              </Popup>
+            </Marker>
+          }
+        </LayerGroup>
+      </LayersControl.Overlay>
+      <LayersControl.Overlay name="Ozone">
+        <LayerGroup >
+          {(x!=0 && y!=0) &&
+            <Marker position = {[x,y]}>
+              <Popup>
+                Ozone value: {ozoneValue} {x} {y} {console.log("Ozone value : ",ozoneValue)}
+              </Popup>
+            </Marker>
+          }
+        </LayerGroup>
+      </LayersControl.Overlay>
+      <LayersControl.Overlay name="NO2">
+        <LayerGroup>
+          {(x!=0 && y!=0) &&
+            <Marker position = {[x,y]}>
+              <Popup>
+                NO2 value : {no2Value} {x} {y} {console.log("NO2 value : ",no2Value)}
+              </Popup>
+            </Marker>
+          }
+        </LayerGroup>
+      </LayersControl.Overlay>
+    </LayersControl>
+  )
 }
 
 const response = fetch('http://127.0.0.1:8000/arg/api/', {
