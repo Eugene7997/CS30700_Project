@@ -53,3 +53,4 @@ To run the Django REST API on your personal machine:
         (exclude the 0.0.0.0:8000 if you just want it to run on localhost port 8000)
     b. In your browser, put this link: http://127.0.0.1:8000/arg/region/
     c. play around with adding data to database
+    d. if you are installing/using the server, replace 127.0.0.1 with the IP address of the server
