@@ -1,5 +1,7 @@
 # Prediction Model Code
 # Documentation
+
+#Steps
 import requests
 import pandas as pd
 import json
