@@ -274,23 +274,23 @@ const Application = () => {
         <Head />
       </div>
       <div id="map">
-      <form>
-        <div style={{
-          marginTop: 10,
-          marginBottom: 10,
-          width: '100%'
-        }}>
-          <div>
-            <select onChange={(event) => window.choice = event.target.value}>
-              <option value="temperature">Temperature</option>
-              <option value="sea">Sea Level</option>
-              <option value="GHG">GHG</option>
-              <option value="humid">Humidity</option>
-            </select>
-            <div class="overSelect" />
+        <form>
+          <div style={{
+            marginTop: 10,
+            marginBottom: 10,
+            width: '100%'
+          }}>
+            <div>
+              <select onChange={(event) => window.choice = event.target.value}>
+                <option value="temperature">Temperature</option>
+                <option value="sea">Sea Level</option>
+                <option value="GHG">GHG</option>
+                <option value="humid">Humidity</option>
+              </select>
+              <div class="overSelect" />
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true} style={mapStyle}>
           <LayersControl>
             <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}> 
