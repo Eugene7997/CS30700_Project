@@ -234,13 +234,10 @@ const ChoroplethMap = () => {
         <LayerGroup
           eventHandlers = {
             {
-              add:(e) => {
-                console.log("Add event: ", e.target)
-                // return(<Chloropleth_legends/>)
+              add:() => {
                 setLegendToggle(true)
               },
-              remove:(e) => {
-                console.log("Remove event: ", e.target)
+              remove:() => {
                 setLegendToggle(false)
               }
             }
@@ -323,7 +320,6 @@ const Application = () => {
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
         </MapContainer>
-        {/* <Chloropleth_legends/> */}
       </div>
     </div>
   )
