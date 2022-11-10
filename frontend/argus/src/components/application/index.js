@@ -27,9 +27,7 @@ const Search = (props)  => {
     
     const [co2Value, setCo2Value] = useState(0)
     const [no2Value, setNo2Value] = useState(0)
-    const [ozoneValue, setOzoneValue] = useState(0)
-
-    
+    const [ozoneValue, setOzoneValue] = useState(0)    
 
     useEffect(() => {
       Fetchdata();
@@ -177,10 +175,10 @@ const CurrentLocation = () => {
   )
 }
 
-const {BaseLayer} = LayersControl
+const ChoroplethMap = () => {
 
-const Application = () => {
-
+  const [legendToggle, setLegendToggle] = useState(false)
+  
   const highlightChloropleth = (e => {
     var layer = e.target
     layer.setStyle({
@@ -229,7 +227,34 @@ const Application = () => {
       fillOpacity: 0.5
     })
   })
+  
+  return (
+    <LayersControl>
+      <LayersControl.Overlay name = "Choropleth map - Temperature">
+        <LayerGroup
+          eventHandlers = {
+            {
+              add:() => {
+                setLegendToggle(true)
+              },
+              remove:() => {
+                setLegendToggle(false)
+              }
+            }
+          }
+        >
+          {geoDatas && (<GeoJSON data = {geoDatas} onEachFeature={onEachFeature} style = {chloropleth_style}/>)}
+        </LayerGroup>
+      </LayersControl.Overlay>
+      {legendToggle ? <Chloropleth_legends/> : null}
+    </LayersControl>
+  )
+}
 
+const {BaseLayer} = LayersControl
+
+const Application = () => {
+  
   const mapStyle = {
     margin: '0 auto',
   }
@@ -274,7 +299,6 @@ const Application = () => {
                 url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
                 subdomains={['mt1','mt2','mt3']}
               />
-              
             </BaseLayer>
             <BaseLayer name={`<img src=${satelliteMapTileIcon} alt="satellite" width=100/>`}> 
               <TileLayer
@@ -291,15 +315,11 @@ const Application = () => {
                 ext= 'png'
               />
             </BaseLayer>
-            
           </LayersControl>
-          
+          <ChoroplethMap/>
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
-          {geoDatas &&
-           (<GeoJSON data = {geoDatas} onEachFeature={onEachFeature} style = {chloropleth_style}/>)}
         </MapContainer>
-        <Chloropleth_legends/>
       </div>
     </div>
   )
