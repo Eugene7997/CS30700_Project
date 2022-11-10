@@ -176,6 +176,8 @@ const CurrentLocation = () => {
 }
 
 const ChoroplethMap = () => {
+
+  const [legendToggle, setLegendToggle] = useState(false)
   
   const highlightChloropleth = (e => {
     var layer = e.target
@@ -229,10 +231,25 @@ const ChoroplethMap = () => {
   return (
     <LayersControl>
       <LayersControl.Overlay name = "Choropleth map - Temperature">
-        <LayerGroup>
+        <LayerGroup
+          eventHandlers = {
+            {
+              add:(e) => {
+                console.log("Add event: ", e.target)
+                // return(<Chloropleth_legends/>)
+                setLegendToggle(true)
+              },
+              remove:(e) => {
+                console.log("Remove event: ", e.target)
+                setLegendToggle(false)
+              }
+            }
+          }
+        >
           {geoDatas && (<GeoJSON data = {geoDatas} onEachFeature={onEachFeature} style = {chloropleth_style}/>)}
         </LayerGroup>
       </LayersControl.Overlay>
+      {legendToggle ? <Chloropleth_legends/> : null}
     </LayersControl>
   )
 }
@@ -306,7 +323,7 @@ const Application = () => {
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
         </MapContainer>
-        <Chloropleth_legends/>
+        {/* <Chloropleth_legends/> */}
       </div>
     </div>
   )
