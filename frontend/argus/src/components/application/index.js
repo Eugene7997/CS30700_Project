@@ -13,8 +13,10 @@ import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import geoDatas from '../chloropleth_map/annualTemperatureOfCountyUSA.json'
 import Chloropleth_legends from '../chloropleth_map/chloropleth_legends';
+import moment from 'moment'
 
 window.choice = "temperature";
+window.date = moment().format('YYYY-MM-DD')
 
 //function to search location by name
 const Search = (props)  => {
@@ -271,17 +273,19 @@ const Application = () => {
           <div style={{
             marginTop: 10,
             marginBottom: 10,
-            width: '100%'
+            width: '100%',
+
           }}>
-            <div>
-              <select onChange={(event) => window.choice = event.target.value}>
-                <option value="temperature">Temperature</option>
-                <option value="sea">Sea Level</option>
-                <option value="GHG">GHG</option>
-                <option value="humid">Humidity</option>
-              </select>
-              <div class="overSelect" />
-            </div>
+              <div>
+                  <select style={{width: 100}} onChange={(event) => window.choice = event.target.value}>
+                    <option value="temperature">Temperature</option>
+                    <option value="sea">Sea Level</option>
+                    <option value="GHG">GHG</option>
+                    <option value="humid">Humidity</option>
+                  </select>
+                  <input type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")}/>
+              </div>
+            <div/>       
           </div>
         </form>
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true} style={mapStyle}>
