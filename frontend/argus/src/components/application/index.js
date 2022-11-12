@@ -25,13 +25,13 @@ const Search = (props)  => {
     const map = useMap()
     const { provider } = props
     
-    const [co2Value, setCo2Value] = useState(0)
-    const [no2Value, setNo2Value] = useState(0)
-    const [ozoneValue, setOzoneValue] = useState(0)    
+    const [co2Value, setCo2Value] = useState("")
+    const [no2Value, setNo2Value] = useState("")
+    const [ozoneValue, setOzoneValue] = useState("")    
 
     useEffect(() => {
       Fetchdata();
-      Fetchdata2();
+      // Fetchdata2();
     }, [x,y,ea])
 
    const Fetchdata2 = async() => {
@@ -71,10 +71,10 @@ const Search = (props)  => {
       }
     })
     const res = await response.json();
-    
+        
     if( x != 0 && y != 0){
       console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
-      var measurement = null;
+      var measurement = null
       if(window.choice == "temperature"){
         measurement = "°C"
       } else if (window.choice == "humid"){
@@ -83,6 +83,20 @@ const Search = (props)  => {
         measurement = "inch"
       } else {
         measurement = " (tons)"
+        var temp = JSON.stringify(res[Object.keys(res)[0]])
+        var co2 = temp.match(/(?<=CO2: )\d+.\d+/)
+        if (co2 != null) {
+          setCo2Value(co2[0]+measurement)
+        }
+        var o3 = temp.match(/(?<=Ozone\(O3\): )\d+.\d+/)
+        if (o3 != null) {
+          setOzoneValue(o3[0]+measurement)
+        }
+        var no2 = temp.match(/(?<=NO2: )\d+.\d+/)
+        if (no2 != null) {
+          setNo2Value(no2[0]+measurement)
+        }
+        return
       }
       L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24)+ "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + JSON.stringify(res).replaceAll("{","").replaceAll("\"", "").replaceAll("}","").replace(":", "(").replace(":", "): ") + measurement).addTo(map)
     }
@@ -107,12 +121,14 @@ const Search = (props)  => {
 
   return (
     <LayersControl>
-      <LayersControl.Overlay name="CO2">
+      <LayersControl.Overlay name="CO2" checked>
         <LayerGroup>
           {(x!=0 && y!=0) &&
             <Marker position = {[y,x]}>
               <Popup>
-                CO2 value : {co2Value} {console.log("CO2 value : ",co2Value)}
+                {Date().toLocaleString().substring(0, 24)} <br/>
+                Coordinate: {x} , {y} <br/> 
+                CO2 value : <b>{co2Value}</b>
               </Popup>
             </Marker>
           }
@@ -123,7 +139,9 @@ const Search = (props)  => {
           {(x!=0 && y!=0) &&
             <Marker position = {[y,x]}>
               <Popup>
-                Ozone value: {ozoneValue} {console.log("Ozone value : ",ozoneValue)}
+                {Date().toLocaleString().substring(0, 24)} <br/>
+                Coordinate: {x} , {y} <br/> 
+                Ozone value: <b>{ozoneValue}</b>
               </Popup>
             </Marker>
           }
@@ -134,7 +152,9 @@ const Search = (props)  => {
           {(x!=0 && y!=0) &&
             <Marker position = {[y,x]}>
               <Popup>
-                NO2 value : {no2Value} {console.log("NO2 value : ",no2Value)}
+                {Date().toLocaleString().substring(0, 24)} <br/>
+                Coordinate: {x} , {y} <br/> 
+                NO2 value : <b>{no2Value}</b>
               </Popup>
             </Marker>
           }
