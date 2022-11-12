@@ -31,34 +31,7 @@ const Search = (props)  => {
 
     useEffect(() => {
       Fetchdata();
-      // Fetchdata2();
     }, [x,y,ea])
-
-   const Fetchdata2 = async() => {
-    // Eric's key
-    const response = await fetch(`https://api.co2signal.com/v1/latest?lon=${x}&lat=${y}&auth-token=S3Hlk9xkYNaGmqYn8G1JoIH0QPiJsn55`)
-    const response2 = await fetch(`https://api.ambeedata.com/latest/by-lat-lng?lat=${y}&lng=${x}&x-api-key=b1637cd664e7dce01cbd651b44e311e27b269c4717eb903fe290388116354b69`)
-
-    // https://api.co2signal.com/v1/latest?countryCode=DK-DK1&lon=-0.05153279397682829&lat=51.325478033406156&auth-token=GKntl9oAJF4H0asImg3MpjSXiIdmLAcU
-    // https://api.ambeedata.com/latest/by-lat-lng?lat=51.325478033406156&lng=-0.05153279397682829&x-api-key=97b6df2236ea4855729d070695e4dfa664a62b0e8f0e432ca94f78de78e7ee7d
-
-    // const response = await fetch(`https://api.co2signal.com/v1/latest?countryCode=DK-DK1&lon=${x}&lat=${y}&auth-token=GKntl9oAJF4H0asImg3MpjSXiIdmLAcU`)
-    // const response2 = await fetch(`https://api.ambeedata.com/latest/by-lat-lng?lat=${y}&lng=${x}&x-api-key=97b6df2236ea4855729d070695e4dfa664a62b0e8f0e432ca94f78de78e7ee7d`)
-    const res = await response.json();
-    const res2 = await response2.json();
-    
-    const temp1 = res['data'].carbonIntensity
-    const temp2 = res2['stations'][0].OZONE
-    const temp3 = res2['stations'][0].NO2
-
-    console.log("carbon intensity: ", temp1)
-    console.log("Ozone: ", temp2)
-    console.log("NO2: ", temp3)
-    
-    setCo2Value(temp1)
-    setOzoneValue(temp2)
-    setNo2Value(temp3)
-  }
 
   //retrieve the EA data when user searched location
   const Fetchdata = async() => {
