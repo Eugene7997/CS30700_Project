@@ -155,8 +155,21 @@ const CurrentLocation = () => {
     });
   }, [map])
 
+  const removeMarker =()=> {
+    map.removeLayer(marker)
+  }
+
   return position === null ? null : (
-    <Marker position={position}>
+    <Marker 
+      position={position}
+      eventHandlers = {{
+        click: (e) => {
+          console.log(e)
+          console.log(e.latlng)
+          // map.removeLayer(this)
+        }
+      }}
+    >
       <Popup>
         You are here. <br />
         <b>SW lng</b>: {bbox[0]} <br />
