@@ -12,7 +12,7 @@ import sys
 LOCAL_UTC_OFFSET = -4 # change this to -5 when edt turns to est
 
 def update_db(backfill = True):
-    print("updating at: " + str(datetime.datetime.now()) + " EDT")
+    print("updating at: " + str(datetime.datetime.now(datetime.timezone.utc)) + " UTC")
     data = fetch_data()
     try:
         connection = mysql.connector.connect(host='localhost',
@@ -200,6 +200,7 @@ def generate_placeholder_data():
     return data
 
 args = sys.argv
+
 
 if len(args) < 2:
     print("Not enough arguments. Format: db_updater.py [mode]")
