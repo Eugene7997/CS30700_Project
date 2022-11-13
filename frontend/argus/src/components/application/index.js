@@ -1,10 +1,10 @@
 
 // react-learn JS libraries
-import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl, GeoJSON, LayerGroup, Circle } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl, GeoJSON, LayerGroup, Circle, CircleMarker } from 'react-leaflet'
 import '../../App.css';
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
-import L, { latLng, latLngBounds, map } from "leaflet";
+import L, { circle, latLng, latLngBounds, map } from "leaflet";
 import img from "./bg.jpg"
 import streetMapTileIcon from "./streetMapImg.jpg"
 import satelliteMapTileIcon from "./satelliteMapImg.png"
@@ -249,6 +249,19 @@ const ChoroplethMap = () => {
 
 const Earthquake = () => {
 
+  const pointToLayer= (feature, layer)=> {
+    const coordinates = feature.geometry.coordinates
+    const mag2 = feature.properties.mag
+    const tsunamicheck2 = feature.properties.tsunami
+    circle = L.CircleMarker(coordinates, mag2*10)
+    if (tsunamicheck2 == 0) {
+      circle.setStyle({color: "red"})
+    }
+    else {
+      circle.setStyle({color: "blue"})
+    }
+  }
+
   const onEachFeature= (feature, layer)=> {
     console.log(feature)
     const tsunamicheck = feature.properties.tsunami
@@ -265,7 +278,7 @@ const Earthquake = () => {
   return (
     <LayersControl>
       <LayersControl.Overlay name = "Earthquake Layer">
-        {earthquakedatas && (<GeoJSON data = {earthquakedatas} onEachFeature={onEachFeature}/>)}
+        {earthquakedatas && (<GeoJSON data = {earthquakedatas} onEachFeature={onEachFeature} pointToLayer={pointToLayer}/>)}
       </LayersControl.Overlay>
     </LayersControl>
   )
