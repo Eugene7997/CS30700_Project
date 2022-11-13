@@ -40,7 +40,7 @@ const Search = (props)  => {
   const Fetchdata = async() => {
     const response = await fetch('http://127.0.0.1:8000/arg/api/', {
       method: 'POST',
-      body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice}),
+      body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date}),
       headers: {
         'Accept': 'application/json, text/plain',
         'Content-Type': 'application/json; charset=utf-8'
@@ -308,7 +308,7 @@ const Application = () => {
                     <option value="GHG">GHG</option>
                     <option value="humid">Humidity</option>
                   </select>
-                  <input type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")}/>
+                  <input type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.date}/>
               </div>
             <div/>       
           </div>
