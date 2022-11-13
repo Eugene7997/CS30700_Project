@@ -19,7 +19,9 @@ from django.forms import Form
 
 from pycountry_convert import country_alpha2_to_continent_code, country_name_to_country_alpha2
 import requests
+import datetime
 import json
+import format_geojson
 import time
 import datetime
 
@@ -113,8 +115,21 @@ def api_home(request, *args, **kwargs):
             return JsonResponse({"Date": date, "Rising Sea Level": sea})
     # return JsonResponse({"region": serializer.data.region_name})
 
+@api_view(["GET", "POST"])
 
-def latlon_to_temp(lat, lon, date):
+def geojson_home(request, *args, **kwargs):
+    if request.method == 'GET':
+        return JsonResponse({"error": "Only send post requests with json data in format {'ea': 'humidity', 'datetime': '2014-09-23T05:46:12'} to this URL"})
+    
+    if request.method == 'POST':
+        ea = request.data.get('ea')
+        dt = datetime.datetime.strptime(request.data.get('datetime'), '%Y-%m-%dT%H:%M:%S')
+        data = format_geojson.get_world_data(ea, dt)
+        geojson = format_geojson.populate_geojson(data)
+        return JsonResponse(geojson)
+
+
+def latlon_to_temp(lat, lon):
     if lat is None:
         return {'error': 'latitude field required'}
     if lon is None:
