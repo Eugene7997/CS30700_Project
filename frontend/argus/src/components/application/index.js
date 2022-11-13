@@ -249,16 +249,15 @@ const ChoroplethMap = () => {
 
 const Earthquake = () => {
 
-  const pointToLayer= (feature, layer)=> {
+  const pointToLayer= (feature)=> {
     const coordinates = feature.geometry.coordinates
     const mag2 = feature.properties.mag
     const tsunamicheck2 = feature.properties.tsunami
-    circle = L.CircleMarker(coordinates, mag2*10)
     if (tsunamicheck2 == 0) {
-      circle.setStyle({color: "red"})
+      L.CircleMarker(coordinates, {radius: mag2*100, color: '#f5363d'})
     }
     else {
-      circle.setStyle({color: "blue"})
+      L.CircleMarker(coordinates, {radius: mag2*100, color: '#025fc9'})
     }
   }
 
