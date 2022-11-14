@@ -9,7 +9,8 @@ import Home from './components/Home'
 // import header from './components/header'
 import About from './components/About'
 import Application from './components/application'
-import Modal from './components/application/Modal/'
+import SignIn from './components/SignIn'
+import SignUp from './components/SignUp'
 
 
 
@@ -17,10 +18,11 @@ function App() {
     return (
       <div className='App'>
         <Routes>
+          <Route path='/signin' element={<SignIn />} />
+          <Route path='/signup' element={<SignUp />} />
           <Route path="/" element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="application" element={<Application />} />
-          <Route path="modal" element={<Modal />} />
         </Routes>
       </div>
     )
