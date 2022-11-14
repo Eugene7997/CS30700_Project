@@ -17,8 +17,8 @@ class UserLocation(ModelForm):
 
 class Region(models.Model):
     region_name = models.CharField(max_length=30, primary_key=True)
-    latitude = models.IntegerField(default=0)
-    longitude = models.IntegerField(default=0)
+    latitude = models.FloatField(default=0)
+    longitude = models.FloatField(default=0)
 
 class SubRegion(models.Model):
     subregion_name = models.CharField(max_length=50, primary_key=True)
@@ -33,7 +33,7 @@ class Datapoint(models.Model):
     ea = models.ForeignKey(EnvironmentalActivity, on_delete=models.CASCADE)
     dp_datetime = models.DateTimeField()
     is_future = models.BooleanField()
-    value = models.FloatField()
+    value = models.FloatField(null = True)
 
 class UntrackedRegion(models.Model):
     untrackedregion_name = models.CharField(max_length=50, primary_key=True)
