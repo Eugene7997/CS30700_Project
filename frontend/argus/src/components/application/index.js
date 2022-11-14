@@ -254,10 +254,10 @@ const Earthquake = () => {
     const mag2 = feature.properties.mag
     const tsunamicheck2 = feature.properties.tsunami
     if (tsunamicheck2 == 0) {
-      L.CircleMarker(coordinates, {radius: mag2*100, color: '#f5363d'})
+      return L.CircleMarker(coordinates, {radius: mag2*100, color: '#f5363d'})
     }
     else {
-      L.CircleMarker(coordinates, {radius: mag2*100, color: '#025fc9'})
+      return L.CircleMarker(coordinates, {radius: mag2*100, color: '#025fc9'})
     }
   }
 
