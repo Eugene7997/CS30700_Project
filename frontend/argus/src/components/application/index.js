@@ -1,10 +1,9 @@
-
 // react-learn JS libraries
-import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl, GeoJSON, LayerGroup, Circle } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl, GeoJSON, LayerGroup, Circle, CircleMarker } from 'react-leaflet'
 import '../../App.css';
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
-import L, { latLng, latLngBounds, map } from "leaflet";
+import L, { circle, latLng, latLngBounds, map } from "leaflet";
 import img from "./bg.jpg"
 import streetMapTileIcon from "./streetMapImg.jpg"
 import satelliteMapTileIcon from "./satelliteMapImg.png"
@@ -40,7 +39,7 @@ const Search = (props)  => {
   const Fetchdata = async() => {
     const response = await fetch('http://127.0.0.1:8000/arg/api/', {
       method: 'POST',
-      body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice}),
+      body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date}),
       headers: {
         'Accept': 'application/json, text/plain',
         'Content-Type': 'application/json; charset=utf-8'
@@ -308,7 +307,7 @@ const Application = () => {
                     <option value="GHG">GHG</option>
                     <option value="humid">Humidity</option>
                   </select>
-                  <input type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")}/>
+                  <input type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.date}/>
               </div>
             <div/>       
           </div>

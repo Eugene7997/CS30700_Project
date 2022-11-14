@@ -15,5 +15,11 @@ router.register(r'untrackedregion', UntrackedRegionViewSet)
 urlpatterns = [
      path('hello/', views.say_hello),
      path('api/', views.api_home),
-     path('models/', include(router.urls))
+     path('models/', include(router.urls)),
+     path('geojson/', views.geojson_home),
+     path('setcookie/', views.api_home),
+     path('getcookie/', views.api_home)
 ]
+
+
+# curl -X POST http://127.0.0.1:8000/arg/geojson/ -H "Content-Type: application/json" -d '{"ea": "temperature", "datetime": "2022-11-13T00:00:00"}'
