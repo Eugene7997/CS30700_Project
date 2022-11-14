@@ -129,7 +129,7 @@ def geojson_home(request, *args, **kwargs):
         return JsonResponse(geojson)
 
 
-def latlon_to_temp(lat, lon):
+def latlon_to_temp(lat, lon, date):
     if lat is None:
         return {'error': 'latitude field required'}
     if lon is None:
