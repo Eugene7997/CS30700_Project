@@ -9,6 +9,8 @@ import img from "./bg.jpg"
 import streetMapTileIcon from "./streetMapImg.jpg"
 import satelliteMapTileIcon from "./satelliteMapImg.png"
 import minimalistMapIcon from "./minimalistMapImg.png"
+import earthquakeIcon from "./earthquake-icon.png"
+import tsunamiIcon from "./ocean-waves-icon.png"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import geoDatas from '../chloropleth_map/annualTemperatureOfCountyUSA.json'
@@ -249,15 +251,29 @@ const ChoroplethMap = () => {
 
 const Earthquake = () => {
 
+  const pointToLayer= (feature)=> {
+    const coordinates = feature.geometry.coordinates
+    const mag2 = feature.properties.mag
+    const tsunamicheck2 = feature.properties.tsunami
+    if (tsunamicheck2 == 0) {
+      return L.CircleMarker(coordinates, {radius: mag2*100, color: '#f5363d'})
+    }
+    else {
+      return L.CircleMarker(coordinates, {radius: mag2*100, color: '#025fc9'})
+    }
+  }
+
   const onEachFeature= (feature, layer)=> {
     console.log(feature)
     const tsunamicheck = feature.properties.tsunami
     const mag = feature.properties.mag
     const place = feature.properties.place
     if (tsunamicheck == 0) {
+      layer.setIcon(earthquakeIcon)
       layer.bindPopup(`<strong>Earthquake <br/> Magntitude: ${mag} <br/> Location: ${place} </strong>`)
     }
     else {
+      layer.setIcon(tsunamiIcon)
       layer.bindPopup(`<strong>Tsunami Flag <br/> Magntitude: ${mag} <br/> Location: ${place} </strong>`)
     }
   }
@@ -265,7 +281,7 @@ const Earthquake = () => {
   return (
     <LayersControl>
       <LayersControl.Overlay name = "Earthquake Layer">
-        {earthquakedatas && (<GeoJSON data = {earthquakedatas} onEachFeature={onEachFeature}/>)}
+        {earthquakedatas && (<GeoJSON data = {earthquakedatas} onEachFeature={onEachFeature} pointToLayer={pointToLayer}/>)}
       </LayersControl.Overlay>
     </LayersControl>
   )
