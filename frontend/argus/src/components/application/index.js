@@ -252,9 +252,20 @@ const ChoroplethMap = () => {
 
 const Earthquake = () => {
 
+  const point= (feature, layer)=> {
+    const tsunamicheck2 = feature.properties.tsunami
+    const mag2 = feature.properties.mag
+
+    if (tsunamicheck2 == 0) {
+      return new L.CircleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {radius:mag2*10, color: "red"})
+    }
+    else {
+      return new L.CircleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {radius:mag2*10, color: "blue"})
+    }
+  }
 
   const onEachFeature= (feature, layer)=> {
-    console.log(feature)
+    console.log([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
     const tsunamicheck = feature.properties.tsunami
     const mag = feature.properties.mag
     const place = feature.properties.place
@@ -269,7 +280,7 @@ const Earthquake = () => {
   return (
     <LayersControl>
       <LayersControl.Overlay name = "Earthquake Layer">
-        {earthquakedatas && (<GeoJSON data = {earthquakedatas} onEachFeature={onEachFeature}/>)}
+        {earthquakedatas && (<GeoJSON data = {earthquakedatas} onEachFeature={onEachFeature} pointToLayer={point}/>)}
       </LayersControl.Overlay>
     </LayersControl>
   )
