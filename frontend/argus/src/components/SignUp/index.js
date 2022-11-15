@@ -35,8 +35,27 @@ class SignUpForm extends Component {
     console.log(this.state);
   }
 
-  authentication() {
-    this.setState({check:true})
+  async authentication() {
+    const response = await fetch('http://127.0.0.1:8000/arg/auth/', {
+      method: 'POST',
+      body : JSON.stringify({'authentication': 'false', 'email':this.state.email, 'password':this.state.password}),
+      headers: {
+        'Accept': 'application/json, text/plain',
+        'Content-Type': 'application/json; charset=utf-8'
+      }
+    })
+    var res = await response.json();
+    res = JSON.stringify(res) 
+    if(res == null){
+      alert("Wrong email address or password. Please try again.")
+    }else{
+      //globally reset whether user sign in
+      const user_data = this.state.Username + " " + res
+      localStorage.setItem("user", user_data)
+      alert("Successfully created account")
+      this.setState({check: true})
+    }
+    this.setState({token : res})
   }
 
   render() {

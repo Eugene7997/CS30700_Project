@@ -17,6 +17,11 @@ const Head = () => {
     const toSignin  = () => {
         navigate("/signin")
     }
+    const logout = () => {
+        localStorage.removeItem('user')
+        alert('Successfully signed out')
+        window.location.reload(false)
+    }
     const Button = styled.button`
         background-color: transparent;
         color: white;
@@ -51,9 +56,14 @@ const Head = () => {
             </div>
         </div>
         <div style={{marginTop: 10, display: 'flex', flexDirection: 'row', aliggItems: 'center', justifyContent: 'center'}}>
+            {localStorage.getItem('user') != null ? 
+            <div  style={{marginRight: 20}}>
+                <Button onClick={() => logout()}>{localStorage.getItem('user').split(' ')[0]}</Button>
+            </div>:
             <div  style={{marginRight: 20}}>
                 <Button onClick={() => toSignin()}>{name}</Button>
             </div>
+            }
             <div style={{marginRight: 20}}>
                 <Button onClick={() => toAbout()}>About us</Button>
             </div>

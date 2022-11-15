@@ -14,6 +14,7 @@ class SignInForm extends Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleChange2 = this.handleChange2.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -23,10 +24,17 @@ class SignInForm extends Component {
     let name = target.name;
 
     this.setState({
-      [name]: value
+      Username: value
     });
   }
-
+  handleChange2(event) {
+    let target = event.target;
+    let value = target.type === "checkbox" ? target.checked : target.value;
+    let name = target.name;
+    this.setState({
+      password: value
+    });
+  }
   handleSubmit(event) {
     event.preventDefault();
     console.log("The form was submitted with the following data:");
@@ -37,28 +45,25 @@ class SignInForm extends Component {
   }
   async authentication() {
     //POST request to the backend
-    // const response = await fetch('http://127.0.0.1:8000/arg/auth/', {
-    //   method: 'POST',
-    //   body : JSON.stringify({'authentication': 'true', 'email':this.state.email, 'password':this.state.password}),
-    //   headers: {
-    //     'Accept': 'application/json, text/plain',
-    //     'Content-Type': 'application/json; charset=utf-8'
-    //   }
-    // })
-    // var res = await response.json();
-    // res = JSON.stringify(res) 
-    // this.setState({token : res})
-    // if(!res){
-    //   alert("Wrong email address or password. Please try again.")
-    // }
-    //globally reset whether user sign in
-
-    
-    const user_data = this.state.Username + " " + "res"
-    localStorage.setItem("user", user_data)
-    const saved = localStorage.getItem("user")
-    console.log(JSON.stringify(saved))
-    this.setState({token : "res"})
+    const response = await fetch('http://127.0.0.1:8000/arg/auth/', {
+      method: 'POST',
+      body : JSON.stringify({'authentication': 'true', 'email':this.state.email, 'password':this.state.password}),
+      headers: {
+        'Accept': 'application/json, text/plain',
+        'Content-Type': 'application/json; charset=utf-8'
+      }
+    })
+    var res = await response.json();
+    res = JSON.stringify(res) 
+    if(res == null){
+      alert("Wrong email address or password. Please try again.")
+    }else{
+      //globally reset whether user sign in
+      const user_data = this.state.Username + " " + res
+      localStorage.setItem("user", user_data)
+      alert("Successfully signed in")
+    }
+    this.setState({token : res})
   }
 
   render() {
@@ -91,8 +96,8 @@ class SignInForm extends Component {
               className="formFieldInput"
               placeholder="Enter your password"
               name="password"
-              value={this.state.password}
-              onChange={this.handleChange}
+              defaultvalue={this.state.password}
+              onChange={this.handleChange2}
             />
           </div>
 
