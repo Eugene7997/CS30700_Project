@@ -1,32 +1,16 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate, Navigate } from "react-router-dom";
+import { Link,useNavigate, Navigate } from "react-router-dom";
+import Head from '../header'
 
-// function Submit(event){
-//   event.preventDefault();
-//   console.log("The form was submitted with the following data:");
-//   console.log(this.state);
-//   this.setState({submitted: true})
-//   let navigate = useNavigate()
-//   navigate.navigate('/')
-// }
-// const Submit = (event) => {
-//   event.preventDefault();
-//   console.log("The form was submitted with the following data:");
-//   console.log(this.state);
-//   this.setState({submitted: true})
-//   let navigate = useNavigate()
-//   navigate.navigate('/')
-// }
 
 class SignInForm extends Component {
   constructor() {
     super();
 
     this.state = {
-      email: "",
+      Username: "",
       password: "",
-      submitted: false,
+      token: null,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -51,23 +35,48 @@ class SignInForm extends Component {
     this.props.navigation.navigate('/')
     
   }
+  async authentication() {
+    //POST request to the backend
+    // const response = await fetch('http://127.0.0.1:8000/arg/auth/', {
+    //   method: 'POST',
+    //   body : JSON.stringify({'authentication': 'true', 'email':this.state.email, 'password':this.state.password}),
+    //   headers: {
+    //     'Accept': 'application/json, text/plain',
+    //     'Content-Type': 'application/json; charset=utf-8'
+    //   }
+    // })
+    // var res = await response.json();
+    // res = JSON.stringify(res) 
+    // this.setState({token : res})
+    // if(!res){
+    //   alert("Wrong email address or password. Please try again.")
+    // }
+    //globally reset whether user sign in
+
+    
+    const user_data = this.state.Username + " " + "res"
+    localStorage.setItem("user", user_data)
+    const saved = localStorage.getItem("user")
+    console.log(JSON.stringify(saved))
+    this.setState({token : "res"})
+  }
 
   render() {
-    // {this.state.submitted ? <Navigate to={'/'}/> : 
     return (
       <div className="formCenter">
+        <Head />
         <form className="formFields" onSubmit={this.handleSubmit}>
           <div className="formField">
             <label className="formFieldLabel" htmlFor="email">
-              E-Mail Address
+              Username
             </label>
             <input
-              type="email"
+              type="text"
               id="email"
               className="formFieldInput"
-              placeholder="Enter your email"
+              placeholder="Enter your Username"
               name="email"
-              value={this.state.email}
+              defaultvalue={this.state.Username}
               onChange={this.handleChange}
             />
           </div>
@@ -88,8 +97,11 @@ class SignInForm extends Component {
           </div>
 
           <div className="formField">
-            <Link to='/' className="formFieldButton">Sign In</Link>
-            <Link to="/signup" className="formFieldLink">
+            <Link onClick={() => this.authentication()} className="formFieldButton">Sign In</Link>
+            {this.state.token != null && (
+              <Navigate to='/' replace={true} />
+            )}
+            <Link style={{marginLeft: 20}} to="/signup" className="formFieldLink">
               Create an account
             </Link>
           </div>
@@ -101,3 +113,4 @@ class SignInForm extends Component {
 }
 
 export default SignInForm;
+

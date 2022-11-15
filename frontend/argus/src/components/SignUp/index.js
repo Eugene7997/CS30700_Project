@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import Head from "../header"
 
 class SignUpForm extends Component {
   constructor() {
@@ -9,7 +10,8 @@ class SignUpForm extends Component {
       email: "",
       password: "",
       name: "",
-      hasAgreed: false
+      hasAgreed: false,
+      check: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -33,9 +35,14 @@ class SignUpForm extends Component {
     console.log(this.state);
   }
 
+  authentication() {
+    this.setState({check:true})
+  }
+
   render() {
     return (
       <div className="formCenter">
+        <Head />
         <form onSubmit={this.handleSubmit} className="formFields">
           <div className="formField">
             <label className="formFieldLabel" htmlFor="name">
@@ -45,7 +52,7 @@ class SignUpForm extends Component {
               type="text"
               id="name"
               className="formFieldInput"
-              placeholder="Enter your full name"
+              placeholder="Enter your Username"
               name="name"
               value={this.state.name}
               onChange={this.handleChange}
@@ -94,9 +101,11 @@ class SignUpForm extends Component {
           </div>
 
           <div className="formField">
-            {/* <button className="formFieldButton">Sign Up</button>{" "} */}
-            <Link to='/signin' className="formFieldButton">Sign Up</Link>
-            <Link to="/signin" className="formFieldLink">
+            <Link onClick={() => this.authentication()} className="formFieldButton">Sign Up</Link>
+            {
+                this.state.check ? <Navigate to={'/'} replace={true} /> : null
+            }
+            <Link style={{marginLeft: 20}} to="/signin" className="formFieldLink">
               I'm already member
             </Link>
           </div>

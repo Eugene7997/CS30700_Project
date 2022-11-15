@@ -58,7 +58,7 @@
 
 .formCenter {
   margin-bottom: 100px;
-  margin-left: 15%;
+  /* margin-left: 15%; */
 }
 
 .formTitle {
@@ -94,9 +94,11 @@
   text-transform: uppercase;
   font-size: 0.9em;
   color: white;
+  
 }
 .formFieldInput {
-  width: 85%;
+  width: 70%;
+  margin-left: 15%;
   background-color: transparent;
   border: none;
   /* color: white; */
@@ -113,6 +115,7 @@
 }
 
 .formFieldButton {
+  margin-left: 15%;
   background-color: #6b5b95;
   color: white;
   border: none;
@@ -132,6 +135,7 @@
 }
 
 .formFieldCheckboxLabel {
+  margin-left: 15%;
   color: #646f7d;
   font-size: 0.9em;
 }
