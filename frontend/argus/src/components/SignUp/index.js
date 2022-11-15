@@ -15,6 +15,8 @@ class SignUpForm extends Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleChange2 = this.handleChange2.bind(this);
+    this.handleChange3 = this.handleChange3.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -24,7 +26,25 @@ class SignUpForm extends Component {
     let name = target.name;
 
     this.setState({
-      [name]: value
+      name: value
+    });
+  }
+  handleChange2(event){
+    let target = event.target;
+    let value = target.type === "checkbox" ? target.checked : target.value;
+    let name = target.name;
+
+    this.setState({
+      password: value
+    });
+  }
+  handleChange3(event){
+    let target = event.target;
+    let value = target.type === "checkbox" ? target.checked : target.value;
+    let name = target.name;
+
+    this.setState({
+      email: value
     });
   }
 
@@ -36,9 +56,10 @@ class SignUpForm extends Component {
   }
 
   async authentication() {
-    const response = await fetch('http://127.0.0.1:8000/arg/auth/', {
+    console.log(this.state)
+    const response = await fetch('http://127.0.0.1:8000/arg/create/', {
       method: 'POST',
-      body : JSON.stringify({'authentication': 'false', 'email':this.state.email, 'password':this.state.password}),
+      body : JSON.stringify({'email':this.state.email, 'password':this.state.password, 'username' : this.state.name}),
       headers: {
         'Accept': 'application/json, text/plain',
         'Content-Type': 'application/json; charset=utf-8'
@@ -62,7 +83,7 @@ class SignUpForm extends Component {
     return (
       <div className="formCenter">
         <Head />
-        <form onSubmit={this.handleSubmit} className="formFields">
+        <form onSubmit={this.authentication()} className="formFields">
           <div className="formField">
             <label className="formFieldLabel" htmlFor="name">
               Full Name
@@ -88,7 +109,7 @@ class SignUpForm extends Component {
               placeholder="Enter your password"
               name="password"
               value={this.state.password}
-              onChange={this.handleChange}
+              onChange={this.handleChange2}
             />
           </div>
           <div className="formField">
@@ -102,7 +123,7 @@ class SignUpForm extends Component {
               placeholder="Enter your email"
               name="email"
               value={this.state.email}
-              onChange={this.handleChange}
+              onChange={this.handleChange3}
             />
           </div>
 

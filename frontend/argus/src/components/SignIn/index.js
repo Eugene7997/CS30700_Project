@@ -47,7 +47,7 @@ class SignInForm extends Component {
     //POST request to the backend
     const response = await fetch('http://127.0.0.1:8000/arg/auth/', {
       method: 'POST',
-      body : JSON.stringify({'authentication': 'true', 'email':this.state.email, 'password':this.state.password}),
+      body : JSON.stringify({'email':this.state.email, 'password':this.state.password}),
       headers: {
         'Accept': 'application/json, text/plain',
         'Content-Type': 'application/json; charset=utf-8'
