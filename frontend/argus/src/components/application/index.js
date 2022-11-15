@@ -14,7 +14,7 @@ import tsunamiIcon from "./ocean-waves-icon.png"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import geoDatas from '../chloropleth_map/annualTemperatureOfCountyUSA.json'
-import earthquakedatas from '../earthquake_plot/Past7days.json'
+import earthquakedatas from '../earthquake_plot/pastmonth.json'
 import Chloropleth_legends from '../chloropleth_map/chloropleth_legends';
 import moment from 'moment'
 
