@@ -292,7 +292,7 @@ const Choropleth = () => {
     })
     
     return (
-        <LayersControl.Overlay name = {`Choropleth map - ${props.ea_type}`}>
+        <BaseLayer name = {`Choropleth map - ${props.ea_type}`}>
           <LayerGroup
             eventHandlers = {
               {
@@ -308,11 +308,11 @@ const Choropleth = () => {
             { geoData && (<GeoJSON data = {geoData} onEachFeature={onEachFeature} style = {chloropleth_style}/>) }      
           </LayerGroup>
           {legendToggle ? <Chloropleth_legends ea_type={props.ea_type}/> : null}
-        </LayersControl.Overlay>
+        </BaseLayer>
     )
   }
   return (
-    <LayersControl>
+    <LayersControl>   
       <ChoroplethMap ea_type="temperature"/>
       <ChoroplethMap ea_type="humidity"/>
       <ChoroplethMap ea_type="sea level"/>
@@ -425,7 +425,6 @@ const Application = () => {
             </BaseLayer>
           </LayersControl>
           <Choropleth/>
-          {/* <ChoroplethMap ea_type="temperature"/> */}
           <Earthquake/>
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
