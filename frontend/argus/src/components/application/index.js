@@ -13,7 +13,6 @@ import earthquakeIcon from "./earthquake-icon.png"
 import tsunamiIcon from "./ocean-waves-icon.png"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
-import geoDatas from '../chloropleth_map/annualTemperatureOfCountyUSA.json'
 import earthquakedatas from '../earthquake_plot/pastmonth.json'
 import Chloropleth_legends from '../chloropleth_map/chloropleth_legends';
 import moment from 'moment'
@@ -51,7 +50,7 @@ const Search = (props)  => {
     const res = await response.json();
         
     if( x != 0 && y != 0){
-      console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
+      // console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
       var measurement = null
       if(window.choice == "temperature"){
         measurement = "°C"
@@ -174,78 +173,150 @@ const CurrentLocation = () => {
   )
 }
 
-const ChoroplethMap = () => {
+const Choropleth = () => {
 
-  const [legendToggle, setLegendToggle] = useState(false)
-  
-  const highlightChloropleth = (e => {
-    var layer = e.target
-    layer.setStyle({
-      weight: 1,
-      color: "black",
-      fillOpacity: 1
+  const ChoroplethMap = (props) => {
+
+    const [legendToggle, setLegendToggle] = useState(false)
+    const [geoData, setGeoData] = useState(null)
+
+    useEffect(() => {
+      fetchGeoData()
     })
-  })
+    
+    const fetchGeoData = async() => {
+      const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
+        method: 'POST',
+        body : JSON.stringify({'ea': props.ea_type, 'datetime': new Date().toISOString().split('.')[0]}),
+        headers: {
+          'Accept': 'application/json, text/plain',
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+      const res = await response.json();
+      setGeoData(res)
+    }
 
-  const resetHighlight= (e =>{
-    e.target.setStyle(chloropleth_style(e.target.feature));
-  })
-
-  const onEachFeature= (feature, layer)=> {
-    console.log(feature)
-    const name = feature.properties.NAME
-    const temp_celsius = feature.properties.tempchg_c
-    layer.bindPopup(`<strong>name: ${name} <br/> temp change in celsius: ${temp_celsius} </strong>`)
-    layer.on({
-      mouseover: highlightChloropleth,
-      mouseout: resetHighlight,
+    const highlightChloropleth = (e => {
+      var layer = e.target
+      layer.setStyle({
+        weight: 1,
+        color: "black",
+        fillOpacity: 1
+      })
     })
-  }
 
-  const mapPolygonColorToDensity=(value => {
-    return value > 1
-      ? '#a50f15'
-      : value > 0.75
-      ? '#de2d26'
-      : value > 0.50
-      ? '#fb6a4a'
-      : value > 0.25
-      ? '#fc9272'
-      : value > 0
-      ? '#fcbba1'
-      : '#fee5d9';
-  })
-
-  const chloropleth_style = (feature => {
-    return ({
-      fillColor: mapPolygonColorToDensity(feature.properties.tempchg),
-      weight: 1,
-      opacity: 1,
-      color: 'white',
-      dashArray: '2',
-      fillOpacity: 0.5
+    const resetHighlight= (e =>{
+      e.target.setStyle(chloropleth_style(e.target.feature));
     })
-  })
-  
-  return (
-    <LayersControl>
-      <LayersControl.Overlay name = "Choropleth map - Temperature">
-        <LayerGroup
-          eventHandlers = {
-            {
-              add:() => {
-                setLegendToggle(true)
-              },
-              remove:() => {
-                setLegendToggle(false)
+
+    const onEachFeature= (feature, layer)=> {
+      console.log("onEachFeature", feature)
+      const name = feature.properties.ADMIN
+      const value = feature.properties.value
+      layer.bindPopup(`<strong>name: ${name} <br/> ${props.ea_type}: ${value} </strong>`)
+      layer.on({
+        mouseover: highlightChloropleth,
+        mouseout: resetHighlight,
+      })
+    }
+
+    const mapPolygonColorToDensity=(value => {
+      if (props.ea_type === "temperature") {
+        return value > 10
+        ? '#a50f15'
+        : value > 5
+        ? '#de2d26'
+        : value > 4
+        ? '#fb6a4a'
+        : value > 3
+        ? '#fc9272'
+        : value > 2
+        ? '#fcbba1'
+        : '#fee5d9';
+      }
+      else if (props.ea_type === "humidity") {
+        return value > 10
+        ? '#FF8300'
+        : value > 5
+        ? '#FE992D'
+        : value > 4
+        ? '#FFA84B'
+        : value > 3
+        ? '#FFBF7B'
+        : value > 2
+        ? '#FFD7AC'
+        : '#FCE0C2';
+      }
+      else if (props.ea_type === "sea level") {
+        return value > 10
+        ? '#005D59'
+        : value > 5
+        ? '#00746F'
+        : value > 4
+        ? '#0CD1CA'
+        : value > 3
+        ? '#1EE1DA'
+        : value > 2
+        ? '#94F3EF'
+        : '#CFFCFA';
+      }
+      else if (props.ea_type === "GHG") {
+        return value > 10
+        ? '#006834'
+        : value > 5
+        ? '#009149'
+        : value > 4
+        ? '#00BE60'
+        : value > 3
+        ? '#00DA6F'
+        : value > 2
+        ? '#A4ECC8'
+        : '#C9EEDC';
+      }
+      else {
+        return null
+      }
+      
+    })
+
+    const chloropleth_style = (feature => {
+      return ({
+        fillColor: mapPolygonColorToDensity(feature.properties.value),
+        weight: 1,
+        opacity: 1,
+        color: 'white',
+        dashArray: '2',
+        fillOpacity: 0.5
+      })
+    })
+    
+    return (
+        <BaseLayer name = {`Choropleth map - ${props.ea_type}`}>
+          <LayerGroup
+            eventHandlers = {
+              {
+                add:() => {
+                  setLegendToggle(true)
+                },
+                remove:() => {
+                  setLegendToggle(false)
+                }
               }
             }
-          }
-        >
-          {geoDatas && (<GeoJSON data = {geoDatas} onEachFeature={onEachFeature} style = {chloropleth_style}/>)}
-        </LayerGroup>
-      </LayersControl.Overlay>
-      {legendToggle ? <Chloropleth_legends/> : null}
+          >
+            { geoData && (<GeoJSON data = {geoData} onEachFeature={onEachFeature} style = {chloropleth_style}/>) }      
+          </LayerGroup>
+          {legendToggle ? <Chloropleth_legends ea_type={props.ea_type}/> : null}
+        </BaseLayer>
+    )
+  }
+  return (
+    <LayersControl>   
+      <ChoroplethMap ea_type="temperature"/>
+      <ChoroplethMap ea_type="humidity"/>
+      <ChoroplethMap ea_type="sea level"/>
+      <ChoroplethMap ea_type="GHG"/>
     </LayersControl>
   )
 }
@@ -265,7 +336,7 @@ const Earthquake = () => {
   }
 
   const onEachFeature= (feature, layer)=> {
-    console.log([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
+    // console.log([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
     const tsunamicheck = feature.properties.tsunami
     const mag = feature.properties.mag
     const place = feature.properties.place
@@ -353,7 +424,7 @@ const Application = () => {
               />
             </BaseLayer>
           </LayersControl>
-          <ChoroplethMap/>
+          <Choropleth/>
           <Earthquake/>
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
