@@ -13,7 +13,7 @@ import earthquakeIcon from "./earthquake-icon.png"
 import tsunamiIcon from "./ocean-waves-icon.png"
 import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
-import geoDatas from '../chloropleth_map/annualTemperatureOfCountyUSA.json'
+import geoDatas from '../chloropleth_map/countries.json'
 import earthquakedatas from '../earthquake_plot/Past7days.json'
 import Chloropleth_legends from '../chloropleth_map/chloropleth_legends';
 import moment from 'moment'
@@ -51,7 +51,7 @@ const Search = (props)  => {
     const res = await response.json();
         
     if( x != 0 && y != 0){
-      console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
+      // console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
       var measurement = null
       if(window.choice == "temperature"){
         measurement = "°C"
@@ -173,10 +173,28 @@ const CurrentLocation = () => {
   )
 }
 
-const ChoroplethMap = () => {
+const ChoroplethMap = (props) => {
 
   const [legendToggle, setLegendToggle] = useState(false)
+  const [geoData, setGeoData] = useState(null)
+
+  useEffect(() => {
+    fetchGeoData()
+  },[legendToggle,geoData])
   
+  const fetchGeoData = async() => {
+    const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
+      method: 'POST',
+      body : JSON.stringify({'ea': props.ea_type, 'datetime': new Date().toISOString().split('.')[0]}),
+      headers: {
+        'Accept': 'application/json, text/plain',
+        'Content-Type': 'application/json; charset=utf-8'
+      }
+    })
+    const res = await response.json();
+    setGeoData(res)
+  }
+
   const highlightChloropleth = (e => {
     var layer = e.target
     layer.setStyle({
@@ -191,10 +209,10 @@ const ChoroplethMap = () => {
   })
 
   const onEachFeature= (feature, layer)=> {
-    console.log(feature)
-    const name = feature.properties.NAME
-    const temp_celsius = feature.properties.tempchg_c
-    layer.bindPopup(`<strong>name: ${name} <br/> temp change in celsius: ${temp_celsius} </strong>`)
+    console.log("onEachFeature", feature)
+    const name = feature.properties.ADMIN
+    const value = feature.properties.value
+    layer.bindPopup(`<strong>name: ${name} <br/> temp: ${value} </strong>`)
     layer.on({
       mouseover: highlightChloropleth,
       mouseout: resetHighlight,
@@ -202,22 +220,22 @@ const ChoroplethMap = () => {
   }
 
   const mapPolygonColorToDensity=(value => {
-    return value > 1
+    return value > 10
       ? '#a50f15'
-      : value > 0.75
+      : value > 5
       ? '#de2d26'
-      : value > 0.50
+      : value > 4
       ? '#fb6a4a'
-      : value > 0.25
+      : value > 3
       ? '#fc9272'
-      : value > 0
+      : value > 2
       ? '#fcbba1'
       : '#fee5d9';
   })
 
   const chloropleth_style = (feature => {
     return ({
-      fillColor: mapPolygonColorToDensity(feature.properties.tempchg),
+      fillColor: mapPolygonColorToDensity(feature.properties.value),
       weight: 1,
       opacity: 1,
       color: 'white',
@@ -241,7 +259,7 @@ const ChoroplethMap = () => {
             }
           }
         >
-          {geoDatas && (<GeoJSON data = {geoDatas} onEachFeature={onEachFeature} style = {chloropleth_style}/>)}
+          { geoData && (<GeoJSON data = {geoData} onEachFeature={onEachFeature} style = {chloropleth_style}/>) }
         </LayerGroup>
       </LayersControl.Overlay>
       {legendToggle ? <Chloropleth_legends/> : null}
@@ -264,7 +282,7 @@ const Earthquake = () => {
   }
 
   const onEachFeature= (feature, layer)=> {
-    console.log([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
+    // console.log([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
     const tsunamicheck = feature.properties.tsunami
     const mag = feature.properties.mag
     const place = feature.properties.place
@@ -352,7 +370,7 @@ const Application = () => {
               />
             </BaseLayer>
           </LayersControl>
-          <ChoroplethMap/>
+          <ChoroplethMap ea_type="temperature"/>a
           <Earthquake/>
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
