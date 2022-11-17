@@ -27,7 +27,7 @@ const Chloropleth_legends = (props) => {
             </div>
         );
     }
-    else if (props.ea_type === "GHG") {
+    else if (props.ea_type === "no2" || props.ea_type === "co2" || props.ea_type === "ozone") {
         return (
             <div className="chloropleth_legends">
                 <div style={{ "--color": '#006834' }}>Dense</div  >

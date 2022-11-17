@@ -261,7 +261,7 @@ const Choropleth = () => {
         ? '#94F3EF'
         : '#CFFCFA';
       }
-      else if (props.ea_type === "GHG") {
+      else if (props.ea_type === "co2" || props.ea_type === "no2" || props.ea_type === "ozone") {
         return value > 10
         ? '#006834'
         : value > 5
@@ -316,7 +316,9 @@ const Choropleth = () => {
       <ChoroplethMap ea_type="temperature" checked={false}/>
       <ChoroplethMap ea_type="humidity" checked={false}/>
       <ChoroplethMap ea_type="sea level" checked={false}/>
-      <ChoroplethMap ea_type="GHG" checked={false}/>
+      <ChoroplethMap ea_type="co2" checked={false}/>
+      <ChoroplethMap ea_type="no2" checked={false}/>
+      <ChoroplethMap ea_type="ozone" checked={false}/>
       <ChoroplethMap ea_type="none" checked={true}/>
     </LayersControl>
   )
