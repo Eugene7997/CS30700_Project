@@ -360,6 +360,23 @@ const Earthquake = () => {
   )
 }
 
+function sliderForTimeFrame() {
+  console.log("sliderForTimeFrame")
+  return(
+    <div>
+      <input  
+        type="range"
+        onChange={
+          (e)=>{
+            console.log("Timeframe changed:", e.target.valueAsNumber)
+          }
+        }
+      >
+      </input>
+    </div>
+  )
+}
+
 const {BaseLayer} = LayersControl
 
 const Application = () => {
@@ -382,6 +399,7 @@ const Application = () => {
       <div>
         <Head />
       </div>
+      {sliderForTimeFrame()}
       <div id="map">
         <form>
           <div style={{
