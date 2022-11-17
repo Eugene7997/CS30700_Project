@@ -292,7 +292,7 @@ const Choropleth = () => {
     })
     
     return (
-        <BaseLayer name = {`Choropleth map - ${props.ea_type}`}>
+        <BaseLayer name = {`Choropleth map - ${props.ea_type}`} checked={props.checked}>
           <LayerGroup
             eventHandlers = {
               {
@@ -313,10 +313,11 @@ const Choropleth = () => {
   }
   return (
     <LayersControl>   
-      <ChoroplethMap ea_type="temperature"/>
-      <ChoroplethMap ea_type="humidity"/>
-      <ChoroplethMap ea_type="sea level"/>
-      <ChoroplethMap ea_type="GHG"/>
+      <ChoroplethMap ea_type="temperature" checked={false}/>
+      <ChoroplethMap ea_type="humidity" checked={false}/>
+      <ChoroplethMap ea_type="sea level" checked={false}/>
+      <ChoroplethMap ea_type="GHG" checked={false}/>
+      <ChoroplethMap ea_type="none" checked={true}/>
     </LayersControl>
   )
 }
