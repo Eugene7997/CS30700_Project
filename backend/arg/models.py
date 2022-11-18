@@ -19,11 +19,6 @@ class Region(models.Model):
     region_name = models.CharField(max_length=30, primary_key=True)
     latitude = models.FloatField(default=0)
     longitude = models.FloatField(default=0)
-
-class SubRegion(models.Model):
-    subregion_name = models.CharField(max_length=50, primary_key=True)
-    region = models.ForeignKey(Region, on_delete=models.CASCADE)
-
 class EnvironmentalActivity(models.Model):
     ea_name = models.CharField(max_length=50, primary_key=True)
 
@@ -34,6 +29,3 @@ class Datapoint(models.Model):
     dp_datetime = models.DateTimeField()
     is_future = models.BooleanField()
     value = models.FloatField(null = True)
-
-class UntrackedRegion(models.Model):
-    untrackedregion_name = models.CharField(max_length=50, primary_key=True)
