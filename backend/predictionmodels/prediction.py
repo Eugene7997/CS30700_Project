@@ -26,15 +26,15 @@ def predict_future_data(date, attribute_data):
     f = forecast.tail(12)
     f_ret = f[['ds', 'yhat']]
     
-    Date_ret = []
+    date_ret = []
     pred_ret = []
 
     for i in f_ret['ds']:
-        Date_ret.append(str(i))
+        date_ret.append(str(i))
 
     for j in f_ret['yhat']:
         pred_ret.append(j)
 
-    return Date_ret, pred_ret
+    return date_ret, pred_ret
 
 #Returns list of both Date and Predicted Values Arrays
