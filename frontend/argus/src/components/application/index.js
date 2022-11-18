@@ -15,6 +15,7 @@ import { LatLng } from "leaflet"
 import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import earthquakedatas from '../earthquake_plot/pastmonth.json'
 import Chloropleth_legends from '../chloropleth_map/chloropleth_legends';
+import ETlegendtest from '../earthquake_plot/etlegend';
 import moment from 'moment'
 
 window.choice = "temperature";
@@ -261,7 +262,7 @@ const Choropleth = () => {
         ? '#94F3EF'
         : '#CFFCFA';
       }
-      else if (props.ea_type === "co2" || props.ea_type === "no2" || props.ea_type === "ozone") {
+      else if (props.ea_type === "GHG") {
         return value > 10
         ? '#006834'
         : value > 5
@@ -316,9 +317,7 @@ const Choropleth = () => {
       <ChoroplethMap ea_type="temperature" checked={false}/>
       <ChoroplethMap ea_type="humidity" checked={false}/>
       <ChoroplethMap ea_type="sea level" checked={false}/>
-      <ChoroplethMap ea_type="co2" checked={false}/>
-      <ChoroplethMap ea_type="no2" checked={false}/>
-      <ChoroplethMap ea_type="ozone" checked={false}/>
+      <ChoroplethMap ea_type="GHG" checked={false}/>
       <ChoroplethMap ea_type="none" checked={true}/>
     </LayersControl>
   )
@@ -326,35 +325,52 @@ const Choropleth = () => {
 
 const Earthquake = () => {
 
+  const [legendToggleET, setLegendToggleET] = useState(false)
+
   const point= (feature, layer)=> {
     const tsunamicheck2 = feature.properties.tsunami
     const mag2 = feature.properties.mag
 
     if (tsunamicheck2 == 0) {
-      return new L.CircleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {radius:mag2*10, color: "red"})
+      return new L.CircleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {radius:mag2*10, color: "#f5363d", fillOpacity:0.1})
     }
     else {
-      return new L.CircleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {radius:mag2*10, color: "blue"})
+      return new L.CircleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {radius:mag2*10, color: "#025fc9"})
     }
   }
 
   const onEachFeature= (feature, layer)=> {
-    // console.log([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
+    const lat = feature.geometry.coordinates[1]
+    const long = feature.geometry.coordinates[0]
     const tsunamicheck = feature.properties.tsunami
     const mag = feature.properties.mag
     const place = feature.properties.place
+    const date = new Date(feature.properties.time)
     if (tsunamicheck == 0) {
-      layer.bindPopup(`<strong>Earthquake <br/> Magntitude: ${mag} <br/> Location: ${place} </strong>`)
+      layer.bindPopup(`<strong> <center>Earthquake</center></strong> <br/> Date: ${date} <br/>  Magntitude: ${mag} <br/> Location: ${place} <br/> Coordinates: ${[lat, long]}`)
     }
     else {
-      layer.bindPopup(`<strong>Tsunami Flag <br/> Magntitude: ${mag} <br/> Location: ${place} </strong>`)
+      layer.bindPopup(`<strong> <center>Tsunami Flag</center></strong> <br/> Date: ${date} <br/> Magntitude: ${mag} <br/> Location: ${place} <br/> Coordinates: ${[lat, long]}`)
     }
   }
-  
   return (
     <LayersControl>
       <LayersControl.Overlay name = "Earthquake Layer">
+      <LayerGroup
+            eventHandlers = {
+              {
+                add:() => {
+                  setLegendToggleET(true)
+                },
+                remove:() => {
+                  setLegendToggleET(false)
+                }
+              }
+            }
+          >
         {earthquakedatas && (<GeoJSON data = {earthquakedatas} onEachFeature={onEachFeature} pointToLayer={point}/>)}
+        </LayerGroup>
+        {legendToggleET ? <ETlegendtest/> : null}
       </LayersControl.Overlay>
     </LayersControl>
   )
