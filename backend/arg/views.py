@@ -85,6 +85,7 @@ def api_home(request, *args, **kwargs):
         if EA not in valid_eas:
             return JsonResponse({"Error": EA + " is not a valid environmental activity, must be one of: " + str(valid_eas)})
         value = latlon_to_value(lat, lon, date, EA)
+        print("found " + str(value) + " at date: " + str(date))
         return JsonResponse({"Date": date, EA: value})
     return JsonResponse({"Error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
@@ -106,8 +107,6 @@ def latlon_to_value(lat, lon, date, ea):
     if validate_latlon(lat, lon) is not None: return validate_latlon(lat, lon)
     coordinates = (lat, lon),
     loc = reverse_geocode.search(coordinates)
-    print("got loc: ")
-    print(loc)
     country = loc[0]['country']
     try:
         country = country_name_to_country_alpha2(country)
@@ -115,28 +114,23 @@ def latlon_to_value(lat, lon, date, ea):
         country = cont_alpha2_to_name(country)
     except:
         country = "Antarctica"
-    if(DEBUG_MODE):
-        print("country:")
-        print(country)
     try:
         # see if country is a primary region
         reg = Region.objects.get(region_name=country)
     except:
         return {'error': 'region not tracked in database'}
     try:
-        temp = EnvironmentalActivity.objects.get(ea_name=ea)
-        filtered = Datapoint.objects.filter(region=reg, ea=temp, is_future=0)
-        most_recent = filtered.aggregate(Max('dp_datetime'))[
-            'dp_datetime__max']
-
-        for i in filtered:
-            if str(i.dp_datetime).split(" ")[0] == date:
-                most_recent = i.dp_datetime
-        dp = filtered.get(dp_datetime=most_recent)
-
+        print("Date: ")
+        print(date)
+        datetime_str = date + " 23:59:59"
+        reference_datetime = datetime.datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S")
+        db_ea = EnvironmentalActivity.objects.get(ea_name=ea)
+        filtered = Datapoint.objects.filter(region=reg, ea=db_ea, is_future=0, dp_datetime__lte=reference_datetime)
+        date_of_most_recent = filtered.aggregate(Max('dp_datetime'))['dp_datetime__max']
+        datapoint = Datapoint.objects.get(region=reg, ea=db_ea, is_future=0, dp_datetime=date_of_most_recent).value
     except:
         return {'error': 'no data for this region'}
-    return {country: dp.value}  # temperature:value
+    return {country: datapoint}  # temperature:value
 
 
 def validate_latlon(lat, lon):
