@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from arg.models import Region, Datapoint, EnvironmentalActivity, SubRegion, UntrackedRegion
+from arg.models import Region, Datapoint, EnvironmentalActivity
 
 class RegionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,13 +15,3 @@ class DatapointSerializer(serializers.ModelSerializer):
     class Meta:
         model = Datapoint
         fields = ('dp_id', 'region', 'ea', 'dp_datetime', 'is_future', 'value')
-
-class SubRegionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SubRegion
-        fields = ('subregion_name', "region")
-
-class UntrackedRegionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UntrackedRegion
-        fields = ('untrackedregion_name',)
