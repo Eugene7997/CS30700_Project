@@ -7,38 +7,34 @@ import json
 import numpy as np
 from matplotlib import pyplot
 from prophet import Prophet
+import datetime
 
+"""
+Pass in Array of dates and corresponding attribute values
 
-# Temperature
-df_t = pd.read_csv("historical temp csv")
-df_t=df_t[['date column', 'temperature column']]
-df_t.fillna(0)
+(Order Date Array so that the latest date is last) 
+"""
 
+def predict_future_data(date, attribute_data):
+    data_dict = {'ds': date, 'y': attribute_data}
+    df = pd.DataFrame(data_dict)
 
-df_t.columns = ['ds', 'y'] # Must rename two columns to 'ds' and 'y', where 'ds' is the date and 'y' is the attribute to predict
+    m = Prophet()
+    m.fit(df)
+    future = m.make_future_dataframe(periods=12, freq="h")
+    forecast = m.predict(future)
+    f = forecast.tail(12)
+    f_ret = f[['ds', 'yhat']]
+    
+    Date_ret = []
+    pred_ret = []
 
-m_temp = Prophet()
-m_temp.fit(df_t)  # df_t is a pandas.DataFrame with 'y' and 'ds' columns
-future_temp = m_temp.make_future_dataframe(periods=30)
-forecast_temp = m_temp.predict(future_temp)
+    for i in f_ret['ds']:
+        Date_ret.append(str(i))
 
-f_temp = forecast_temp.tail(30)
-f_temp = f_temp[['ds', 'yhat']]
-f_temp.columns = ['date', 'Predicted Temperature']
+    for j in f_ret['yhat']:
+        pred_ret.append(j)
 
-# Precipitation
-df_p = pd.read_csv("historical precipitation csv")
-df_p=df_p[['date column', 'preciptation data column']]
-df_p.fillna(0)
+    return Date_ret, pred_ret
 
-
-df_p.columns = ['ds', 'y']
-
-m_precip = Prophet()
-m_precip .fit(df_p)  # df_p is a pandas.DataFrame with 'y' and 'ds' columns
-future_precip  = m_precip .make_future_dataframe(periods=30)
-forecast_precip  = m_precip .predict(future_precip)
-
-f_precip  = forecast_precip .tail(30)
-f_precip  = f_precip [['ds', 'yhat']]
-f_precip.columns = ['date', 'Predicted Precipitation']
+#Returns list of both Date and Predicted Values Arrays
