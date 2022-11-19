@@ -76,7 +76,7 @@ const Search = (props)  => {
         return
       }
       var temp_data = JSON.stringify(res).replaceAll("{","").replaceAll("\"", "").replaceAll("}","").replace(":", ": ").split(',')
-      L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24)+ "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement).addTo(map)
+      L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement).addTo(map)
     }
   }
       
@@ -363,23 +363,25 @@ const Earthquake = () => {
 function sliderForTimeFrame() {
   console.log("sliderForTimeFrame")
   
-  var max = 0
   var today = new Date()
-  console.log(today)
-  if(today.getHours + 4 > 24){
-    max = today.getHours + 4 - 24
+  var min = today.getHours()*-1
+  var max = 0
+  console.log("today", today)
+  if(today.getHours() + 4 > 24){
+    max = today.getHours() + 4 - 24
     max = ''+max
   }else{
-    max = today.getHours + 4 
+    max = today.getHours() + 4 
     max = '' + max
   }
+  console.log("asd", max)
   return(
     <div>
       <input  
         type="range"
-        min={today.getHours}
-        max={4}
-        defaultValue={today.getHours + 0}
+        min={min}
+        max={max}
+        defaultValue={0}
         onChange={
           (e)=>{
             console.log("Timeframe changed:", e.target.valueAsNumber)
