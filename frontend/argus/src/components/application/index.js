@@ -19,7 +19,7 @@ import moment from 'moment'
 
 window.choice = "temperature";
 window.date = moment().format('YYYY-MM-DD')
-
+window.time = 0
 //function to search location by name
 const Search = (props)  => {
     const [x, setX] = useState(0);
@@ -41,7 +41,7 @@ const Search = (props)  => {
   const Fetchdata = async() => {
     const response = await fetch('http://127.0.0.1:8000/arg/api/', {
       method: 'POST',
-      body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date}),
+      body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date, 'time': window.time}),
       headers: {
         'Accept': 'application/json, text/plain',
         'Content-Type': 'application/json; charset=utf-8'
@@ -362,13 +362,28 @@ const Earthquake = () => {
 
 function sliderForTimeFrame() {
   console.log("sliderForTimeFrame")
+  
+  var max = 0
+  var today = new Date()
+  console.log(today)
+  if(today.getHours + 4 > 24){
+    max = today.getHours + 4 - 24
+    max = ''+max
+  }else{
+    max = today.getHours + 4 
+    max = '' + max
+  }
   return(
     <div>
       <input  
         type="range"
+        min={today.getHours}
+        max={4}
+        defaultValue={today.getHours + 0}
         onChange={
           (e)=>{
             console.log("Timeframe changed:", e.target.valueAsNumber)
+            window.time = e.target.valueAsNumber
           }
         }
       >
