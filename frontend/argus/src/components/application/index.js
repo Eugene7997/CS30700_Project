@@ -410,8 +410,10 @@ const Application = () => {
                   <select style={{width: 100}} onChange={(event) => window.choice = event.target.value}>
                     <option value="temperature">Temperature</option>
                     <option value="sea">Sea Level</option>
-                    <option value="GHG">GHG</option>
                     <option value="humid">Humidity</option>
+                    <option value="co2">CO2</option>
+                    <option value="no2">NO2</option>
+                    <option value="ozone">Ozone</option>
                   </select>
                   <input type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.date}/>
               </div>
