@@ -9,10 +9,14 @@ import random
 from api_calls import *
 import sys
 
-LOCAL_UTC_OFFSET = -4 # change this to -5 when edt turns to est
+LOCAL_UTC_OFFSET = -5
 
+
+# Adds all of the current climate values to the database, plus a few extended
+# functionalities like future prediction, filling gaps in past data, etc.
 def update_db(backfill = True):
     print("updating at: " + str(datetime.datetime.now(datetime.timezone.utc)) + " UTC")
+    remove_past_futures()
     data = fetch_data()
     try:
         connection = mysql.connector.connect(host='localhost',
@@ -37,6 +41,27 @@ def update_db(backfill = True):
         fill_gaps()
 
 
+# removes any previous future predicted values that are now in the past
+def remove_past_futures():
+    try:
+        connection = mysql.connector.connect(host='localhost',
+                                             database='djangodatabase',
+                                             user='dbadmin',
+                                             password='password12345')
+    except Exception as e:
+        print("error while connecting to MySQL: " + str(e))
+        return
+    if connection.is_connectted():
+        cursor = connection.cursor()
+        query = "DELETE FROM arg_datapoint WHERE dp_datetime < %s AND is_future = 1;"
+        n = datetime.datetime.now()
+        past_cutoff = datetime.datetime(n.year, n.month, n.day, (n.hour + 1) % 24)
+        cursor.execute(query, [past_cutoff])
+        connection.commit()
+        connection.close()
+
+
+# fetches all of the current values for every ea in every region
 def fetch_data():
     try:
         connection = mysql.connector.connect(host='localhost',
@@ -80,6 +105,8 @@ def fetch_data():
     return None
 
 
+# For past 24 hours this finds missing data, fetches data to fill it, then
+# inserts the new data into the gaps.
 def fill_gaps():
     try: 
         connection = mysql.connector.connect(host='localhost',
@@ -123,6 +150,8 @@ def fill_gaps():
             fill_in(hourly_data, missing_points[region][ea], region, ea)
 
 
+# takes in hourly data from past 24 hours, times that are missing in the past
+# 24 hours, and a target region/ea. It then fills in the gaps with the data
 def fill_in(hourly_data, missing_datapoints, region, ea):
     now = datetime.datetime.now(datetime.timezone.utc)
     target_date_utc = datetime.datetime(now.year, now.month, now.day) - datetime.timedelta(days=1)
@@ -145,6 +174,7 @@ def fill_in(hourly_data, missing_datapoints, region, ea):
         connection.commit()
 
 
+# finds all of the null/missing datapoints from the past 24 hours.
 def get_missing_datapoints():
     has_missing_points = False
     try: 
@@ -186,6 +216,7 @@ def get_missing_datapoints():
         return missing_points
 
 
+# function for generating one hour worth of random placeholder data
 def generate_placeholder_data():
     regions = ['North America', 'South America', 'Europe', 'Africa', 'Asia', 'Oceania', 'Antarctica']
     eas = ['temperature',]
