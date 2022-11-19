@@ -83,11 +83,11 @@ def api_home(request, *args, **kwargs):
         EA = request.data.get('EA')
         valid_eas = ['temperature', 'humidity', 'sea level', 'co2', 'no2', 'ozone']
         if EA not in valid_eas:
-            return JsonResponse({"Error": EA + " is not a valid environmental activity, must be one of: " + str(valid_eas)})
+            return JsonResponse({"error": EA + " is not a valid environmental activity, must be one of: " + str(valid_eas)})
         value = latlon_to_value(lat, lon, date, EA)
         print("found " + str(value) + " at date: " + str(date))
         return JsonResponse({"Date": date, EA: value})
-    return JsonResponse({"Error": request.method + " is not a valid request method for this URL. Use POST or GET."})
+    return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 @api_view(["GET", "POST"])
 
@@ -120,8 +120,6 @@ def latlon_to_value(lat, lon, date, ea):
     except:
         return {'error': 'region not tracked in database'}
     try:
-        print("Date: ")
-        print(date)
         datetime_str = date + " 23:59:59"
         reference_datetime = datetime.datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S")
         db_ea = EnvironmentalActivity.objects.get(ea_name=ea)
@@ -129,7 +127,7 @@ def latlon_to_value(lat, lon, date, ea):
         date_of_most_recent = filtered.aggregate(Max('dp_datetime'))['dp_datetime__max']
         datapoint = Datapoint.objects.get(region=reg, ea=db_ea, is_future=0, dp_datetime=date_of_most_recent).value
     except:
-        return {'error': 'no data for this region'}
+        return {'error': 'no ' + ea + ' data for the given region at this date'}
     return {country: datapoint}  # temperature:value
 
 
