@@ -56,8 +56,15 @@ def say_hello(request):
 
 def setcookie(request):
     html = HttpResponse("<h1>Dataflair Django Tutorial</h1>")
-    EA = request.data.get('EA')
-    html.set_cookie('dataflair', 'Hello this is your Cookies', EA = None)
+    if request.COOKIES.get('visits'):
+        html.set_cookie('dataflair', 'Welcome Back')
+        value = int(request.COOKIES.get('visits'))
+        html.set_cookie('visits', value + 1)
+    else:
+        value = 1
+        text = "Welcome for the first time"
+        html.set_cookie('visits', value)
+        html.set_cookie('dataflair', text)
     return html
 
 def showcookie(request):
