@@ -408,11 +408,9 @@ const SliderForTimeFrame = () => {
           (e)=>{
             console.log("Timeframe changed:", e.target.valueAsNumber)
             window.time = e.target.valueAsNumber
-            map.dragging.disable() // STILL NEEDED, do not remove
             map.removeLayer(markers)
             markers.clearLayers()
             map.addLayer(markers)
-            map.dragging.enable()
           }
         }
       >
