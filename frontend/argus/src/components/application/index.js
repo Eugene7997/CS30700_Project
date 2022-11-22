@@ -70,20 +70,6 @@ const Search = (props)  => {
         measurement = "inch"
       } else {
         measurement = " (tons)"
-        var temp = JSON.stringify(res[Object.keys(res)[0]])
-        var co2 = temp.match(/(?<=CO2: )\d+.\d+/)
-        if (co2 != null) {
-          setCo2Value(co2[0]+measurement)
-        }
-        var o3 = temp.match(/(?<=Ozone\(O3\): )\d+.\d+/)
-        if (o3 != null) {
-          setOzoneValue(o3[0]+measurement)
-        }
-        var no2 = temp.match(/(?<=NO2: )\d+.\d+/)
-        if (no2 != null) {
-          setNo2Value(no2[0]+measurement)
-        }
-        return
       }
       var temp_data = JSON.stringify(res).replaceAll("{","").replaceAll("\"", "").replaceAll("}","").replace(":", ": ").split(',')
       var button = `<button class="remove" type="button">Remove me</button>`
@@ -109,49 +95,7 @@ const Search = (props)  => {
     return () => map.removeControl(searchControl)
   }, [props])
 
-  return (
-    <LayersControl>
-      <LayersControl.Overlay name="CO2">
-        <LayerGroup>
-          {(x!=0 && y!=0) &&
-            <Marker position = {[y,x]}>
-              <Popup>
-                {Date().toLocaleString().substring(0, 24)} <br/>
-                Coordinate: {x} , {y} <br/> 
-                CO2 value : <b>{co2Value}</b>
-              </Popup>
-            </Marker>
-          }
-        </LayerGroup>
-      </LayersControl.Overlay>
-      <LayersControl.Overlay name="Ozone">
-        <LayerGroup >
-          {(x!=0 && y!=0) &&
-            <Marker position = {[y,x]}>
-              <Popup>
-                {Date().toLocaleString().substring(0, 24)} <br/>
-                Coordinate: {x} , {y} <br/> 
-                Ozone value: <b>{ozoneValue}</b>
-              </Popup>
-            </Marker>
-          }
-        </LayerGroup>
-      </LayersControl.Overlay>
-      <LayersControl.Overlay name="NO2">
-        <LayerGroup>
-          {(x!=0 && y!=0) &&
-            <Marker position = {[y,x]}>
-              <Popup>
-                {Date().toLocaleString().substring(0, 24)} <br/>
-                Coordinate: {x} , {y} <br/> 
-                NO2 value : <b>{no2Value}</b>
-              </Popup>
-            </Marker>
-          }
-        </LayerGroup>
-      </LayersControl.Overlay>
-    </LayersControl>
-  )
+  return null
 }
 
 //function to retrieve user's current location
