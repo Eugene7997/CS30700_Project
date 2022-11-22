@@ -24,8 +24,8 @@ var markers = L.layerGroup()
 
 function removeMarker(obj) {
   const btn = document.querySelector(".remove");
-  btn.addEventListener("click", function () {
-    markers.remove(obj)
+  btn.addEventListener("click", (e) => {
+    markers.removeLayer(obj.sourceTarget)
   })
 }
 
@@ -85,7 +85,6 @@ const Search = (props)  => {
         return
       }
       var temp_data = JSON.stringify(res).replaceAll("{","").replaceAll("\"", "").replaceAll("}","").replace(":", ": ").split(',')
-      // L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement).addTo(map)
       var button = `<button class="remove" type="button">Remove me</button>`
       L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
       markers.addTo(map)
@@ -163,7 +162,6 @@ const CurrentLocation = () => {
   useEffect(() => {
     map.locate().on("locationfound", function (e) {
       setPosition(e.latlng)
-      // alert(e.latlng);
       map.flyTo(e.latlng, map.getZoom());
       const radius = e.accuracy
       const circle = L.circle(e.latlng, radius)
@@ -352,7 +350,6 @@ const Earthquake = () => {
   }
 
   const onEachFeature= (feature, layer)=> {
-    // console.log([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
     const tsunamicheck = feature.properties.tsunami
     const mag = feature.properties.mag
     const place = feature.properties.place
@@ -394,7 +391,6 @@ const SliderForTimeFrame = () => {
     max = today.getHours() + 4 
     max = '' + max
   }
-  // console.log("asd", max)
   return(
     <div style={style}>
       <input  
