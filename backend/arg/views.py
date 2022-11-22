@@ -7,8 +7,8 @@ from django.http import JsonResponse
 import reverse_geocode
 from django.db.models import Min, Max
 
-from arg.serializers import RegionSerializer, DatapointSerializer, EnvironmentalActivitySerializer, SubRegionSerializer, UntrackedRegionSerializer
-from arg.models import Region, Datapoint, EnvironmentalActivity, SubRegion, UntrackedRegion
+from arg.serializers import RegionSerializer, DatapointSerializer, EnvironmentalActivitySerializer
+from arg.models import Region, Datapoint, EnvironmentalActivity
 from django.forms.models import model_to_dict
 
 from rest_framework.decorators import api_view
@@ -68,26 +68,6 @@ class EnvironmentalActivityViewSet(viewsets.ModelViewSet):
     queryset = EnvironmentalActivity.objects.all()
     serializer_class = EnvironmentalActivitySerializer
 
-
-class SubRegionViewSet(viewsets.ModelViewSet):
-    queryset = SubRegion.objects.all()
-    serializer_class = SubRegionSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        subregion = request.data['subregion_name']
-        UntrackedRegion.objects.filter(untrackedregion_name=subregion).delete()
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-class UntrackedRegionViewSet(viewsets.ModelViewSet):
-    queryset = UntrackedRegion.objects.all()
-    serializer_class = UntrackedRegionSerializer
-
-
 @api_view(["GET", "POST"])
 def api_home(request, *args, **kwargs):
     temp = 0
@@ -101,19 +81,13 @@ def api_home(request, *args, **kwargs):
         lon = request.data.get('longitude')
         date = request.data.get('date')
         EA = request.data.get('EA')
-        if (EA == 'temperature'):
-            temp = latlon_to_temp(lat, lon, date)
-            return JsonResponse({"Date": date, "temperature": temp})
-        if (EA == 'humid'):
-            humidity = latlon_to_humidity(lat, lon, date)
-            return JsonResponse({"Date": date, "humidity": humidity})
-        if (EA == 'GHG'):
-            GHG = latlon_to_ghg(lat, lon, date)
-            return JsonResponse({"Date": date, "Greenhouse Gases": GHG})
-        if (EA == 'sea'):
-            sea = latlon_to_sea(lat, lon, date)
-            return JsonResponse({"Date": date, "Rising Sea Level": sea})
-    # return JsonResponse({"region": serializer.data.region_name})
+        valid_eas = ['temperature', 'humidity', 'sea level', 'co2', 'no2', 'ozone']
+        if EA not in valid_eas:
+            return JsonResponse({"error": EA + " is not a valid environmental activity, must be one of: " + str(valid_eas)})
+        value = latlon_to_value(lat, lon, date, EA)
+        print("found " + str(value) + " at date: " + str(date))
+        return JsonResponse({"Date": date, EA: value})
+    return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 @api_view(["GET", "POST"])
 
@@ -129,7 +103,35 @@ def geojson_home(request, *args, **kwargs):
         return JsonResponse(geojson)
 
 
-def latlon_to_temp(lat, lon):
+def latlon_to_value(lat, lon, date, ea):
+    if validate_latlon(lat, lon) is not None: return validate_latlon(lat, lon)
+    coordinates = (lat, lon),
+    loc = reverse_geocode.search(coordinates)
+    country = loc[0]['country']
+    try:
+        country = country_name_to_country_alpha2(country)
+        country = country_alpha2_to_continent_code(country)
+        country = cont_alpha2_to_name(country)
+    except:
+        country = "Antarctica"
+    try:
+        # see if country is a primary region
+        reg = Region.objects.get(region_name=country)
+    except:
+        return {'error': 'region not tracked in database'}
+    try:
+        datetime_str = date + " 23:59:59"
+        reference_datetime = datetime.datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S")
+        db_ea = EnvironmentalActivity.objects.get(ea_name=ea)
+        filtered = Datapoint.objects.filter(region=reg, ea=db_ea, is_future=0, dp_datetime__lte=reference_datetime)
+        date_of_most_recent = filtered.aggregate(Max('dp_datetime'))['dp_datetime__max']
+        datapoint = Datapoint.objects.get(region=reg, ea=db_ea, is_future=0, dp_datetime=date_of_most_recent).value
+    except:
+        return {'error': 'no ' + ea + ' data for the given region at this date'}
+    return {country: datapoint}  # temperature:value
+
+
+def validate_latlon(lat, lon):
     if lat is None:
         return {'error': 'latitude field required'}
     if lon is None:
@@ -142,227 +144,4 @@ def latlon_to_temp(lat, lon):
         return {'error': 'latitude range is -90 to 90'}
     if lon > 180 or lon < -180:
         return {'error': 'longitude range is -180 to 180'}
-    coordinates = (lat, lon),
-    loc = reverse_geocode.search(coordinates)
-    print("got loc: ")
-    print(loc)
-    country = loc[0]['country']
-    try:
-        country = country_name_to_country_alpha2(country)
-        country = country_alpha2_to_continent_code(country)
-        country = cont_alpha2_to_name(country)
-    except:
-        country = "Antarctica"
-    if(DEBUG_MODE):
-        print("country:")
-        print(country)
-    try:
-        # see if country is a primary region
-        reg = Region.objects.get(region_name=country)
-    except:
-        try:
-            # see if country is a sub region
-            reg = SubRegion.objects.get(subregion_name=country).region
-            if(DEBUG_MODE):
-                print("region: ")
-                print(reg.region_name)
-        except:
-            if not UntrackedRegion.objects.filter(untrackedregion_name=country).exists():
-                untracked = UntrackedRegion()
-                untracked.untrackedregion_name = country
-                untracked.save()
-            return {'error': 'region not tracked in database'}
-    try:
-        temp = EnvironmentalActivity.objects.get(ea_name="temperature")
-        filtered = Datapoint.objects.filter(region=reg, ea=temp, is_future=0)
-        most_recent = filtered.aggregate(Max('dp_datetime'))[
-            'dp_datetime__max']
-
-        for i in filtered:
-            if str(i.dp_datetime).split(" ")[0] == date:
-                most_recent = i.dp_datetime
-        dp = filtered.get(dp_datetime=most_recent)
-
-    except:
-        return {'error': 'no data for this region'}
-    return {country: dp.value}  # temperature:value
-
-
-def latlon_to_humidity(lat, lon, date):
-    if lat is None:
-        return {'error': 'latitude field required'}
-    if lon is None:
-        return {'error': 'longitude field required'}
-    if type(lat) != type(1) and type(lat) != type(1.):
-        return {'error': 'latitude must be a number datatype'}
-    if type(lon) != type(1) and type(lon) != type(1.):
-        return {'error': 'longitude must be a number datatype'}
-    if lat > 90 or lat < -90:
-        return {'error': 'latitude range is -90 to 90'}
-    if lon > 180 or lon < -180:
-        return {'error': 'longitude range is -180 to 180'}
-    coordinates = (lat, lon),
-    loc = reverse_geocode.search(coordinates)
-    country = loc[0]['country']
-    try:
-        country = country_name_to_country_alpha2(country)
-        country = country_alpha2_to_continent_code(country)
-        country = cont_alpha2_to_name(country)
-    except:
-        country = "Antarctica"
-    if(DEBUG_MODE):
-        print("country:")
-        print(country)
-    try:
-        # see if country is a primary region
-        reg = Region.objects.get(region_name=country)
-    except:
-        try:
-            # see if country is a sub region
-            reg = SubRegion.objects.get(subregion_name=country).region
-        except:
-            if not UntrackedRegion.objects.filter(untrackedregion_name=country).exists():
-                untracked = UntrackedRegion()
-                untracked.untrackedregion_name = country
-                untracked.save()
-            return {'error': 'region not tracked in database'}
-    try:
-        humi = EnvironmentalActivity.objects.get(ea_name="humidity")
-        filtered = Datapoint.objects.filter(region=reg, ea=humi, is_future=0)
-        most_recent = filtered.aggregate(Max('dp_datetime'))[
-            'dp_datetime__max']
-        for i in filtered:
-            if str(i.dp_datetime).split(" ")[0] == date:
-                most_recent = i.dp_datetime
-
-        dp = filtered.get(dp_datetime=most_recent)
-    except:
-        return {'error': 'no data for this region'}
-    return {country: dp.value}  # humidity:value
-
-
-def latlon_to_ghg(lat, lon, date):
-    if lat is None:
-        return {'error': 'latitude field required'}
-    if lon is None:
-        return {'error': 'longitude field required'}
-    if type(lat) != type(1) and type(lat) != type(1.):
-        return {'error': 'latitude must be a number datatype'}
-    if type(lon) != type(1) and type(lon) != type(1.):
-        return {'error': 'longitude must be a number datatype'}
-    if lat > 90 or lat < -90:
-        return {'error': 'latitude range is -90 to 90'}
-    if lon > 180 or lon < -180:
-        return {'error': 'longitude range is -180 to 180'}
-    coordinates = (lat, lon),
-    loc = reverse_geocode.search(coordinates)
-    country = loc[0]['country']
-    try:
-        country = country_name_to_country_alpha2(country)
-        country = country_alpha2_to_continent_code(country)
-        country = cont_alpha2_to_name(country)
-    except:
-        country = "Antarctica"
-    if(DEBUG_MODE):
-        print("country:")
-        print(country)
-    try:
-        # see if country is a primary region
-        reg = Region.objects.get(region_name=country)
-    except:
-        try:
-            # see if country is a sub region
-            reg = SubRegion.objects.get(subregion_name=country).region
-        except:
-            if not UntrackedRegion.objects.filter(untrackedregion_name=country).exists():
-                untracked = UntrackedRegion()
-                untracked.untrackedregion_name = country
-                untracked.save()
-            return {'error': 'region not tracked in database'}
-    try:
-        ghg = EnvironmentalActivity.objects.get(ea_name="co2")
-        filtered = Datapoint.objects.filter(region=reg, ea=ghg, is_future=0)
-        most_recent = filtered.aggregate(Max('dp_datetime'))[
-            'dp_datetime__max']
-
-        for i in filtered:
-            if str(i.dp_datetime).split(" ")[0] == date:
-                most_recent = i.dp_datetime
-
-        dp = filtered.get(dp_datetime=most_recent)
-    except:
-        return {'error': 'no data for this region'}
-
-    # API for O3 and NO2
-    API = '37cde85ed34605798aa360d4c26dc586'
-    year, month, day = date.split("-")
-    start = int(time.mktime(datetime.datetime(
-        int(year), int(month), int(day), 00, 00).timetuple()))
-    end = int(time.mktime(datetime.datetime(
-        int(year), int(month), int(day), 1, 00).timetuple()))
-    response = requests.get(
-        f'http://api.openweathermap.org/data/2.5/air_pollution?lat=44.34&lon=10.99&type=hour&start={start}&end={end}&appid={API}')
-    res = response.text
-    parse_json = json.loads(res)
-
-    ozone = parse_json['list'][0]['components']['o3']  # ozone
-    no2 = parse_json['list'][0]['components']['no2']  # NO2
-    co2 = dp.value  # co2
-    final = "CO2: " + str(dp.value) + " Ozone(O3): " + \
-        str(ozone) + " NO2: " + str(no2)
-    return {country: final}  # greenhouse gases:value
-
-
-def latlon_to_sea(lat, lon, date):
-    if lat is None:
-        return {'error': 'latitude field required'}
-    if lon is None:
-        return {'error': 'longitude field required'}
-    if type(lat) != type(1) and type(lat) != type(1.):
-        return {'error': 'latitude must be a number datatype'}
-    if type(lon) != type(1) and type(lon) != type(1.):
-        return {'error': 'longitude must be a number datatype'}
-    if lat > 90 or lat < -90:
-        return {'error': 'latitude range is -90 to 90'}
-    if lon > 180 or lon < -180:
-        return {'error': 'longitude range is -180 to 180'}
-    coordinates = (lat, lon),
-    loc = reverse_geocode.search(coordinates)
-    country = loc[0]['country']
-    try:
-        country = country_name_to_country_alpha2(country)
-        country = country_alpha2_to_continent_code(country)
-        country = cont_alpha2_to_name(country)
-    except:
-        country = "Antarctica"
-    if(DEBUG_MODE):
-        print("country:")
-        print(country)
-    try:
-        # see if country is a primary region
-        reg = Region.objects.get(region_name=country)
-    except:
-        try:
-            # see if country is a sub region
-            reg = SubRegion.objects.get(subregion_name=country).region
-        except:
-            if not UntrackedRegion.objects.filter(untrackedregion_name=country).exists():
-                untracked = UntrackedRegion()
-                untracked.untrackedregion_name = country
-                untracked.save()
-            return {'error': 'region not tracked in database'}
-    try:
-        sea = EnvironmentalActivity.objects.get(ea_name="sea level")
-        filtered = Datapoint.objects.filter(region=reg, ea=sea, is_future=0)
-        most_recent = filtered.aggregate(Max('dp_datetime'))[
-            'dp_datetime__max']
-
-        for i in filtered:
-            if str(i.dp_datetime).split(" ")[0] == date:
-                most_recent = i.dp_datetime
-
-        dp = filtered.get(dp_datetime=most_recent)
-
-    except:
-        return {'error': 'no data for this region'}
-    return {country: dp.value}  # rising sea levels:value
+    return None
