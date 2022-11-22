@@ -18,8 +18,17 @@ import Chloropleth_legends from '../chloropleth_map/chloropleth_legends';
 import ETlegendtest from '../earthquake_plot/etlegend';
 import moment from 'moment'
 
-window.choice = "temperature";
+window.choice = "temperature"
 window.date = moment().format('YYYY-MM-DD')
+window.time = 0
+var markers = L.layerGroup()
+
+function removeMarker(obj) {
+  const btn = document.querySelector(".remove");
+  btn.addEventListener("click", (e) => {
+    markers.removeLayer(obj.sourceTarget)
+  })
+}
 
 //function to search location by name
 const Search = (props)  => {
@@ -42,7 +51,7 @@ const Search = (props)  => {
   const Fetchdata = async() => {
     const response = await fetch('http://127.0.0.1:8000/arg/api/', {
       method: 'POST',
-      body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date}),
+      body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date, 'time': window.time}),
       headers: {
         'Accept': 'application/json, text/plain',
         'Content-Type': 'application/json; charset=utf-8'
@@ -77,7 +86,9 @@ const Search = (props)  => {
         return
       }
       var temp_data = JSON.stringify(res).replaceAll("{","").replaceAll("\"", "").replaceAll("}","").replace(":", ": ").split(',')
-      L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24)+ "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement).addTo(map)
+      var button = `<button class="remove" type="button">Remove me</button>`
+      L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
+      markers.addTo(map)
     }
   }
       
@@ -152,7 +163,6 @@ const CurrentLocation = () => {
   useEffect(() => {
     map.locate().on("locationfound", function (e) {
       setPosition(e.latlng)
-      // alert(e.latlng);
       map.flyTo(e.latlng, map.getZoom());
       const radius = e.accuracy
       const circle = L.circle(e.latlng, radius)
@@ -181,9 +191,9 @@ const Choropleth = () => {
     const [legendToggle, setLegendToggle] = useState(false)
     const [geoData, setGeoData] = useState(null)
 
-    useEffect(() => {
-      fetchGeoData()
-    })
+    // useEffect(() => {
+    //   fetchGeoData()
+    // })
     
     const fetchGeoData = async() => {
       const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
@@ -298,6 +308,7 @@ const Choropleth = () => {
             eventHandlers = {
               {
                 add:() => {
+                  fetchGeoData()
                   setLegendToggle(true)
                 },
                 remove:() => {
@@ -317,8 +328,10 @@ const Choropleth = () => {
       <ChoroplethMap ea_type="temperature" checked={false}/>
       <ChoroplethMap ea_type="humidity" checked={false}/>
       <ChoroplethMap ea_type="sea level" checked={false}/>
-      <ChoroplethMap ea_type="GHG" checked={false}/>
-      <ChoroplethMap ea_type="none" checked={true}/>
+      <ChoroplethMap ea_type="co2" checked={false}/>
+      <ChoroplethMap ea_type="no2" checked={false}/>
+      <ChoroplethMap ea_type="ozone" checked={false}/>
+      <ChoroplethMap ea_type="none" checked={false}/>
     </LayersControl>
   )
 }
@@ -340,8 +353,7 @@ const Earthquake = () => {
   }
 
   const onEachFeature= (feature, layer)=> {
-    const lat = feature.geometry.coordinates[1]
-    const long = feature.geometry.coordinates[0]
+    // console.log([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
     const tsunamicheck = feature.properties.tsunami
     const mag = feature.properties.mag
     const place = feature.properties.place
@@ -373,6 +385,59 @@ const Earthquake = () => {
         {legendToggleET ? <ETlegendtest/> : null}
       </LayersControl.Overlay>
     </LayersControl>
+  )
+}
+
+const SliderForTimeFrame = () => {
+  const style = {
+    position: "absolute",
+    top: "20vh",
+    height: "100%",
+    zIndex: "999"
+  }
+  const map = useMap()
+  console.log("sliderForTimeFrame")
+  
+  var today = new Date()
+  var min = today.getHours()*-1
+  var max = 0
+  console.log("today", today)
+  if(today.getHours() + 4 > 24){
+    max = today.getHours() + 4 - 24
+    max = ''+max
+  }else{
+    max = today.getHours() + 4 
+    max = '' + max
+  }
+  return(
+    <div style={style}>
+      <input  
+        type="range"
+        min={min}
+        max={max}
+        defaultValue={0}
+        onMouseEnter={
+          (e) => {
+            map.dragging.disable()          
+          }
+        }
+        onMouseOut={
+          (e) => {
+            map.dragging.enable()          
+          }
+        }
+        onChange={
+          (e)=>{
+            console.log("Timeframe changed:", e.target.valueAsNumber)
+            window.time = e.target.valueAsNumber
+            map.removeLayer(markers)
+            markers.clearLayers()
+            map.addLayer(markers)
+          }
+        }
+      >
+      </input>
+    </div>
   )
 }
 
@@ -421,6 +486,7 @@ const Application = () => {
           </div>
         </form>
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true} style={mapStyle}>
+          <SliderForTimeFrame></SliderForTimeFrame>
           <LayersControl>
             <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}> 
               <TileLayer
