@@ -408,18 +408,6 @@ const SliderForTimeFrame = () => {
             markers.clearLayers()
             map.addLayer(markers)
             map.dragging.enable()
-
-            // map.eachLayer(function(layer){
-            //   map.remove();
-            //   console.log(layer)
-            //   map.removeLayer(layer);
-            //   L.latlngs = [];
-            // })
-            // map._panes.markerPane.remove();
-            // map.eachLayer((layer) => {
-            //   layer.remove();
-            // });
-
           }
         }
       >
