@@ -394,9 +394,14 @@ const SliderForTimeFrame = () => {
         min={min}
         max={max}
         defaultValue={0}
-        onMouseOver={
+        onMouseEnter={
           (e) => {
             map.dragging.disable()          
+          }
+        }
+        onMouseOut={
+          (e) => {
+            map.dragging.enable()          
           }
         }
         onChange={
