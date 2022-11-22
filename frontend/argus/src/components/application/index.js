@@ -22,6 +22,13 @@ window.date = moment().format('YYYY-MM-DD')
 window.time = 0
 var markers = L.layerGroup()
 
+function removeMarker(obj) {
+  const btn = document.querySelector(".remove");
+  btn.addEventListener("click", function () {
+    markers.remove(obj)
+  })
+}
+
 //function to search location by name
 const Search = (props)  => {
     const [x, setX] = useState(0);
@@ -79,7 +86,8 @@ const Search = (props)  => {
       }
       var temp_data = JSON.stringify(res).replaceAll("{","").replaceAll("\"", "").replaceAll("}","").replace(":", ": ").split(',')
       // L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement).addTo(map)
-      L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement).addTo(markers)
+      var button = `<button class="remove" type="button">Remove me</button>`
+      L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
       markers.addTo(map)
     }
   }
@@ -386,7 +394,7 @@ const SliderForTimeFrame = () => {
     max = today.getHours() + 4 
     max = '' + max
   }
-  console.log("asd", max)
+  // console.log("asd", max)
   return(
     <div style={style}>
       <input  
