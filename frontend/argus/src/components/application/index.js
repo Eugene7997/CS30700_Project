@@ -17,9 +17,11 @@ import earthquakedatas from '../earthquake_plot/pastmonth.json'
 import Chloropleth_legends from '../chloropleth_map/chloropleth_legends';
 import moment from 'moment'
 
-window.choice = "temperature";
+window.choice = "temperature"
 window.date = moment().format('YYYY-MM-DD')
 window.time = 0
+var markers = L.layerGroup()
+
 //function to search location by name
 const Search = (props)  => {
     const [x, setX] = useState(0);
@@ -76,7 +78,9 @@ const Search = (props)  => {
         return
       }
       var temp_data = JSON.stringify(res).replaceAll("{","").replaceAll("\"", "").replaceAll("}","").replace(":", ": ").split(',')
-      L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement).addTo(map)
+      // L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement).addTo(map)
+      L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement).addTo(markers)
+      markers.addTo(map)
     }
   }
       
@@ -361,7 +365,14 @@ const Earthquake = () => {
   )
 }
 
-function sliderForTimeFrame() {
+const SliderForTimeFrame = () => {
+  const style = {
+    position: "absolute",
+    top: "20vh",
+    height: "100%",
+    zIndex: "999"
+  }
+  const map = useMap()
   console.log("sliderForTimeFrame")
   
   var today = new Date()
@@ -377,16 +388,38 @@ function sliderForTimeFrame() {
   }
   console.log("asd", max)
   return(
-    <div>
+    <div style={style}>
       <input  
         type="range"
         min={min}
         max={max}
         defaultValue={0}
+        onMouseOver={
+          (e) => {
+            map.dragging.disable()          
+          }
+        }
         onChange={
           (e)=>{
             console.log("Timeframe changed:", e.target.valueAsNumber)
             window.time = e.target.valueAsNumber
+            map.dragging.disable() // STILL NEEDED, do not remove
+            map.removeLayer(markers)
+            markers.clearLayers()
+            map.addLayer(markers)
+            map.dragging.enable()
+
+            // map.eachLayer(function(layer){
+            //   map.remove();
+            //   console.log(layer)
+            //   map.removeLayer(layer);
+            //   L.latlngs = [];
+            // })
+            // map._panes.markerPane.remove();
+            // map.eachLayer((layer) => {
+            //   layer.remove();
+            // });
+
           }
         }
       >
@@ -417,7 +450,7 @@ const Application = () => {
       <div>
         <Head />
       </div>
-      {sliderForTimeFrame()}
+      {/* {sliderForTimeFrame()} */}
       <div id="map">
         <form>
           <div style={{
@@ -439,6 +472,7 @@ const Application = () => {
           </div>
         </form>
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true} style={mapStyle}>
+          <SliderForTimeFrame></SliderForTimeFrame>
           <LayersControl>
             <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}> 
               <TileLayer
