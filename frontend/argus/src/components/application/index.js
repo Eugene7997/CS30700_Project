@@ -140,7 +140,7 @@ const Choropleth = () => {
     // })
     
     const fetchGeoData = async() => {
-      const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
+      const response = await fetch('http://44.209.88.168:8000/arg/geojson/', {
         method: 'POST',
         body : JSON.stringify({'ea': props.ea_type, 'datetime': new Date().toISOString().split('.')[0]}),
         headers: {
