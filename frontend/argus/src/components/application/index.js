@@ -135,11 +135,14 @@ const Choropleth = () => {
     const [legendToggle, setLegendToggle] = useState(false)
     const [geoData, setGeoData] = useState(null)
 
-    // useEffect(() => {
-    //   fetchGeoData()
-    // })
+    useEffect(() => {
+      fetchGeoData()
+    })
     
     const fetchGeoData = async() => {
+      if (geoData != null) {
+        return
+      } 
       const response = await fetch('http://44.209.88.168:8000/arg/geojson/', {
         method: 'POST',
         body : JSON.stringify({'ea': props.ea_type, 'datetime': new Date().toISOString().split('.')[0]}),
@@ -252,7 +255,7 @@ const Choropleth = () => {
             eventHandlers = {
               {
                 add:() => {
-                  fetchGeoData()
+                  // fetchGeoData()
                   setLegendToggle(true)
                 },
                 remove:() => {
