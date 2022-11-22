@@ -353,6 +353,8 @@ const Earthquake = () => {
   }
 
   const onEachFeature= (feature, layer)=> {
+    const lat = feature.geometry.coordinates[1]
+    const long = feature.geometry.coordinates[0]
     // console.log([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
     const tsunamicheck = feature.properties.tsunami
     const mag = feature.properties.mag
