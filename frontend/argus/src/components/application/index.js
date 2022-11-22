@@ -111,7 +111,7 @@ const Search = (props)  => {
 
   return (
     <LayersControl>
-      <LayersControl.Overlay name="CO2" checked>
+      <LayersControl.Overlay name="CO2">
         <LayerGroup>
           {(x!=0 && y!=0) &&
             <Marker position = {[y,x]}>
