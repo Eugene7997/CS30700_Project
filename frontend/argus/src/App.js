@@ -11,6 +11,7 @@ import About from './components/About'
 import Application from './components/application'
 import SignIn from './components/SignIn'
 import SignUp from './components/SignUp'
+import Notifcation from './components/Notification'
 
 
 
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route path='/signin' element={<SignIn />} />
           <Route path='/signup' element={<SignUp />} />
+          <Route path='/notification' element={<Notifcation />} />
           <Route path="/" element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="application" element={<Application />} />
