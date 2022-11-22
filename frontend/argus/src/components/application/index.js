@@ -180,9 +180,9 @@ const Choropleth = () => {
     const [legendToggle, setLegendToggle] = useState(false)
     const [geoData, setGeoData] = useState(null)
 
-    useEffect(() => {
-      fetchGeoData()
-    })
+    // useEffect(() => {
+    //   fetchGeoData()
+    // })
     
     const fetchGeoData = async() => {
       const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
@@ -297,6 +297,7 @@ const Choropleth = () => {
             eventHandlers = {
               {
                 add:() => {
+                  fetchGeoData()
                   setLegendToggle(true)
                 },
                 remove:() => {
@@ -319,7 +320,7 @@ const Choropleth = () => {
       <ChoroplethMap ea_type="co2" checked={false}/>
       <ChoroplethMap ea_type="no2" checked={false}/>
       <ChoroplethMap ea_type="ozone" checked={false}/>
-      <ChoroplethMap ea_type="none" checked={true}/>
+      <ChoroplethMap ea_type="none" checked={false}/>
     </LayersControl>
   )
 }
