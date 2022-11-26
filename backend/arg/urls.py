@@ -9,11 +9,14 @@ from django.urls import path
 
 from .views import MyTokenObtainPairView
 
+from arg.views import RegionViewSet, EnvironmentalActivityViewSet, DatapointViewSet, UserViewSet, NotificationViewSet
 
 router = routers.DefaultRouter()
 router.register(r'region', RegionViewSet)
 router.register(r'environmentalactivity', EnvironmentalActivityViewSet)
 router.register(r'datapoint', DatapointViewSet)
+router.register(r'user', UserViewSet)
+router.register(r'notification', NotificationViewSet)
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -31,7 +34,9 @@ urlpatterns = [
      path('create/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
      path('auth/refresh', TokenRefreshView.as_view(), name='token_refresh'),
      path('setcookie/', views.setcookie),
-     path('getcookie/', views.showcookie)
+     path('getcookie/', views.showcookie),
+     path('notifications/', views.notifications_home),
+     path('login/', views.login_home)
 ]
 
 
