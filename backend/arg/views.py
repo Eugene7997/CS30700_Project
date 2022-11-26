@@ -24,6 +24,8 @@ import json
 import format_geojson
 import time
 import datetime
+import hashlib
+import re
 
 # Create your views here.
 # request -> response
@@ -122,7 +124,7 @@ def notifications_home(request, *args, **kwargs):
         return JsonResponse({"error": "only send post requests with json data in format {'email': string, 'ea': string, 'region': string, 'threshold': float, 'mode': string"})
     if request.method == 'POST':
         user_email = request.data.get('email')
-        matching_users = User.objects.get(email=user_email)
+        matching_users = User.objects.filter(email=user_email)
         if len(matching_users) == 0:
             return JsonResponse({"Status": "Failure: " + user_email + " is not a registered email address."})
         try:
@@ -138,6 +140,42 @@ def notifications_home(request, *args, **kwargs):
         Notification.objects.create(user=db_user, ea=db_ea, region=db_region, threshold=threshold, mode=mode)
         return JsonResponse({"Status": "Success"})
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
+
+# use this command to test /arg/notifications/, will require an entry in the User table with email set to "test@mail.com"
+#curl -X POST -H "Content-Type: application/json" -d '{"email": "test@mail.com", "ea": "temperature", "region": "Africa", "threshold": 70.3, "mode": "greater"}' http://127.0.0.1:8000/arg/notifications/
+
+
+@api_view(["GET", "POST"])
+def login_home(request, *args, **kwargs):
+    if request.method == 'GET':
+        return JsonResponse({"error": "only send post requests with json data in format {'email': string, 'password': string, 'mode': 'login'/'register'}"})
+    if request.method == 'POST':
+        user_email = request.data.get('email')
+        email_regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+        if not re.fullmatch(email_regex, user_email):
+            return JsonResponse({"error": "Invalid email address"})
+        unhashed_password = request.data.get('password')
+        hashed_password = hashlib.sha256(unhashed_password.encode())
+        matching_users = User.objects.filter(email=user_email)
+        mode = request.data.get('mode')
+        if mode == 'login':
+            if len(matching_users) == 0:
+                return JsonResponse({"error": "User does not exist"})
+            user = matching_users[0]
+            if hashed_password != user.hashed_password:
+                return JsonResponse({"error": "Password is incorrect"})
+            return JsonResponse({"success": "Username and password are valid"})
+
+        elif mode == 'register':
+            matching_users = User.objects.filter(email=user_email)
+            if len(matching_users) != 0:
+                return JsonResponse({"error": "That email address is already in use"})
+            User.objects.create(email=user_email, hashed_password=hashed_password)
+            return JsonResponse({"success": "User has been registered"})
+        return 0
+    return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
+    
+
 
 def latlon_to_value(lat, lon, date, ea):
     if validate_latlon(lat, lon) is not None: return validate_latlon(lat, lon)
