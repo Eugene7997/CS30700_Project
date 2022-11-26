@@ -194,12 +194,15 @@ def notifications_home(request, *args, **kwargs):
             mode = request.data.get('mode')
         except:
             return JsonResponse({"Status": "Failure: Failed to fetch specified parameters from the database."})
+        identical_notifications = Notification.objects.filter(user=db_user, ea=db_ea, region=db_region, threshold=threshold, mode=mode)
+        if len(identical_notifications) != 0:
+            return JsonResponse({"Status": "Failure: A notification with these parameters already exists for this user"})
         Notification.objects.create(user=db_user, ea=db_ea, region=db_region, threshold=threshold, mode=mode)
         return JsonResponse({"Status": "Success"})
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 # use this command to test /arg/notifications/, will require an entry in the User table with email set to "test@mail.com"
-#curl -X POST -H "Content-Type: application/json" -d '{"email": "test@mail.com", "ea": "temperature", "region": "Africa", "threshold": 70.3, "mode": "greater"}' http://127.0.0.1:8000/arg/notifications/
+#curl -X POST -H "Content-Type: application/json" -d '{"email": "acrutled@purdue.edu", "ea": "temperature", "region": "Africa", "threshold": 100.5, "mode": "less"}' http://127.0.0.1:8000/arg/notifications/
 
 
 @api_view(["GET", "POST"])
@@ -212,7 +215,7 @@ def login_home(request, *args, **kwargs):
         if not re.fullmatch(email_regex, user_email):
             return JsonResponse({"error": "Invalid email address"})
         unhashed_password = request.data.get('password')
-        hashed_password = hashlib.sha256(unhashed_password.encode())
+        hashed_password = hashlib.sha256(unhashed_password.encode()).hexdigest()
         matching_users = User.objects.filter(email=user_email)
         mode = request.data.get('mode')
         if mode == 'login':
@@ -233,6 +236,7 @@ def login_home(request, *args, **kwargs):
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
     
 
+#curl -X POST -H "Content-Type: application/json" -d '{"email": "acrutled@purdue.edu", "password": "password1", "mode": "register"}' http://127.0.0.1:8000/arg/login/
 
 def latlon_to_value(lat, lon, date, ea):
     if validate_latlon(lat, lon) is not None: return validate_latlon(lat, lon)
