@@ -7,8 +7,8 @@ from django.http import JsonResponse
 import reverse_geocode
 from django.db.models import Min, Max
 
-from arg.serializers import RegionSerializer, DatapointSerializer, EnvironmentalActivitySerializer
-from arg.models import Region, Datapoint, EnvironmentalActivity
+from arg.serializers import RegionSerializer, DatapointSerializer, EnvironmentalActivitySerializer, UserSerializer, NotificationSerializer
+from arg.models import Region, Datapoint, EnvironmentalActivity, User, Notification
 from django.forms.models import model_to_dict
 
 from rest_framework.decorators import api_view
@@ -68,6 +68,17 @@ class EnvironmentalActivityViewSet(viewsets.ModelViewSet):
     queryset = EnvironmentalActivity.objects.all()
     serializer_class = EnvironmentalActivitySerializer
 
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+    
+
 @api_view(["GET", "POST"])
 def api_home(request, *args, **kwargs):
     temp = 0
@@ -101,7 +112,32 @@ def geojson_home(request, *args, **kwargs):
         data = format_geojson.get_world_data(ea, dt)
         geojson = format_geojson.populate_geojson(data)
         return JsonResponse(geojson)
+    return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
+
+@api_view(["GET", "POST"])
+
+def notifications_home(request, *args, **kwargs):
+    if request.method == 'GET':
+        return JsonResponse({"error": "only send post requests with json data in format {'email': string, 'ea': string, 'region': string, 'threshold': float, 'mode': string"})
+    if request.method == 'POST':
+        user_email = request.data.get('email')
+        matching_users = User.objects.get(email=user_email)
+        if len(matching_users) == 0:
+            return JsonResponse({"Status": "Failure: " + user_email + " is not a registered email address."})
+        try:
+            db_user = matching_users[0]
+            ea = request.data.get('ea')
+            db_ea = EnvironmentalActivity.objects.get(ea_name=ea)
+            region = request.data.get('region')
+            db_region = Region.objects.get(region_name=region)
+            threshold = request.data.get('threshold')
+            mode = request.data.get('mode')
+        except:
+            return JsonResponse({"Status": "Failure: Failed to fetch specified parameters from the database."})
+        Notification.objects.create(user=db_user, ea=db_ea, region=db_region, threshold=threshold, mode=mode)
+        return JsonResponse({"Status": "Success"})
+    return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 def latlon_to_value(lat, lon, date, ea):
     if validate_latlon(lat, lon) is not None: return validate_latlon(lat, lon)

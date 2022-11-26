@@ -42,7 +42,8 @@ class User(models.Model):
 
 class Notification(models.Model):
     notification_id = models.AutoField(primary_key=True)
-    email = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     ea = models.ForeignKey(EnvironmentalActivity, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     threshold = models.FloatField()
+    mode = models.CharField()
