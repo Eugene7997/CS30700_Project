@@ -8,9 +8,13 @@ import datetime
 import random
 from api_calls import *
 import sys
+import predictionmodels.prediction as pred
 
-LOCAL_UTC_OFFSET = -4 # change this to -5 when edt turns to est
+LOCAL_UTC_OFFSET = -5
 
+
+# Adds all of the current climate values to the database, plus a few extended
+# functionalities like future prediction, filling gaps in past data, etc.
 def update_db(backfill = True):
     print("updating at: " + str(datetime.datetime.now(datetime.timezone.utc)) + " UTC")
     data = fetch_data()
@@ -33,10 +37,13 @@ def update_db(backfill = True):
                 val = [region, ea, now, 0, ea_val]
                 cursor.execute(query, val)
         connection.commit()
+    remove_past_futures()
     if backfill and datetime.datetime.now(datetime.timezone.utc).hour == 0:
         fill_gaps()
+    generate_future_predictions()
 
 
+# fetches all of the current values for every ea in every region
 def fetch_data():
     try:
         connection = mysql.connector.connect(host='localhost',
@@ -80,6 +87,8 @@ def fetch_data():
     return None
 
 
+# For past 24 hours this finds missing data, fetches data to fill it, then
+# inserts the new data into the gaps.
 def fill_gaps():
     try: 
         connection = mysql.connector.connect(host='localhost',
@@ -123,6 +132,8 @@ def fill_gaps():
             fill_in(hourly_data, missing_points[region][ea], region, ea)
 
 
+# takes in hourly data from past 24 hours, times that are missing in the past
+# 24 hours, and a target region/ea. It then fills in the gaps with the data
 def fill_in(hourly_data, missing_datapoints, region, ea):
     now = datetime.datetime.now(datetime.timezone.utc)
     target_date_utc = datetime.datetime(now.year, now.month, now.day) - datetime.timedelta(days=1)
@@ -145,6 +156,7 @@ def fill_in(hourly_data, missing_datapoints, region, ea):
         connection.commit()
 
 
+# finds all of the null/missing datapoints from the past 24 hours.
 def get_missing_datapoints():
     has_missing_points = False
     try: 
@@ -186,6 +198,79 @@ def get_missing_datapoints():
         return missing_points
 
 
+def generate_future_predictions():
+    try:
+        connection = mysql.connector.connect(host='localhost',
+                                             database='djangodatabase',
+                                             user='dbadmin',
+                                             password='password12345')
+    except Exception as e:
+        print("error while connecting to MySQL: " + str(e))
+        return None
+    if connection.is_connected():
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM arg_region;")
+        db_regions = cursor.fetchall()
+        regions = [region_tuple[0] for region_tuple in db_regions]
+        cursor.execute("SELECT * FROM arg_environmentalactivity")
+        db_eas = cursor.fetchall()
+        eas = [ea_tuple[0] for ea_tuple in db_eas]
+        now = datetime.datetime.now()
+        ten_days = datetime.timedelta(days=10)
+        cutoff = now - ten_days
+        valid_values = {
+            'humidity': [0.0, 100.0],
+            'temperature': [-80.7, 51.2],
+            'co2': [-100000, 100000],
+            'no2': [-100000, 100000],
+            'ozone': [-100000, 100000],
+            'sea level': [-100000, 100000]
+        }
+        for region in regions:
+            for ea in eas:
+                query = "SELECT * FROM arg_datapoint WHERE region_id = %s AND ea_id = %s AND is_future = 0 AND dp_datetime > %s AND value IS NOT NULL ORDER BY dp_datetime ASC"
+                query_params = [region, ea, cutoff]
+                cursor.execute(query, query_params)
+                input_data = cursor.fetchall()
+                input_dates = [input_tuple[1] for input_tuple in input_data]
+                input_values = [input_tuple[3] for input_tuple in input_data]
+                if len(input_values) > 3:
+                    future_dates, future_vals = pred.predict_future_data(input_dates, input_values)
+                    future_vals = [min(max(future_val, valid_values[ea][0]), valid_values[ea][1]) for future_val in future_vals]
+                    date_format = "%Y-%m-%d %H:%M:%S"
+                    first_date = datetime.datetime.strptime(future_dates[0], date_format)
+                    delta = input_dates[-1] - first_date + datetime.timedelta(hours=1)
+                    future_datetimes = [datetime.datetime.strptime(future_date, date_format) + delta for future_date in future_dates]
+                    for i in range(len(future_datetimes)):
+                        future_val = future_vals[i]
+                        future_datetime = future_datetimes[i]
+                        query = "INSERT INTO arg_datapoint (region_id, ea_id, dp_datetime, is_future, value) VALUES (%s, %s, %s, %s, %s);"
+                        query_params = [region, ea, future_datetime, 1, future_val]
+                        cursor.execute(query, query_params)
+        connection.commit()
+
+
+# removes any previous future predicted values that are now in the past
+def remove_past_futures():
+    try:
+        connection = mysql.connector.connect(host='localhost',
+                                             database='djangodatabase',
+                                             user='dbadmin',
+                                             password='password12345')
+    except Exception as e:
+        print("error while connecting to MySQL: " + str(e))
+        return
+    if connection.is_connectted():
+        cursor = connection.cursor()
+        query = "DELETE FROM arg_datapoint WHERE dp_datetime < %s AND is_future = 1;"
+        n = datetime.datetime.now()
+        past_cutoff = datetime.datetime(n.year, n.month, n.day, (n.hour + 1) % 24)
+        cursor.execute(query, [past_cutoff])
+        connection.commit()
+        connection.close()
+
+
+# function for generating one hour worth of random placeholder data
 def generate_placeholder_data():
     regions = ['North America', 'South America', 'Europe', 'Africa', 'Asia', 'Oceania', 'Antarctica']
     eas = ['temperature',]
@@ -199,29 +284,32 @@ def generate_placeholder_data():
                  data[region][ea] = -1
     return data
 
+
 args = sys.argv
-
-
-if len(args) < 2:
-    print("Not enough arguments. Format: db_updater.py [mode]")
-    print("Run \"db_updater.py help\" for a list of modes")
+if len(args) != 2:
+    print("Invalid number of arguments. Format: \"python db_updater.py [mode]\"")
+    print("Run \"python db_updater.py help\" for a list of modes")
     exit(0)
 
 mode = args[1].lower()
 
 if mode == 'help':
-    print("\n\n     -------------------------  Modes  --------------------------\n")
-    print("     help  -  lists the possible modes")
-    print("     once  -  updates the database once, including back-filling")
-    print(" oncenobf  -  updates the database once with no back-filling")
-    print(" backfill  -  just runs the back-filling feature of the python script")
-    print("   hourly  -  intended production mode, updates the database hourly with back-filling\n\n")
+    if len(args) == 2:
+        print("\n\n     -----------------------  db_updater.py modes  ------------------------\n")
+        print("     help  -  lists the possible modes")
+        print("     once  -  updates the database once, including back-filling")
+        print(" oncenobf  -  updates the database once with no back-filling")
+        print(" backfill  -  checks the past 24 hours of data and fills in any missing values (currently only for temperature, humidity)")
+        print("  predict  -  runs the prediction models alone without fetching new data")
+        print("   hourly  -  intended production mode, updates the database hourly with back-filling and predictions\n\n")
 elif mode == 'once':
     update_db()
 elif mode == 'oncenobf':
     update_db(backfill = False)
 elif mode == 'backfill':
     fill_gaps()
+elif mode == 'predict':
+    generate_future_predictions()
 elif mode == 'hourly':
     print("Running in hourly mode. First database update will be in 1 hour.")
     schedule.every(1).hours.do(update_db)

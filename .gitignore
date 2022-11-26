@@ -3,4 +3,6 @@ backend/.venv
 backend/.vscode
 backend/__pycache__
 backend/arg/__pycache__
+backend/arg/migrations
 backend/argus/__pycache__
+backend/predictionmodels/__pycache__

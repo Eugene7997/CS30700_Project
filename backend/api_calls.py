@@ -138,7 +138,7 @@ class api_backfill:
             r = requests.get(url=url)
             self.temp_humid_response = r.json()
         hourly = self.temp_humid_response['days'][0]['hours']
-        temps = {int(hour['datetime'][0:2]): hour['temp'] for hour in hourly}
+        temps = {int(hour['datetime'][0:2]): f_to_c(hour['temp']) for hour in hourly}
         return temps
     
     def humidity(self, lat, lon, start, end):
@@ -150,3 +150,6 @@ class api_backfill:
         # formatted like {0:10, 1:15, 2:27.3, 3:0.4} where each key is an hour and each value is a humidity
         humids = {int(hour['datetime'][0:2]) : hour['humidity'] for hour in hourly}
         return humids
+
+def f_to_c(temp):
+    return (temp - 32) * .55555556
