@@ -46,4 +46,4 @@ class Notification(models.Model):
     ea = models.ForeignKey(EnvironmentalActivity, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     threshold = models.FloatField()
-    mode = models.CharField()
+    mode = models.CharField(max_length=20)

@@ -16,7 +16,7 @@ urlpatterns = [
      path('hello/', views.say_hello),
      path('api/', views.api_home),
      path('models/', include(router.urls)),
-     path('geojson/', views.geojson_home)
+     path('geojson/', views.geojson_home),
      path('notifications/', views.notifications_home)
 ]
 
