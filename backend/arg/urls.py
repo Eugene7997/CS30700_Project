@@ -2,12 +2,14 @@ from django.urls import include, path
 from . import views 
 from rest_framework import routers
 #from .views import index
-from arg.views import RegionViewSet, EnvironmentalActivityViewSet, DatapointViewSet
+from arg.views import RegionViewSet, EnvironmentalActivityViewSet, DatapointViewSet, UserViewSet, NotificationViewSet
 
 router = routers.DefaultRouter()
 router.register(r'region', RegionViewSet)
 router.register(r'environmentalactivity', EnvironmentalActivityViewSet)
 router.register(r'datapoint', DatapointViewSet)
+router.register(r'user', UserViewSet)
+router.register(r'notification', NotificationViewSet)
 
 #URLConf
 urlpatterns = [
@@ -15,6 +17,7 @@ urlpatterns = [
      path('api/', views.api_home),
      path('models/', include(router.urls)),
      path('geojson/', views.geojson_home)
+     path('notifications/', views.notifications_home)
 ]
 
 
