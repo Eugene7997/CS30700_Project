@@ -31,27 +31,27 @@ function removeMarker(obj) {
 }
 
 //function to search location by name
-const Search = (props)  => {
-    const [x, setX] = useState(0);
-    const [y, setY] = useState(0);
-    const [lab, setLabel] = useState(null);
-    const [ea, setEA] = useState(window.choice)
-    const map = useMap()
-    const { provider } = props
-    
-    const [co2Value, setCo2Value] = useState("")
-    const [no2Value, setNo2Value] = useState("")
-    const [ozoneValue, setOzoneValue] = useState("")    
+const Search = (props) => {
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+  const [lab, setLabel] = useState(null);
+  const [ea, setEA] = useState(window.choice)
+  const map = useMap()
+  const { provider } = props
 
-    useEffect(() => {
-      Fetchdata();
-    }, [x,y,ea])
+  const [co2Value, setCo2Value] = useState("")
+  const [no2Value, setNo2Value] = useState("")
+  const [ozoneValue, setOzoneValue] = useState("")
+
+  useEffect(() => {
+    Fetchdata();
+  }, [x, y, ea])
 
   //retrieve the EA data when user searched location
-  const Fetchdata = async() => {
+  const Fetchdata = async () => {
     const response = await fetch('http://127.0.0.1:8000/arg/api/', {
       method: 'POST',
-      body : JSON.stringify({'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date, 'time': window.time}),
+      body: JSON.stringify({ 'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date, 'time': window.time }),
       headers: {
         'Accept': 'application/json, text/plain',
         'Content-Type': 'application/json; charset=utf-8'
@@ -59,38 +59,38 @@ const Search = (props)  => {
     })
     const res = await response.json();
     //res.cookie('sky', 'blue')
-        
-    if( x != 0 && y != 0){
+
+    if (x != 0 && y != 0) {
       // console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
       var measurement = null
-      if(window.choice == "temperature"){
+      if (window.choice == "temperature") {
         measurement = "°C"
-      } else if (window.choice == "humid"){
+      } else if (window.choice == "humid") {
         measurement = "%"
-      } else if (window.choice == "sea"){
+      } else if (window.choice == "sea") {
         measurement = "inch"
       } else {
         measurement = " (tons)"
       }
-      var temp_data = JSON.stringify(res).replaceAll("{","").replaceAll("\"", "").replaceAll("}","").replace(":", ": ").split(',')
+      var temp_data = JSON.stringify(res).replaceAll("{", "").replaceAll("\"", "").replaceAll("}", "").replace(":", ": ").split(',')
       var button = `<button class="remove" type="button">Remove me</button>`
-      L.marker([y,x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>"  +"Coordinate: " +x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
+      L.marker([y, x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
       markers.addTo(map)
     }
   }
 
   //const cookies = new window.Cookies();
   //console.log(cookies.getAll([]))
-      
+
   //search the location by location_label
-  useEffect(()  => {
+  useEffect(() => {
     const searchControl = new GeoSearchControl({
       provider,
       autoComplete: true,
       showPopup: false,
       showMarker: false,
-      popupFormat: ({query, result}) => {
-        setX(result.x); 
+      popupFormat: ({ query, result }) => {
+        setX(result.x);
         setY(result.y);
         setLabel(result.label);
         return result.label;
@@ -142,11 +142,11 @@ const Choropleth = () => {
     // useEffect(() => {
     //   fetchGeoData()
     // })
-    
-    const fetchGeoData = async() => {
+
+    const fetchGeoData = async () => {
       const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
         method: 'POST',
-        body : JSON.stringify({'ea': props.ea_type, 'datetime': new Date().toISOString().split('.')[0]}),
+        body: JSON.stringify({ 'ea': props.ea_type, 'datetime': new Date().toISOString().split('.')[0] }),
         headers: {
           'Accept': 'application/json, text/plain',
           'Content-Type': 'application/json; charset=utf-8'
@@ -165,11 +165,11 @@ const Choropleth = () => {
       })
     })
 
-    const resetHighlight= (e =>{
+    const resetHighlight = (e => {
       e.target.setStyle(chloropleth_style(e.target.feature));
     })
 
-    const onEachFeature= (feature, layer)=> {
+    const onEachFeature = (feature, layer) => {
       console.log("onEachFeature", feature)
       const name = feature.properties.ADMIN
       const value = feature.properties.value
@@ -180,63 +180,63 @@ const Choropleth = () => {
       })
     }
 
-    const mapPolygonColorToDensity=(value => {
+    const mapPolygonColorToDensity = (value => {
       if (props.ea_type === "temperature") {
         return value > 10
-        ? '#a50f15'
-        : value > 5
-        ? '#de2d26'
-        : value > 4
-        ? '#fb6a4a'
-        : value > 3
-        ? '#fc9272'
-        : value > 2
-        ? '#fcbba1'
-        : '#fee5d9';
+          ? '#a50f15'
+          : value > 5
+            ? '#de2d26'
+            : value > 4
+              ? '#fb6a4a'
+              : value > 3
+                ? '#fc9272'
+                : value > 2
+                  ? '#fcbba1'
+                  : '#fee5d9';
       }
       else if (props.ea_type === "humidity") {
         return value > 10
-        ? '#FF8300'
-        : value > 5
-        ? '#FE992D'
-        : value > 4
-        ? '#FFA84B'
-        : value > 3
-        ? '#FFBF7B'
-        : value > 2
-        ? '#FFD7AC'
-        : '#FCE0C2';
+          ? '#FF8300'
+          : value > 5
+            ? '#FE992D'
+            : value > 4
+              ? '#FFA84B'
+              : value > 3
+                ? '#FFBF7B'
+                : value > 2
+                  ? '#FFD7AC'
+                  : '#FCE0C2';
       }
       else if (props.ea_type === "sea level") {
         return value > 10
-        ? '#005D59'
-        : value > 5
-        ? '#00746F'
-        : value > 4
-        ? '#0CD1CA'
-        : value > 3
-        ? '#1EE1DA'
-        : value > 2
-        ? '#94F3EF'
-        : '#CFFCFA';
+          ? '#005D59'
+          : value > 5
+            ? '#00746F'
+            : value > 4
+              ? '#0CD1CA'
+              : value > 3
+                ? '#1EE1DA'
+                : value > 2
+                  ? '#94F3EF'
+                  : '#CFFCFA';
       }
       else if (props.ea_type === "GHG") {
         return value > 10
-        ? '#006834'
-        : value > 5
-        ? '#009149'
-        : value > 4
-        ? '#00BE60'
-        : value > 3
-        ? '#00DA6F'
-        : value > 2
-        ? '#A4ECC8'
-        : '#C9EEDC';
+          ? '#006834'
+          : value > 5
+            ? '#009149'
+            : value > 4
+              ? '#00BE60'
+              : value > 3
+                ? '#00DA6F'
+                : value > 2
+                  ? '#A4ECC8'
+                  : '#C9EEDC';
       }
       else {
         return null
       }
-      
+
     })
 
     const chloropleth_style = (feature => {
@@ -249,58 +249,64 @@ const Choropleth = () => {
         fillOpacity: 0.5
       })
     })
-    
+
     return (
-        <BaseLayer name = {`Choropleth map - ${props.ea_type}`} checked={props.checked}>
-          <LayerGroup
-            eventHandlers = {
-              {
-                add:() => {
-                  fetchGeoData()
-                  setLegendToggle(true)
-                },
-                remove:() => {
-                  setLegendToggle(false)
-                }
+      <BaseLayer name={`Choropleth map - ${props.ea_type}`} checked={props.checked}>
+        <LayerGroup
+          eventHandlers={
+            {
+              add: () => {
+                fetchGeoData()
+                setLegendToggle(true)
+              },
+              remove: () => {
+                setLegendToggle(false)
               }
             }
-          >
-            { geoData && (<GeoJSON data = {geoData} onEachFeature={onEachFeature} style = {chloropleth_style}/>) }      
-          </LayerGroup>
-          {legendToggle ? <Chloropleth_legends ea_type={props.ea_type}/> : null}
-        </BaseLayer>
+          }
+        >
+          {geoData && (<GeoJSON data={geoData} onEachFeature={onEachFeature} style={chloropleth_style} />)}
+        </LayerGroup>
+        {legendToggle ? <Chloropleth_legends ea_type={props.ea_type} /> : null}
+      </BaseLayer>
     )
   }
   return (
-    <LayersControl>   
-      <ChoroplethMap ea_type="temperature" checked={false}/>
-      <ChoroplethMap ea_type="humidity" checked={false}/>
-      <ChoroplethMap ea_type="sea level" checked={false}/>
-      <ChoroplethMap ea_type="co2" checked={false}/>
-      <ChoroplethMap ea_type="no2" checked={false}/>
-      <ChoroplethMap ea_type="ozone" checked={false}/>
-      <ChoroplethMap ea_type="none" checked={false}/>
+    <LayersControl>
+      <ChoroplethMap ea_type="temperature" checked={false} />
+      <ChoroplethMap ea_type="humidity" checked={false} />
+      <ChoroplethMap ea_type="sea level" checked={false} />
+      <ChoroplethMap ea_type="co2" checked={false} />
+      <ChoroplethMap ea_type="no2" checked={false} />
+      <ChoroplethMap ea_type="ozone" checked={false} />
+      <ChoroplethMap ea_type="none" checked={false} />
     </LayersControl>
   )
 }
 
 const Earthquake = () => {
-
   const [legendToggleET, setLegendToggleET] = useState(false)
+  const [ed, setED] = useState(null)
 
-  const point= (feature, layer)=> {
+  const fetchETData = async () => {
+    const response = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson')
+    const res = await response.json();
+    setED(res)
+  }
+
+  const point = (feature, layer) => {
     const tsunamicheck2 = feature.properties.tsunami
     const mag2 = feature.properties.mag
 
     if (tsunamicheck2 == 0) {
-      return new L.CircleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {radius:mag2*10, color: "#f5363d", fillOpacity:0.1})
+      return new L.CircleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], { radius: mag2 * 10, color: "#f5363d", fillOpacity: 0.1 })
     }
     else {
-      return new L.CircleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {radius:mag2*10, color: "#025fc9"})
+      return new L.CircleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], { radius: mag2 * 10, color: "#025fc9" })
     }
   }
 
-  const onEachFeature= (feature, layer)=> {
+  const onEachFeature = (feature, layer) => {
     const lat = feature.geometry.coordinates[1]
     const long = feature.geometry.coordinates[0]
     // console.log([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
@@ -317,22 +323,23 @@ const Earthquake = () => {
   }
   return (
     <LayersControl>
-      <LayersControl.Overlay name = "Earthquake Layer">
-      <LayerGroup
-            eventHandlers = {
-              {
-                add:() => {
-                  setLegendToggleET(true)
-                },
-                remove:() => {
-                  setLegendToggleET(false)
-                }
+      <LayersControl.Overlay name="Earthquake Layer">
+        <LayerGroup
+          eventHandlers={
+            {
+              add: () => {
+                fetchETData()
+                setLegendToggleET(true)
+              },
+              remove: () => {
+                setLegendToggleET(false)
               }
             }
-          >
-        {earthquakedatas && (<GeoJSON data = {earthquakedatas} onEachFeature={onEachFeature} pointToLayer={point}/>)}
+          }
+        >
+          {ed && (<GeoJSON data={ed} onEachFeature={onEachFeature} pointToLayer={point} />)}
         </LayerGroup>
-        {legendToggleET ? <ETlegendtest/> : null}
+        {legendToggleET ? <ETlegendtest /> : null}
       </LayersControl.Overlay>
     </LayersControl>
   )
@@ -347,37 +354,37 @@ const SliderForTimeFrame = () => {
   }
   const map = useMap()
   console.log("sliderForTimeFrame")
-  
+
   var today = new Date()
-  var min = today.getHours()*-1
+  var min = today.getHours() * -1
   var max = 0
   console.log("today", today)
-  if(today.getHours() + 4 > 24){
+  if (today.getHours() + 4 > 24) {
     max = today.getHours() + 4 - 24
-    max = ''+max
-  }else{
-    max = today.getHours() + 4 
+    max = '' + max
+  } else {
+    max = today.getHours() + 4
     max = '' + max
   }
-  return(
+  return (
     <div style={style}>
-      <input  
+      <input
         type="range"
         min={min}
         max={max}
         defaultValue={0}
         onMouseEnter={
           (e) => {
-            map.dragging.disable()          
+            map.dragging.disable()
           }
         }
         onMouseOut={
           (e) => {
-            map.dragging.enable()          
+            map.dragging.enable()
           }
         }
         onChange={
-          (e)=>{
+          (e) => {
             console.log("Timeframe changed:", e.target.valueAsNumber)
             window.time = e.target.valueAsNumber
             map.removeLayer(markers)
@@ -391,10 +398,10 @@ const SliderForTimeFrame = () => {
   )
 }
 
-const {BaseLayer} = LayersControl
+const { BaseLayer } = LayersControl
 
 const Application = () => {
-  
+
   const mapStyle = {
     margin: '0 auto',
   }
@@ -404,7 +411,7 @@ const Application = () => {
   }
 
   return (
-    <div style = {{
+    <div style={{
       backgroundImage: `url(${img})`,
       backgroundRepeat: `no-repeat`,
       height: '100vh',
@@ -421,48 +428,48 @@ const Application = () => {
             width: '100%',
 
           }}>
-              <div>
-                  <select style={{width: 100}} onChange={(event) => window.choice = event.target.value}>
-                    <option value="temperature">Temperature</option>
-                    <option value="sea">Sea Level</option>
-                    <option value="humid">Humidity</option>
-                    <option value="co2">CO2</option>
-                    <option value="no2">NO2</option>
-                    <option value="ozone">Ozone</option>
-                  </select>
-                  <input type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.date}/>
-              </div>
-            <div/>       
+            <div>
+              <select style={{ width: 100 }} onChange={(event) => window.choice = event.target.value}>
+                <option value="temperature">Temperature</option>
+                <option value="sea">Sea Level</option>
+                <option value="humid">Humidity</option>
+                <option value="co2">CO2</option>
+                <option value="no2">NO2</option>
+                <option value="ozone">Ozone</option>
+              </select>
+              <input type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.date} />
+            </div>
+            <div />
           </div>
         </form>
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true} style={mapStyle}>
           <SliderForTimeFrame></SliderForTimeFrame>
           <LayersControl>
-            <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}> 
+            <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}>
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
-                subdomains={['mt1','mt2','mt3']}
+                subdomains={['mt1', 'mt2', 'mt3']}
               />
             </BaseLayer>
-            <BaseLayer name={`<img src=${satelliteMapTileIcon} alt="satellite" width=100/>`}> 
+            <BaseLayer name={`<img src=${satelliteMapTileIcon} alt="satellite" width=100/>`}>
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-                subdomains={['mt1','mt2','mt3']}
+                subdomains={['mt1', 'mt2', 'mt3']}
               />
             </BaseLayer>
-            <BaseLayer name={`<img src=${minimalistMapIcon} alt="minimalist" width=100/>`}> 
+            <BaseLayer name={`<img src=${minimalistMapIcon} alt="minimalist" width=100/>`}>
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}"
                 subdomains='abcd'
-                ext= 'png'
+                ext='png'
               />
             </BaseLayer>
           </LayersControl>
-          <Choropleth/>
-          <Earthquake/>
+          <Choropleth />
+          <Earthquake />
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
         </MapContainer>
