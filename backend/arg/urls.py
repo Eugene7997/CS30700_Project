@@ -36,7 +36,9 @@ urlpatterns = [
      path('setcookie/', views.setcookie),
      path('getcookie/', views.showcookie),
      path('notifications/', views.notifications_home),
-     path('login/', views.login_home)
+     path('login/', views.login_home),
+     path('delete_notification/', views.delete_notification),
+     path('list_notifications/', views.list_notifications)
 ]
 
 
