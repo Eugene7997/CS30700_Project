@@ -147,6 +147,44 @@ def notifications_home(request, *args, **kwargs):
 # use this command to test /arg/notifications/, will require an entry in the User table with email set to "test@mail.com"
 #curl -X POST -H "Content-Type: application/json" -d '{"email": "acrutled@purdue.edu", "ea": "temperature", "region": "Africa", "threshold": 100.5, "mode": "less"}' http://127.0.0.1:8000/arg/notifications/
 
+@api_view(["GET", "POST"])
+def delete_notification(request, *args, **kwargs):
+    if request.method == 'GET':
+        return JsonResponse({"error": "only send post requests with json data in format {'email': string, 'region': string, 'ea': string, 'mode': string, 'threshold': float} to this URL"})
+    if request.method == 'POST':
+        user = request.data.get('email')
+        region = request.data.get('region')
+        ea = request.data.get('ea')
+        mode = request.data.get('mode')
+        threshold = request.data.get('threshold')
+        matching_notifications = Notification.objects.filter(user=user, region=region, ea=ea, mode=mode, threshold=threshold)
+        if len(matching_notifications) == 0:
+            return JsonResponse({"error": "This notification does not exist."})
+        try:
+            matching_notifications.delete()
+        except:
+            return JsonResponse({"error": "Encountered an error deleting the value from the database."})
+        return JsonResponse({"success": "success"})
+    return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
+
+
+@api_view(["GET", "POST"])
+def list_notifications(request, *args, **kwargs):
+    if request.method == 'GET':
+        return JsonResponse({"error": "only send post requests with json data in format {'email': string} to this URL"})
+    if request.method == 'POST':
+        user_email = request.data.get('email')
+        user_notifications = Notification.objects.filter(user=user_email)
+        response_notifications = []
+        for notif_object in user_notifications:
+            response_notifications.append({"notification_id": notif_object.notification_id, 
+                                           "ea": notif_object.ea,
+                                           "region": notif_object.region,
+                                           "mode": notif_object.mode,
+                                           "threshold": notif_object.threshold})
+        return JsonResponse(response_notifications)
+    return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
+
 
 @api_view(["GET", "POST"])
 def login_home(request, *args, **kwargs):
