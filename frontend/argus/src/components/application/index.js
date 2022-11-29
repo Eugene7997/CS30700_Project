@@ -24,27 +24,6 @@ window.date = moment().format('YYYY-MM-DD')
 window.time = 0
 var markers = L.layerGroup()
 
-function GetIcon(_iconSize){
-  var icon = ''
-  if(window.choice === "temperature"){
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/temperature.png")
-  }else if(window.choice === "humid"){
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/humidity.png")
-  }else if(window.choice === "sea"){
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/sealevel.png")
-  }else if(window.choice === "co2"){
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/co2.png")
-  }else if(window.choice === "no2"){
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/no2.png")
-  }else{
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/ozone.png")
-  }
-  return L.icon({
-    iconUrl: icon,
-    iconSize: _iconSize,
-  })
-}
-
 function removeMarker(obj) {
   const btn = document.querySelector(".remove");
   btn.addEventListener("click", (e) => {
@@ -67,7 +46,6 @@ const Search = (props) => {
 
   useEffect(() => {
     Fetchdata();
-    console.log(x + " " + y)
   }, [x, y, ea])
 
   //retrieve the EA data when user searched location
@@ -90,7 +68,7 @@ const Search = (props) => {
     //res.cookie('sky', 'blue')
 
     if (x != 0 && y != 0) {
-      console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
+      // console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
       var measurement = null
       if (window.choice == "temperature") {
         measurement = "°C"
@@ -103,7 +81,7 @@ const Search = (props) => {
       }
       var temp_data = JSON.stringify(res).replaceAll("{", "").replaceAll("\"", "").replaceAll("}", "").replace(":", ": ").split(',')
       var button = `<button class="remove" type="button">Remove me</button>`
-      L.marker([y, x],{icon: GetIcon(40)}).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
+      L.marker([y, x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
       markers.addTo(map)
     }
   }
