@@ -225,7 +225,7 @@ def delete_notification(request, *args, **kwargs):
             matching_notifications.delete()
         except:
             return JsonResponse({"Status": "Failure: Encountered an error deleting the value from the database."})
-        return JsonResponse({"Status": "success"})
+        return JsonResponse({"Status": "Success"})
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 
