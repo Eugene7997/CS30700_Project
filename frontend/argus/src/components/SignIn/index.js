@@ -4,6 +4,7 @@ import Head from '../header'
 
 
 
+
 class SignInForm extends Component {
   constructor() {
     super();
@@ -55,7 +56,7 @@ class SignInForm extends Component {
       }
     })
     var res = await response.json();
-    //res.cookie('sky', 'blue')
+    res.cookie('sky', 'blue')
     res = JSON.stringify(res) 
     if(res == null){
       alert("Wrong email address or password. Please try again.")

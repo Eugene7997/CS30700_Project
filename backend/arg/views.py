@@ -30,6 +30,8 @@ import re
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework import permissions
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -55,27 +57,26 @@ DEBUG_MODE = 1
 
 def setcookie(request):
     html = HttpResponse("<h1>Dataflair Django Tutorial</h1>")
-    print(request.COOKIES)
     if request.COOKIES.get('visits'):
-        html.set_cookie('dataflair', 'Welcome Back')
+        html.set_cookie('tabstyle', 'Welcome Back')
         value = int(request.COOKIES.get('visits'))
         html.set_cookie('visits', value + 1)
     else:
         value = 1
         text = "Welcome for the first time"
         html.set_cookie('visits', value)
-        html.set_cookie('dataflair', text)
+        html.set_cookie('tabstyle', text)
     return html
 
-def showcookie(request):
-    if request.COOKIES.get('visits') is not None:
-        value = request.COOKIES.get('visits')
-        text = request.COOKIES.get('dataflair')
-        html = HttpResponse("<center><h1>{0}<br>You have requested this page {1} times</h1></center>".format(text, value))
-        html.set_cookie('visits', int(value) + 1)
-        return html
-    else:
-        return redirect('/setcookie')
+#def showcookie(request):
+#    if request.COOKIES.get('visits') is not None:
+#        value = request.COOKIES.get('visits')
+#        text = request.COOKIES.get('dataflair')
+#        html = HttpResponse("<center><h1>{0}<br>You have requested this page {1} times</h1></center>".format(text, value))
+#        html.set_cookie('visits', int(value) + 1)
+#        return html
+#    else:
+#       return redirect('/setcookie')
 
     
 
@@ -139,6 +140,8 @@ def getRoutes(request):
             '/api/create']
     return JsonResponse(routes, safe=False)
 
+@api_view(["GET", "POST"])
+@csrf_exempt
 def api_home(request, *args, **kwargs):
     temp = 0
     humidity = 0
@@ -160,8 +163,9 @@ def api_home(request, *args, **kwargs):
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 @api_view(["GET", "POST"])
-
+@csrf_exempt
 def geojson_home(request, *args, **kwargs):
+    permission_classes = [permissions.IsAuthenticated]
     if request.method == 'GET':
         return JsonResponse({"error": "Only send post requests with json data in format {'ea': 'humidity', 'datetime': '2014-09-23T05:46:12'} to this URL"})
     

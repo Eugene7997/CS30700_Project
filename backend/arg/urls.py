@@ -10,6 +10,7 @@ from django.urls import path
 from .views import MyTokenObtainPairView
 
 from arg.views import RegionViewSet, EnvironmentalActivityViewSet, DatapointViewSet, UserViewSet, NotificationViewSet
+from django.views.decorators.csrf import csrf_exempt
 
 router = routers.DefaultRouter()
 router.register(r'region', RegionViewSet)
@@ -26,15 +27,15 @@ from rest_framework_simplejwt.views import (
 #URLConf
 urlpatterns = [
      path('hello/', views.say_hello),
-     path('api/', views.api_home),
+     path('api/', csrf_exempt(views.api_home)),
      path('models/', include(router.urls)),
      path('geojson/', views.geojson_home),
      path('', views.getRoutes),
      path('auth/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
-     path('create/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+     #path('create/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
      path('auth/refresh', TokenRefreshView.as_view(), name='token_refresh'),
      path('setcookie/', views.setcookie),
-     path('getcookie/', views.showcookie),
+     #path('getcookie/', views.showcookie),
      path('notifications/', views.notifications_home),
      path('login/', views.login_home),
      path('delete_notification/', views.delete_notification),
