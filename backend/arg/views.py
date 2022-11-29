@@ -145,7 +145,7 @@ def notifications_home(request, *args, **kwargs):
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 # use this command to test /arg/notifications/, will require an entry in the User table with email set to "test@mail.com"
-#curl -X POST -H "Content-Type: application/json" -d '{"email": "acrutled@purdue.edu", "ea": "temperature", "region": "Africa", "threshold": 100.5, "mode": "less"}' http://127.0.0.1:8000/arg/notifications/
+#curl -X POST -H "Content-Type: application/json" -d '{"email": "test@gmail.com", "ea": "temperature", "region": "Africa", "threshold": 100.5, "mode": "less"}' http://127.0.0.1:8000/arg/notifications/
 
 @api_view(["GET", "POST"])
 def delete_notification(request, *args, **kwargs):
@@ -159,12 +159,12 @@ def delete_notification(request, *args, **kwargs):
         threshold = request.data.get('threshold')
         matching_notifications = Notification.objects.filter(user=user, region=region, ea=ea, mode=mode, threshold=threshold)
         if len(matching_notifications) == 0:
-            return JsonResponse({"error": "This notification does not exist."})
+            return JsonResponse({"Status": "Failure: This notification does not exist."})
         try:
             matching_notifications.delete()
         except:
-            return JsonResponse({"error": "Encountered an error deleting the value from the database."})
-        return JsonResponse({"success": "success"})
+            return JsonResponse({"Status": "Failure: Encountered an error deleting the value from the database."})
+        return JsonResponse({"Status": "success"})
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 
