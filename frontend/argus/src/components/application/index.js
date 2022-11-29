@@ -17,6 +17,7 @@ import earthquakedatas from '../earthquake_plot/pastmonth.json'
 import Chloropleth_legends from '../chloropleth_map/chloropleth_legends';
 import ETlegendtest from '../earthquake_plot/etlegend';
 import moment from 'moment'
+import Cookies from 'universal-cookie';
 
 window.choice = "temperature"
 window.date = moment().format('YYYY-MM-DD')
@@ -71,6 +72,7 @@ const Search = (props) => {
 
   //retrieve the EA data when user searched location
   const Fetchdata = async () => {
+    let name = "test"
     const response = await fetch('http://127.0.0.1:8000/arg/api/', {
       method: 'POST',
       body: JSON.stringify({ 'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date, 'time': window.time }),
@@ -79,6 +81,11 @@ const Search = (props) => {
         'Content-Type': 'application/json; charset=utf-8'
       }
     })
+    const cookies = new Cookies();
+    cookies.set('EA', window.choice, { path: '/' });
+    cookies.set('date', window.date, { path: '/' });
+    console.log(cookies.get('EA'));
+    console.log(cookies.get('date')); 
     const res = await response.json();
     //res.cookie('sky', 'blue')
 
@@ -101,8 +108,7 @@ const Search = (props) => {
     }
   }
 
-  //const cookies = new window.Cookies();
-  //console.log(cookies.getAll([]))
+  
 
   //search the location by location_label
   useEffect(() => {

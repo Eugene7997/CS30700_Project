@@ -12,7 +12,7 @@ import Application from './components/application'
 import SignIn from './components/SignIn'
 import SignUp from './components/SignUp'
 import Notifcation from './components/Notification'
-
+import PrivateRoute from './components/SignIn/PrivateRoute'
 
 
 function App() { 
