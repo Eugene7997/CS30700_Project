@@ -381,7 +381,6 @@ const SliderForTimeFrame = () => {
     zIndex: "999"
   }
   const map = useMap()
-  console.log("sliderForTimeFrame")
 
   var today = new Date()
   var min = today.getHours() * -1
