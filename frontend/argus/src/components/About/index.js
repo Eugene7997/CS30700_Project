@@ -50,7 +50,8 @@ const About = () => {
             </div>
             
           </ScrollPage>
-          <ScrollPage style={{backgroundColor: 'black'}}>
+          <ScrollPage>
+            <div className='page4' />
           </ScrollPage> 
           <ScrollPage page={3}>
             <div className='page4'>
@@ -62,7 +63,8 @@ const About = () => {
               </Animator>
             </div>
           </ScrollPage>
-          <ScrollPage style={{backgroundColor: 'black'}}>
+          <ScrollPage>
+            <div className='page4' />
           </ScrollPage> 
           <ScrollPage page={4}>
             <div className='pages'>
