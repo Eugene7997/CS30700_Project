@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useHistory } from "react-router-dom";
 import Head from "../header"
 
 class SignUpForm extends Component {
@@ -66,15 +66,17 @@ class SignUpForm extends Component {
       }
     })
     var res = await response.json();
-    res = JSON.stringify(res) 
-    if(res == null){
-      alert("Wrong email address or password. Please try again.")
-    }else{
+    //res = JSON.stringify(res) 
+    if("error" in res){
+      alert(res["error"])
+    }else if ("success" in res){
       //globally reset whether user sign in
-      const user_data = this.state.Username + " " + res
-      localStorage.setItem("user", user_data)
-      alert("Successfully created account")
+      //const user_data = this.state.Username + " " + res
+      sessionStorage.setItem("email", this.state.email)
+      alert(res["success"])
       this.setState({check: true})
+    } else {
+      alert("failed to connect to backend")
     }
     this.setState({token : res})
   }

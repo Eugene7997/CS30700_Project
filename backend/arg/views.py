@@ -250,7 +250,7 @@ def list_notifications(request, *args, **kwargs):
 @api_view(["GET", "POST"])
 def login_home(request, *args, **kwargs):
     if request.method == 'GET':
-        return JsonResponse({"error": "only send post requests with json data in format {'email': string, 'password': string, 'mode': 'login'/'register'}"})
+        return JsonResponse({"error": "only send post requests with json data in format {'email': string, 'password': string}"})
     if request.method == 'POST':
         user_email = request.data.get('email')
         email_regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
@@ -259,22 +259,32 @@ def login_home(request, *args, **kwargs):
         unhashed_password = request.data.get('password')
         hashed_password = hashlib.sha256(unhashed_password.encode()).hexdigest()
         matching_users = User.objects.filter(email=user_email)
-        mode = request.data.get('mode')
-        if mode == 'login':
-            if len(matching_users) == 0:
-                return JsonResponse({"error": "User does not exist"})
-            user = matching_users[0]
-            if hashed_password != user.hashed_password:
-                return JsonResponse({"error": "Password is incorrect"})
-            return JsonResponse({"success": "Username and password are valid"})
+        if len(matching_users) == 0:
+            return JsonResponse({"error": "User does not exist"})
+        user = matching_users[0]
+        if hashed_password != user.hashed_password:
+            return JsonResponse({"error": "Password is incorrect"})
+        return JsonResponse({"success": "Username and password are valid"})
+    return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
-        elif mode == 'register':
-            matching_users = User.objects.filter(email=user_email)
-            if len(matching_users) != 0:
-                return JsonResponse({"error": "That email address is already in use"})
-            User.objects.create(email=user_email, hashed_password=hashed_password)
-            return JsonResponse({"success": "User has been registered"})
-        return 0
+
+@api_view(["GET", "POST"])
+def register_home(request, *args, **kwargs):
+    if request.method == 'GET':
+        return JsonResponse({"error": "only send post requests with json data in format {'email': string, 'password': string, 'username': string}"})
+    if request.method == 'POST':
+        user_email = request.data.get('email')
+        email_regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+        if not re.fullmatch(email_regex, user_email):
+            return JsonResponse({"error": "Invalid email address"})
+        unhashed_password = request.data.get('password')
+        hashed_password = hashlib.sha256(unhashed_password.encode()).hexdigest()
+        matching_users = User.objects.filter(email=user_email)
+        matching_users = User.objects.filter(email=user_email)
+        if len(matching_users) != 0:
+            return JsonResponse({"error": "That email address is already in use"})
+        User.objects.create(email=user_email, hashed_password=hashed_password)
+        return JsonResponse({"success": "User has been registered"})
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
     
 

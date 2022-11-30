@@ -10,7 +10,7 @@ class SignInForm extends Component {
     super();
 
     this.state = {
-      Username: "",
+      email: "",
       password: "",
       token: null,
     };
@@ -26,7 +26,7 @@ class SignInForm extends Component {
     let name = target.name;
 
     this.setState({
-      Username: value
+      email: value
     });
   }
   handleChange2(event) {
@@ -47,6 +47,8 @@ class SignInForm extends Component {
   }
   async authentication() {
     //POST request to the backend
+    console.log(this.state.email)
+    console.log(this.state.password)
     const response = await fetch('http://127.0.0.1:8000/arg/auth/', {
       method: 'POST',
       body : JSON.stringify({'email':this.state.email, 'password':this.state.password}),
@@ -56,15 +58,17 @@ class SignInForm extends Component {
       }
     })
     var res = await response.json();
-    res.cookie('sky', 'blue')
-    res = JSON.stringify(res) 
-    if(res == null){
-      alert("Wrong email address or password. Please try again.")
-    }else{
+    //res.cookie('sky', 'blue')
+    if("error" in res){
+      alert(res["error"])
+    }else if ("success" in res){
       //globally reset whether user sign in
-      const user_data = this.state.Username + " " + res
-      localStorage.setItem("user", user_data)
-      alert("Successfully signed in")
+      //const user_data = this.state.Username + " " + res
+      sessionStorage.setItem("email", this.state.email)
+      alert(res["success"])
+      //this.setState({check: true})
+    } else {
+      alert("failed to connect to backend")
     }
     this.setState({token : res})
   }

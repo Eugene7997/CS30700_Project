@@ -24,6 +24,27 @@ window.date = moment().format('YYYY-MM-DD')
 window.time = 0
 var markers = L.layerGroup()
 
+function GetIcon(_iconSize){
+  var icon = ''
+  if(window.choice === "temperature"){
+    icon = require("./images/temp.png")
+  }else if(window.choice === "humid"){
+    icon = require("./images/humid.png")
+  }else if(window.choice === "sea"){
+    icon = require("./images/sealevel.png")
+  }else if(window.choice === "co2"){
+    icon = require("./images/CO2.png")
+  }else if(window.choice === "no2"){
+    icon = require("./icons/no2.png")
+  }else{
+    icon = require("./icons/ozone.png")
+  }
+  return L.icon({
+    iconUrl: icon,
+    iconSize: _iconSize,
+  })
+}
+
 function removeMarker(obj) {
   const btn = document.querySelector(".remove");
   btn.addEventListener("click", (e) => {
@@ -329,7 +350,7 @@ const Earthquake = () => {
   }
   return (
     <LayersControl>
-      <LayersControl.Overlay name="Earthquake Layer">
+      <LayersControl.Overlay name="Earthquake and Tsunami Plot">
         <LayerGroup
           eventHandlers={
             {
@@ -359,7 +380,6 @@ const SliderForTimeFrame = () => {
     zIndex: "999"
   }
   const map = useMap()
-  console.log("sliderForTimeFrame")
 
   var today = new Date()
   var min = today.getHours() * -1

@@ -316,7 +316,7 @@ def remove_past_futures():
     except Exception as e:
         print("error while connecting to MySQL: " + str(e))
         return
-    if connection.is_connectted():
+    if connection.is_connected():
         cursor = connection.cursor()
         query = "DELETE FROM arg_datapoint WHERE dp_datetime < %s AND is_future = 1;"
         n = datetime.datetime.now()

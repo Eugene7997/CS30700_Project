@@ -31,13 +31,13 @@ urlpatterns = [
      path('models/', include(router.urls)),
      path('geojson/', views.geojson_home),
      path('', views.getRoutes),
-     path('auth/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
-     #path('create/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
-     path('auth/refresh', TokenRefreshView.as_view(), name='token_refresh'),
+     path('auth/', views.login_home),
+     path('create/', views.register_home),
+     #path('auth/refresh', TokenRefreshView.as_view(), name='token_refresh'),
      path('setcookie/', views.setcookie),
      #path('getcookie/', views.showcookie),
      path('notifications/', views.notifications_home),
-     path('login/', views.login_home),
+     #path('login/', views.login_home),
      path('delete_notification/', views.delete_notification),
      path('list_notifications/', views.list_notifications)
 ]

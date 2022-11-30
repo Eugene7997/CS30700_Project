@@ -3,6 +3,7 @@ import Arugslogo from './logo.png'
 import { useNavigate } from "react-router-dom";
 import ProgressButton from 'react-progress-button'
 import styled from 'styled-components'
+import zIndex from '@mui/material/styles/zIndex';
 
 
 const Head = () => {
@@ -42,8 +43,8 @@ const Head = () => {
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingBottom: 10,
-            backgroundColor: 'navy'
-
+            backgroundColor: 'navy',
+            
         }}>
             <div style={{
                 display: 'flex',
