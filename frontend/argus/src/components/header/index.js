@@ -44,6 +44,7 @@ const Head = () => {
             justifyContent: 'space-between',
             paddingBottom: 10,
             backgroundColor: 'navy',
+            
         }}>
             <div style={{
                 display: 'flex',

@@ -11,12 +11,13 @@ const FadeUp = batch(Fade(), Sticky(70), Move())
 
 const About = () => {
   return (
-        <div>
+        
           <div>
-          <Head/>
-          </div>
-          <div>
+            {/* <Head/> */}
         <ScrollContainer>
+          <ScrollPage style={{backgroundColor: 'black'}}>
+            <Head/>
+          </ScrollPage>        
           <ScrollPage page={0}>
             <div className='pages'>
               <div style={{fontSize: 30, textAlign: 'center'}}>
@@ -30,6 +31,8 @@ const About = () => {
               </div>
             </div>
           </ScrollPage>
+          <ScrollPage style={{backgroundColor: 'black'}}>
+          </ScrollPage> 
           <ScrollPage page={1}>
             <div className='pages'>
               <Animator animation={ZoomInScrollOut}>
@@ -37,6 +40,8 @@ const About = () => {
               </Animator>
             </div>
           </ScrollPage>
+          <ScrollPage style={{backgroundColor: 'black'}}>
+          </ScrollPage> 
           <ScrollPage page={2}>
             <div className='pages'>
               <Animator animation={ZoomInScrollOut}>
@@ -45,6 +50,8 @@ const About = () => {
             </div>
             
           </ScrollPage>
+          <ScrollPage style={{backgroundColor: 'black'}}>
+          </ScrollPage> 
           <ScrollPage page={3}>
             <div className='page4'>
               <Animator animation={batch(Sticky(28), Fade(), Zoom())}>
@@ -55,6 +62,8 @@ const About = () => {
               </Animator>
             </div>
           </ScrollPage>
+          <ScrollPage style={{backgroundColor: 'black'}}>
+          </ScrollPage> 
           <ScrollPage page={4}>
             <div className='pages'>
               <Animator animation={ZoomInScrollOut}>
@@ -63,6 +72,8 @@ const About = () => {
             </div>
           </ScrollPage>
           <ScrollPage page={5}>
+          <ScrollPage style={{backgroundColor: 'black'}}>
+          </ScrollPage> 
             <div className='pages'>
               <Animator animation={FadeUp}>
                 <h2>We allow users to monitor past, present, and future temepratures at any location.</h2>
@@ -79,7 +90,7 @@ const About = () => {
               </Animator>
             </div>
           </ScrollPage>
-          <ScrollPage page={7}>
+          <ScrollPage page={7}> 
             <div className="page2">
               <Animator animation={batch(Fade(), Sticky(), Move(0, 80))}>
                 <h2>We also support Greenhouse gas emission</h2>
@@ -94,8 +105,8 @@ const About = () => {
             </div>
           </ScrollPage>
       </ScrollContainer>
-      </div>
-      </div>
+       </div>
+      
   )
 }
 
