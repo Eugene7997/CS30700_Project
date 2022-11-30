@@ -160,21 +160,41 @@ const CurrentLocation = () => {
   )
 }
 
-const Choropleth = () => {
+const TimeDependentComponents = () => {
+  const [windowTime, setWindowTime] = useState(window.time)
+
+  const handleTimeFrameChange = (updatedTimeFrameValue) => {
+    console.log("onchangeTimeFrameonchangeTimeFrame", updatedTimeFrameValue)
+    setWindowTime(updatedTimeFrameValue)
+  }
+
+  return (
+    <div>
+      <SliderForTimeFrame onchangeTimeFrame={handleTimeFrameChange} timeframe={windowTime} />
+      <Choropleth timeframe={windowTime} />
+    </div>
+  )
+}
+
+const Choropleth = (props) => {
 
   const ChoroplethMap = (props) => {
 
     const [legendToggle, setLegendToggle] = useState(false)
     const [geoData, setGeoData] = useState(null)
-
     // useEffect(() => {
     //   fetchGeoData()
     // })
 
     const fetchGeoData = async () => {
+      setGeoData(null)
+      var date = new Date()
+      console.log(props.timeframe)
+      date.setHours(date.getHours() - props.timeframe)
+      date = date.toISOString().split('.')[0]
       const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
         method: 'POST',
-        body: JSON.stringify({ 'ea': props.ea_type, 'datetime': new Date().toISOString().split('.')[0] }),
+        body: JSON.stringify({ 'ea': props.ea_type, 'datetime': date }),
         headers: {
           'Accept': 'application/json, text/plain',
           'Content-Type': 'application/json; charset=utf-8'
@@ -201,7 +221,7 @@ const Choropleth = () => {
       console.log("onEachFeature", feature)
       const name = feature.properties.ADMIN
       const value = feature.properties.value
-      layer.bindPopup(`<strong>name: ${name} <br/> ${props.ea_type}: ${value} </strong>`)
+      layer.bindPopup(`<strong>name: ${name} <br/> ${props.ea_type}: ${value} <br/> time: ${props.timeframe}</strong>`)
       layer.on({
         mouseover: highlightChloropleth,
         mouseout: resetHighlight,
@@ -301,14 +321,68 @@ const Choropleth = () => {
   }
   return (
     <LayersControl>
-      <ChoroplethMap ea_type="temperature" checked={false} />
-      <ChoroplethMap ea_type="humidity" checked={false} />
-      <ChoroplethMap ea_type="sea level" checked={false} />
-      <ChoroplethMap ea_type="co2" checked={false} />
-      <ChoroplethMap ea_type="no2" checked={false} />
-      <ChoroplethMap ea_type="ozone" checked={false} />
-      <ChoroplethMap ea_type="none" checked={false} />
+      <ChoroplethMap timeframe ={props.timeframe} ea_type="temperature" checked={false} />
+      <ChoroplethMap timeframe ={props.timeframe} ea_type="humidity" checked={false} />
+      <ChoroplethMap timeframe ={props.timeframe} ea_type="sea level" checked={false} />
+      <ChoroplethMap timeframe ={props.timeframe} ea_type="co2" checked={false} />
+      <ChoroplethMap timeframe ={props.timeframe} ea_type="no2" checked={false} />
+      <ChoroplethMap timeframe ={props.timeframe} ea_type="ozone" checked={false} />
+      <ChoroplethMap timeframe ={props.timeframe} ea_type="none" checked={false} />
     </LayersControl>
+  )
+}
+
+const SliderForTimeFrame = (props) => {
+  const style = {
+    position: "absolute",
+    top: "20vh",
+    height: "100%",
+    zIndex: "999"
+  }
+  const map = useMap()
+
+  var today = new Date()
+  var min = today.getHours() * -1
+  var max = 0
+  console.log("today", today)
+  if (today.getHours() + 4 > 24) {
+    max = today.getHours() + 4 - 24
+    max = '' + max
+  } else {
+    max = today.getHours() + 4
+    max = '' + max
+  }
+
+  return (
+    <div style={style}>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        defaultValue={0}
+        onMouseEnter={
+          (e) => {
+            map.dragging.disable()
+          }
+        }
+        onMouseOut={
+          (e) => {
+            map.dragging.enable()
+          }
+        }
+        onChange={
+          (e) => {
+            console.log("Timeframe changed:", e.target.valueAsNumber)
+            window.time = e.target.valueAsNumber
+            map.removeLayer(markers)
+            markers.clearLayers()
+            map.addLayer(markers)
+            props.onchangeTimeFrame(e.target.valueAsNumber)
+          }
+        }
+      >
+      </input>
+    </div>
   )
 }
 
@@ -373,58 +447,6 @@ const Earthquake = () => {
   )
 }
 
-const SliderForTimeFrame = () => {
-  const style = {
-    position: "absolute",
-    top: "20vh",
-    height: "100%",
-    zIndex: "999"
-  }
-  const map = useMap()
-
-  var today = new Date()
-  var min = today.getHours() * -1
-  var max = 0
-  console.log("today", today)
-  if (today.getHours() + 4 > 24) {
-    max = today.getHours() + 4 - 24
-    max = '' + max
-  } else {
-    max = today.getHours() + 4
-    max = '' + max
-  }
-  return (
-    <div style={style}>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        defaultValue={0}
-        onMouseEnter={
-          (e) => {
-            map.dragging.disable()
-          }
-        }
-        onMouseOut={
-          (e) => {
-            map.dragging.enable()
-          }
-        }
-        onChange={
-          (e) => {
-            console.log("Timeframe changed:", e.target.valueAsNumber)
-            window.time = e.target.valueAsNumber
-            map.removeLayer(markers)
-            markers.clearLayers()
-            map.addLayer(markers)
-          }
-        }
-      >
-      </input>
-    </div>
-  )
-}
-
 const { BaseLayer } = LayersControl
 
 const Application = () => {
@@ -470,7 +492,6 @@ const Application = () => {
           </div>
         </form>
         <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true} style={mapStyle}>
-          <SliderForTimeFrame></SliderForTimeFrame>
           <LayersControl>
             <BaseLayer checked name={`<img src=${streetMapTileIcon} alt="street" width=100/>`}>
               <TileLayer
@@ -495,7 +516,9 @@ const Application = () => {
               />
             </BaseLayer>
           </LayersControl>
-          <Choropleth />
+          {/* <SliderForTimeFrame />
+          <Choropleth /> */}
+          <TimeDependentComponents />
           <Earthquake />
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
