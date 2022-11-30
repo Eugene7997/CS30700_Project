@@ -78,7 +78,7 @@ const About = () => {
           </ScrollPage> 
             <div className='pages'>
               <Animator animation={FadeUp}>
-                <h2>We allow users to monitor past, present, and future temepratures at any location.</h2>
+                <h1>We allow users to monitor past, present, and future temepratures at any location.</h1>
               </Animator>
               <Animator animation={batch(Sticky(30), Fade(), Zoom(5,1))}>
                 <img src={require('../../images/temp.jpg')} width="500" heigth="600"/>
@@ -88,21 +88,21 @@ const About = () => {
           <ScrollPage page={6}>
             <div className="page1">
               <Animator animation={batch(Fade(), Sticky(), Move(0, -100))}>
-                <h2>We enabled users to monitor rising sea level at anywhere</h2>
+                <h1>We enabled users to monitor rising sea level at anywhere</h1>
               </Animator>
             </div>
           </ScrollPage>
           <ScrollPage page={7}> 
             <div className="page2">
               <Animator animation={batch(Fade(), Sticky(), Move(0, 80))}>
-                <h2>We also support Greenhouse gas emission</h2>
+                <h1>We also support Greenhouse gas emission</h1>
               </Animator>
             </div>
           </ScrollPage>
           <ScrollPage page={8}>
             <div className="page3">
               <Animator animation={batch(Fade(), Sticky(), Move(0, 60))}>
-                <h2>Finally, Argus supports humidity monitoring</h2>
+                <h1>Finally, Argus supports humidity monitoring</h1>
               </Animator>
             </div>
           </ScrollPage>
