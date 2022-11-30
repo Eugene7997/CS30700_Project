@@ -27,17 +27,17 @@ var markers = L.layerGroup()
 function GetIcon(_iconSize){
   var icon = ''
   if(window.choice === "temperature"){
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/temperature.png")
+    icon = require("./icons/temperature.png")
   }else if(window.choice === "humid"){
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/humidity.png")
+    icon = require("./icons/humidity.png")
   }else if(window.choice === "sea"){
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/sealevel.png")
+    icon = require("./icons/sealevel.png")
   }else if(window.choice === "co2"){
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/co2.png")
+    icon = require("./icons/co2.png")
   }else if(window.choice === "no2"){
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/no2.png")
+    icon = require("./icons/no2.png")
   }else{
-    icon = require("/Users/jiwoongpark/Desktop/CS307/CS30700_Project/frontend/argus/src/components/application/icons/ozone.png")
+    icon = require("./icons/ozone.png")
   }
   return L.icon({
     iconUrl: icon,
@@ -351,7 +351,7 @@ const Earthquake = () => {
   }
   return (
     <LayersControl>
-      <LayersControl.Overlay name="Earthquake Layer">
+      <LayersControl.Overlay name="Earthquake and Tsunami Plot">
         <LayerGroup
           eventHandlers={
             {
