@@ -75,7 +75,6 @@ class api_parser:
         return r.json()['data']['fossilFuelPercentage']
 
     def sea_level(self, lat, lon):
-        existing_sea_level_data = None
         try: 
             connection = mysql.connector.connect(host='localhost',
                                                  database='djangodatabase',
@@ -89,10 +88,6 @@ class api_parser:
             cursor = connection.cursor()
             today = datetime.datetime.now()
             start_of_day = datetime.datetime(today.year, today.month, today.day)
-            coordinates = (lat, lon),
-            country = reverse_geocode.search(coordinates)[0]['country']
-            cursor.execute("select * FROM arg_subregion WHERE subregion_name = %s;", [country])
-            region = cursor.fetchone()
             cursor.execute("select * FROM arg_datapoint WHERE ea_id = 'sea level' and dp_datetime > %s;", [start_of_day])
             sea_level_vals = cursor.fetchall()
             for val_tuple in sea_level_vals:
@@ -111,7 +106,7 @@ class api_parser:
     def ozone(self, lat, lon):
         if self.ozone_no2_response is None:
             ozone_URL = "https://api.ambeedata.com/latest/by-lat-lng?lat={0}&lng={1}".format(lat, lon)
-            ozone_headers = {"x-api-key": "b1637cd664e7dce01cbd651b44e311e27b269c4717eb903fe290388116354b69"}
+            ozone_headers = {"x-api-key": "081b23f0276fb5e1fda825de63b0facee63276ab6f5ab1c69685024e3d955d6a"}
             r = requests.get(url=ozone_URL, headers=ozone_headers)
             self.ozone_no2_response = r.json()
         if not 'stations' in self.ozone_no2_response.keys():
@@ -121,7 +116,7 @@ class api_parser:
     def no2(self, lat, lon):
         if self.ozone_no2_response is None:
             no2_URL = "https://api.ambeedata.com/latest/by-lat-lng?lat={0}&lng={1}".format(lat, lon)
-            no2_headers = {"x-api-key": "b1637cd664e7dce01cbd651b44e311e27b269c4717eb903fe290388116354b69"}
+            no2_headers = {"x-api-key": "081b23f0276fb5e1fda825de63b0facee63276ab6f5ab1c69685024e3d955d6a"}
             r = requests.get(url=no2_URL, headers=no2_headers)
             self.ozone_no2_response = r.json()
         if not 'stations' in self.ozone_no2_response.keys():
