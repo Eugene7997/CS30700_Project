@@ -17,7 +17,7 @@ const Start = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: '40%'
+        marginTop: '25%'
     }}>
        <button type='button' onClick={Navito} style={{
         fontSize: '60px',
