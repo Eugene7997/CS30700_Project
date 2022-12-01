@@ -53,7 +53,7 @@ def populate_geojson(data):
 
 
 
-def get_world_data(ea, time):
+def get_world_data(ea, time, end_time=None):
     try:
         connection = mysql.connector.connect(host='localhost',
                                              database='djangodatabase',
@@ -65,12 +65,21 @@ def get_world_data(ea, time):
     
     values = {}
     cursor = connection.cursor()
-    for continent_code in continent_dict.keys():
-        query = "SELECT * FROM arg_datapoint WHERE is_future = 0 AND region_id = %s AND ea_id = %s AND dp_datetime < %s ORDER BY arg_datapoint.dp_datetime DESC LIMIT 1;"
-        vals = [continent_dict[continent_code], ea, time]
-        cursor.execute(query, vals)
-        row = cursor.fetchall()[0]
-        value = row[3]
-        values[continent_code] = value
+    if end_time is None:
+        for continent_code in continent_dict.keys():
+            query = "SELECT * FROM arg_datapoint WHERE is_future = 0 AND region_id = %s AND ea_id = %s AND dp_datetime < %s ORDER BY arg_datapoint.dp_datetime DESC LIMIT 1;"
+            vals = [continent_dict[continent_code], ea, time]
+            cursor.execute(query, vals)
+            row = cursor.fetchall()[0]
+            value = row[3]
+            values[continent_code] = value
+    else:
+        for continent_code in continent_dict.keys():
+            query = "SELECT * FROM arg_datapoint WHERE is_future = 0 AND region_id = %s AND ea_id = %s AND dp_datetime < %s AND dp_datetime > %s;"
+            vals = [continent_dict[continent_code], ea, time, end_time]
+            cursor.execute(query, vals)
+            responses = cursor.fetchall()
+            avg = sum([response[3] for response in responses]) / len(responses)
+            values[continent_code] = avg
     connection.close()
     return values
