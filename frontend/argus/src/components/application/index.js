@@ -207,16 +207,31 @@ const Choropleth = (props) => {
       date.setHours(date.getHours() + props.timeframe)
       setQueryDate(date)
       date = date.toISOString().split('.')[0]
-      const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
-        method: 'POST',
-        body: JSON.stringify({ 'ea': props.ea_type, 'datetime': date }),
-        headers: {
-          'Accept': 'application/json, text/plain',
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      })
-      const res = await response.json();
-      setGeoData(res)
+      if (window.checked === true) {
+        const response = await fetch('http://127.0.0.1:8000/arg/avg_geojson/', {
+          method: 'POST',
+          body: JSON.stringify({ 'ea': props.ea_type, 'datetime': date }),
+          headers: {
+            'Accept': 'application/json, text/plain',
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        })
+        const res = await response.json();
+        setGeoData(res)
+      }
+      else {
+        const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
+          method: 'POST',
+          body: JSON.stringify({ 'ea': props.ea_type, 'datetime': date }),
+          headers: {
+            'Accept': 'application/json, text/plain',
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        })
+        const res = await response.json();
+        setGeoData(res)
+      }
+      
     }
 
     const highlightChloropleth = (e => {
