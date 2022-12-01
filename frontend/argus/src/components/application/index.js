@@ -21,7 +21,10 @@ import Cookies from 'universal-cookie';
 
 window.choice = "temperature"
 window.date = moment().format('YYYY-MM-DD')
+window.start_date = moment().format('YYYY-MM-DD')
+window.end_date = moment().format('YYYY-MM-DD')
 window.time = 0
+window.checked = false
 var markers = L.layerGroup()
 
 function GetIcon(_iconSize){
@@ -50,6 +53,16 @@ function removeMarker(obj) {
   btn.addEventListener("click", (e) => {
     markers.removeLayer(obj.sourceTarget)
   })
+}
+
+function Calendars(use_range) {
+  if(use_range) {
+    document.getElementById("singlemode").style.display = "none";
+    document.getElementById("rangemode").style.display = "inline";
+  } else {
+    document.getElementById("singlemode").style.display = "inline";
+    document.getElementById("rangemode").style.display = "none";
+  }
 }
 
 //function to search location by name
@@ -458,6 +471,12 @@ const Application = () => {
     console.log(e.target.value)
   }
 
+  const handleCheckbox = () => {
+    window.checked = !window.checked
+    console.log(window.checked)
+    Calendars(window.checked)
+  }
+
   return (
     <div style={{
       backgroundImage: `url(${img})`,
@@ -485,7 +504,20 @@ const Application = () => {
                 <option value="no2">NO2</option>
                 <option value="ozone">Ozone</option>
               </select>
-              <input type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.date} />
+              <br/>
+              <label style={{color:'white'}}>&nbsp;Use Date Ranges:&nbsp;</label>
+              <input type="checkbox" onChange={handleCheckbox}/>
+              <br/>
+              <span id="singlemode" style={{display: "inline"}}>
+              <label style={{color:'white'}}>&nbsp;Date:</label>
+                <input id="singlecalendar" type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.date} />
+              </span>
+              <span id="rangemode" style={{display: "none"}}>
+                <label style={{color:'white'}}>&nbsp;Start Date:</label>
+                <input id="startcalendar" type="date" onChange={e => window.start_date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.start_date} />
+                <label style={{color:'white'}}>&nbsp;End Date:</label>
+                <input id="endcalendar" type="date" onChange={e => window.end_date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.end_date} />
+              </span>
             </div>
             <div />
           </div>
