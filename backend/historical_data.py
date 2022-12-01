@@ -4,6 +4,23 @@ import datetime
 import reverse_geocode
 import mysql.connector
 import json
+from pycountry_convert import country_alpha2_to_continent_code, country_name_to_country_alpha2
+
+
+def cont_alpha2_to_name(input):
+    if 'NA' == input:
+        return "North America"
+    elif 'OC' == input:
+        return 'Oceania'
+    elif 'AF' == input:
+        return 'Africa'
+    elif 'EU' == input:
+        return 'Europe'
+    elif 'SA' == input:
+        return 'South America'
+    elif 'AS' == input:
+        return 'Asia'
+        
 
 def process_noaa_temp(df):
     df.dropna(subset=['LATITUDE', 'LONGITUDE', 'DATE', 'TAVG'], inplace=True)
@@ -34,8 +51,9 @@ def process_noaa_temp(df):
         if country in countries.keys():
             region = countries[country]
         else:
-            cursor.execute("select * from arg_subregion where subregion_name = %s;", [country])
-            region = cursor.fetchall()[0][1]
+            region = country_name_to_country_alpha2(country)
+            region = country_alpha2_to_continent_code(region)
+            region = cont_alpha2_to_name(region)
             countries[country] = region
         arguments = [row_date, 0, float(temperature), "temperature", region]
         cursor.execute("insert into arg_datapoint (dp_datetime, is_future, value, ea_id, region_id) values (%s, %s, %s, %s, %s);", arguments)
