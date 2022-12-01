@@ -74,7 +74,7 @@ class SignUpForm extends Component {
       //const user_data = this.state.Username + " " + res
       sessionStorage.setItem("email", this.state.email)
       alert(res["success"])
-      this.setState({check: true})
+      //this.setState({check: true})
     } else {
       alert("failed to connect to backend")
     }
