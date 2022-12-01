@@ -90,6 +90,8 @@ const Search = (props) => {
 
     if (x != 0 && y != 0) {
       // console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
+      var date = new Date()
+      date.setHours(date.getHours() - window.time)
       var measurement = null
       if (window.choice == "temperature") {
         measurement = "°C"
@@ -102,7 +104,7 @@ const Search = (props) => {
       }
       var temp_data = JSON.stringify(res).replaceAll("{", "").replaceAll("\"", "").replaceAll("}", "").replace(":", ": ").split(',')
       var button = `<button class="remove" type="button">Remove me</button>`
-      L.marker([y, x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
+      L.marker([y, x]).bindPopup(date.toLocaleString().substring(0, 24) + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
       markers.addTo(map)
     }
   }
