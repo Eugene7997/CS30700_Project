@@ -27,13 +27,13 @@ var markers = L.layerGroup()
 function GetIcon(_iconSize){
   var icon = ''
   if(window.choice === "temperature"){
-    icon = require("./images/temp.png")
+    icon = require("./icons/temperature.png")
   }else if(window.choice === "humid"){
-    icon = require("./images/humid.png")
+    icon = require("./icons/humid.png")
   }else if(window.choice === "sea"){
-    icon = require("./images/sealevel.png")
+    icon = require("./icons/sealevel.png")
   }else if(window.choice === "co2"){
-    icon = require("./images/CO2.png")
+    icon = require("./icons/co2.png")
   }else if(window.choice === "no2"){
     icon = require("./icons/no2.png")
   }else{
