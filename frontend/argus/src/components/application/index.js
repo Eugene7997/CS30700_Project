@@ -131,7 +131,7 @@ const Search = (props) => {
       }
       var temp_data = JSON.stringify(res).replaceAll("{", "").replaceAll("\"", "").replaceAll("}", "").replace(":", ": ").split(',')
       var button = `<button class="remove" type="button">Remove me</button>`
-      L.marker([y, x]).bindPopup(date.toLocaleString().substring(0, 24) + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
+      L.marker([y, x],{icon: GetIcon(40)}).bindPopup(date.toLocaleString().substring(0, 24) + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
       markers.addTo(map)
     }
   }
@@ -224,9 +224,10 @@ const Choropleth = (props) => {
       setQueryDate(date)
       date = date.toISOString().split('.')[0]
       if (window.checked === true) {
+        var date = new Date()
         const response = await fetch('http://127.0.0.1:8000/arg/avg_geojson/', {
           method: 'POST',
-          body: JSON.stringify({ 'ea': props.ea_type, 'datetime': date }),
+          body: JSON.stringify({ 'ea': props.ea_type, 'start_datetime':window.start_date, 'end_datetime': window.end_date }),
           headers: {
             'Accept': 'application/json, text/plain',
             'Content-Type': 'application/json; charset=utf-8'
