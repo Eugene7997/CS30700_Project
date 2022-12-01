@@ -75,17 +75,21 @@ def get_world_data(ea, time, end_time=None):
             responses = cursor.fetchall()
             if len(responses) == 0:
                 return None
-            row = cursor.fetchall()[0]
+            row = responses[0]
             value = row[3]
             values[continent_code] = value
     else:
         for continent_code in continent_dict.keys():
             query = "SELECT * FROM arg_datapoint WHERE is_future = 0 AND region_id = %s AND ea_id = %s AND dp_datetime < %s AND dp_datetime > %s;"
-            vals = [continent_dict[continent_code], ea, time, end_time]
+            vals = [continent_dict[continent_code], ea, end_time, time]
             cursor.execute(query, vals)
             responses = cursor.fetchall()
             if len(responses) == 0:
-                return None
+                if continent_code == 'AQ':
+                    values[continent_code] = 0
+                    continue
+                else:
+                    return None
             avg = sum([response[3] for response in responses]) / len(responses)
             values[continent_code] = avg
     connection.close()
