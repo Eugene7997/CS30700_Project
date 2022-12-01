@@ -193,8 +193,8 @@ const Choropleth = (props) => {
       var date = new Date()
       console.log(props.timeframe)
       date.setHours(date.getHours() - props.timeframe)
-      date = date.toISOString().split('.')[0]
       setQueryDate(date)
+      date = date.toISOString().split('.')[0]
       const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
         method: 'POST',
         body: JSON.stringify({ 'ea': props.ea_type, 'datetime': date }),
@@ -224,7 +224,7 @@ const Choropleth = (props) => {
       console.log("onEachFeature", feature)
       const name = feature.properties.ADMIN
       const value = feature.properties.value
-      layer.bindPopup(`<strong>name: ${name} <br/> ${props.ea_type}: ${value} <br/> Date: ${queryDate}</strong>`)
+      layer.bindPopup(`<strong>name: ${name} <br/> ${props.ea_type}: ${value} <br/> Date: ${queryDate.toLocaleString().substring(0, 24)}</strong>`)
       layer.on({
         mouseover: highlightChloropleth,
         mouseout: resetHighlight,
@@ -346,15 +346,9 @@ const SliderForTimeFrame = (props) => {
 
   var today = new Date()
   var min = today.getHours() * -1
-  var max = 0
-  console.log("today", today)
-  if (today.getHours() + 4 > 24) {
-    max = today.getHours() + 4 - 24
-    max = '' + max
-  } else {
-    max = today.getHours() + 4
-    max = '' + max
-  }
+  console.log("min",today.getHours())
+  var max = 24 - today.getHours() - 1
+  max = '' + max
 
   return (
     <div style={style}>
