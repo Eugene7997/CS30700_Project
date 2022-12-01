@@ -233,7 +233,12 @@ const Choropleth = (props) => {
           }
         })
         const res = await response.json();
-        setGeoData(res)
+        if ("error" in res) {
+          
+        }
+        else {
+          setGeoData(res)
+        }
       }
       else {
         const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
@@ -542,9 +547,9 @@ const Application = () => {
               </span>
               <span id="rangemode" style={{display: "none"}}>
                 <label style={{color:'white'}}>&nbsp;Start Date:</label>
-                <input id="startcalendar" type="date" onChange={e => window.start_date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.start_date} />
+                <input id="startcalendar" type="date" onChange={e => window.start_date = e.target.value} max={moment().add(2, 'month').format("YYYY-MM-DD")} min={moment().subtract(5, 'year').format("YYYY-MM-DD")} defaultValue={window.start_date} />
                 <label style={{color:'white'}}>&nbsp;End Date:</label>
-                <input id="endcalendar" type="date" onChange={e => window.end_date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.end_date} />
+                <input id="endcalendar" type="date" onChange={e => window.end_date = e.target.value} max={moment().add(2, 'month').format("YYYY-MM-DD")} min={moment().subtract(5, 'year').format("YYYY-MM-DD")} defaultValue={window.end_date} />
               </span>
             </div>
             <div />
