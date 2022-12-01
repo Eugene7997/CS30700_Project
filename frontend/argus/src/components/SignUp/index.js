@@ -76,7 +76,7 @@ class SignUpForm extends Component {
         //globally reset whether user sign in
         //const user_data = this.state.Username + " " + res
         sessionStorage.setItem("email", this.state.email)
-        localStorage.setItem("user", this.state.name)
+        localStorage.setItem("user", this.state.email)
         alert(res["success"])
         this.setState({check: true})
       } else {

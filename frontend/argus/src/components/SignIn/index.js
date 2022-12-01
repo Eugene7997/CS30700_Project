@@ -65,6 +65,7 @@ class SignInForm extends Component {
       //globally reset whether user sign in
       //const user_data = this.state.Username + " " + res
       sessionStorage.setItem("email", this.state.email)
+      localStorage.setItem('user', this.state.email)
       alert(res["success"])
       //this.setState({check: true})
     } else {
@@ -91,7 +92,7 @@ class SignInForm extends Component {
               type="text"
               id="email"
               className="formFieldInput"
-              placeholder="Enter your Username"
+              placeholder="Enter your Email address"
               name="email"
               defaultvalue={this.state.Username}
               onChange={this.handleChange}
