@@ -89,13 +89,12 @@ const Search = (props) => {
     if (window.checked === true) {
       response = await fetch('http://127.0.0.1:8000/arg/avg_api/', {
         method: 'POST',
-        body: JSON.stringify({ 'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date, 'time': window.time }),
+        body: JSON.stringify({ 'latitude': y, 'longitude': x, 'EA': window.choice, 'start_date': window.start_date, 'end_date': window.end_date }),
         headers: {
           'Accept': 'application/json, text/plain',
           'Content-Type': 'application/json; charset=utf-8'
         }
       })
-      
     }
     else {
       response = await fetch('http://127.0.0.1:8000/arg/api/', {
