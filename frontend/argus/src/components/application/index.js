@@ -21,7 +21,10 @@ import Cookies from 'universal-cookie';
 
 window.choice = "temperature"
 window.date = moment().format('YYYY-MM-DD')
+window.start_date = moment().format('YYYY-MM-DD')
+window.end_date = moment().format('YYYY-MM-DD')
 window.time = 0
+window.checked = false
 var markers = L.layerGroup()
 
 function GetIcon(_iconSize){
@@ -52,6 +55,18 @@ function removeMarker(obj) {
   })
 }
 
+function Calendars(use_range) {
+  if(use_range) {
+    document.getElementById("singlemode").style.display = "none";
+    document.getElementById("rangemode").style.display = "inline";
+    document.getElementById("asd").style.display = "none";
+  } else {
+    document.getElementById("singlemode").style.display = "inline";
+    document.getElementById("rangemode").style.display = "none";
+    document.getElementById("asd").style.display = "inline";
+  }
+}
+
 //function to search location by name
 const Search = (props) => {
   const [x, setX] = useState(0);
@@ -60,10 +75,6 @@ const Search = (props) => {
   const [ea, setEA] = useState(window.choice)
   const map = useMap()
   const { provider } = props
-
-  const [co2Value, setCo2Value] = useState("")
-  const [no2Value, setNo2Value] = useState("")
-  const [ozoneValue, setOzoneValue] = useState("")
 
   useEffect(() => {
     Fetchdata();
@@ -91,6 +102,8 @@ const Search = (props) => {
 
     if (x != 0 && y != 0) {
       // console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
+      var date = new Date()
+      date.setHours(date.getHours() + window.time)
       var measurement = null
       if (window.choice == "temperature") {
         measurement = "°C"
@@ -103,7 +116,7 @@ const Search = (props) => {
       }
       var temp_data = JSON.stringify(res).replaceAll("{", "").replaceAll("\"", "").replaceAll("}", "").replace(":", ": ").split(',')
       var button = `<button class="remove" type="button">Remove me</button>`
-      L.marker([y, x], {icon: GetIcon(40)}).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
+      L.marker([y, x]).bindPopup(date.toLocaleString().substring(0, 24) + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
       markers.addTo(map)
     }
   }
@@ -160,7 +173,7 @@ const CurrentLocation = () => {
   )
 }
 
-const TimeDependentComponents = () => {
+const TimeDependentComponents = (props) => {
   const [windowTime, setWindowTime] = useState(window.time)
 
   const handleTimeFrameChange = (updatedTimeFrameValue) => {
@@ -170,7 +183,9 @@ const TimeDependentComponents = () => {
 
   return (
     <div>
-      <SliderForTimeFrame onchangeTimeFrame={handleTimeFrameChange} timeframe={windowTime} />
+      <span id="asd" style={{display: "inline"}}>
+        <SliderForTimeFrame id="asd" onchangeTimeFrame={handleTimeFrameChange} timeframe={windowTime} />
+      </span>
       <Choropleth timeframe={windowTime} />
     </div>
   )
@@ -190,20 +205,34 @@ const Choropleth = (props) => {
     const fetchGeoData = async () => {
       setGeoData(null)
       var date = new Date()
-      console.log(props.timeframe)
-      date.setHours(date.getHours() - props.timeframe)
-      date = date.toISOString().split('.')[0]
+      date.setHours(date.getHours() + props.timeframe)
       setQueryDate(date)
-      const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
-        method: 'POST',
-        body: JSON.stringify({ 'ea': props.ea_type, 'datetime': date }),
-        headers: {
-          'Accept': 'application/json, text/plain',
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      })
-      const res = await response.json();
-      setGeoData(res)
+      date = date.toISOString().split('.')[0]
+      if (window.checked === true) {
+        const response = await fetch('http://127.0.0.1:8000/arg/avg_geojson/', {
+          method: 'POST',
+          body: JSON.stringify({ 'ea': props.ea_type, 'datetime': date }),
+          headers: {
+            'Accept': 'application/json, text/plain',
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        })
+        const res = await response.json();
+        setGeoData(res)
+      }
+      else {
+        const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
+          method: 'POST',
+          body: JSON.stringify({ 'ea': props.ea_type, 'datetime': date }),
+          headers: {
+            'Accept': 'application/json, text/plain',
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        })
+        const res = await response.json();
+        setGeoData(res)
+      }
+      
     }
 
     const highlightChloropleth = (e => {
@@ -223,7 +252,7 @@ const Choropleth = (props) => {
       console.log("onEachFeature", feature)
       const name = feature.properties.ADMIN
       const value = feature.properties.value
-      layer.bindPopup(`<strong>name: ${name} <br/> ${props.ea_type}: ${value} <br/> Date: ${queryDate}</strong>`)
+      layer.bindPopup(`<strong>name: ${name} <br/> ${props.ea_type}: ${value} <br/> Date: ${queryDate.toLocaleString().substring(0, 24)}</strong>`)
       layer.on({
         mouseover: highlightChloropleth,
         mouseout: resetHighlight,
@@ -345,15 +374,9 @@ const SliderForTimeFrame = (props) => {
 
   var today = new Date()
   var min = today.getHours() * -1
-  var max = 0
-  console.log("today", today)
-  if (today.getHours() + 4 > 24) {
-    max = today.getHours() + 4 - 24
-    max = '' + max
-  } else {
-    max = today.getHours() + 4
-    max = '' + max
-  }
+  console.log("min",today.getHours())
+  var max = 24 - today.getHours() - 1
+  max = '' + max
 
   return (
     <div style={style}>
@@ -461,6 +484,12 @@ const Application = () => {
     console.log(e.target.value)
   }
 
+  const handleCheckbox = () => {
+    window.checked = !window.checked
+    console.log(window.checked)
+    Calendars(window.checked)
+  }
+
   return (
     <div style={{
       backgroundImage: `url(${img})`,
@@ -488,7 +517,20 @@ const Application = () => {
                 <option value="no2">NO2</option>
                 <option value="ozone">Ozone</option>
               </select>
-              <input type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.date} />
+              <br/>
+              <label style={{color:'white'}}>&nbsp;Use Date Ranges:&nbsp;</label>
+              <input type="checkbox" onChange={handleCheckbox}/>
+              <br/>
+              <span id="singlemode" style={{display: "inline"}}>
+              <label style={{color:'white'}}>&nbsp;Date:</label>
+                <input id="singlecalendar" type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.date} />
+              </span>
+              <span id="rangemode" style={{display: "none"}}>
+                <label style={{color:'white'}}>&nbsp;Start Date:</label>
+                <input id="startcalendar" type="date" onChange={e => window.start_date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.start_date} />
+                <label style={{color:'white'}}>&nbsp;End Date:</label>
+                <input id="endcalendar" type="date" onChange={e => window.end_date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.end_date} />
+              </span>
             </div>
             <div />
           </div>
@@ -520,7 +562,7 @@ const Application = () => {
           </LayersControl>
           {/* <SliderForTimeFrame />
           <Choropleth /> */}
-          <TimeDependentComponents />
+          <TimeDependentComponents useDateRange={window.checked}/>
           <Earthquake />
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />

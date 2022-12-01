@@ -28,8 +28,10 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
      path('hello/', views.say_hello),
      path('api/', csrf_exempt(views.api_home)),
+     path('avg_api/', csrf_exempt(views.date_range_home)),
      path('models/', include(router.urls)),
      path('geojson/', views.geojson_home),
+     path('avg_geojson/', views.date_range_geojson),
      path('', views.getRoutes),
      path('auth/', views.login_home),
      path('create/', views.register_home),
