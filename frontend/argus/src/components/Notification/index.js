@@ -6,30 +6,6 @@ import Head from '../header'
 function Notifcation() {
 
     const [email, setEmail] = useState(null);
-    const [tempgreater, setTempGreater] = useState("");
-    const [tempgreaterregion, setTempGreaterRegion] = useState("");
-    const [templess, setTempLess] = useState("");
-    const [templessregion, setTempLessRegion] = useState("");
-
-    const [slgreater, setSLGreater] = useState("");
-    const [slgreaterregion, setSLGreaterRegion] = useState("");
-    const [slless, setSLLess] = useState("");
-    const [sllessregion, setSLLessRegion] = useState("");
-
-    const [humiditygreater, sethumidityGreater] = useState("");
-    const [humiditygreaterregion, sethumidityGreaterRegion] = useState("");
-    const [humidityless, sethumidityLess] = useState("");
-    const [humiditylessregion, sethumidityLessRegion] = useState("");
-
-    const [co2greater, setco2Greater] = useState("");
-    const [co2greaterregion, setco2GreaterRegion] = useState("");
-    const [co2less, setco2Less] = useState("");
-    const [co2lessregion, setco2LessRegion] = useState("");
-
-    const [no2greater, setno2Greater] = useState("");
-    const [no2greaterregion, setno2GreaterRegion] = useState("");
-    const [no2less, setno2Less] = useState("");
-    const [no2lessregion, setno2LessRegion] = useState("");
 
     const [removeea, setRemoveEA] = useState(null);
     const [removeeavalue, setRemoveEAValue] = useState(null);
@@ -41,9 +17,8 @@ function Notifcation() {
     const [mode, setMode] = useState(null)
     const [val, setVal] = useState(null)
 
-    var d = {}
-    const [list2, setList2] = useState([])
     const [displaylist, setDisplayList] = useState([])
+    const [savedlist, setSavedList] = useState([])
 
     function handleAdd() {
         var add = true
@@ -67,14 +42,13 @@ function Notifcation() {
         else {
             alert("Notification already added")
         }
+        
     }
-    
-    function handleAdd23() {
-        console.log(region, ea, "lll")
-    }
+    console.log("submit notifications: ", savedlist)
+
     const hClick = m => {
         handleAdd()
-        //submitNotification()
+        submitNotification()
     }
 
     function handleRemove() {
@@ -85,7 +59,11 @@ function Notifcation() {
                 displaylist.splice(l, 1)
             }
         }
-        //deleteNotification()
+        deleteNotification()
+    }
+
+    const listN = f => {
+        listNotifications()
     }
 
     async function submitNotification() {
@@ -98,7 +76,8 @@ function Notifcation() {
             }
         })
         var res = await response.json();
-        console.log(res)
+        console.log("submit ",res)
+        alert(res.Status)
     }
 
     async function deleteNotification() {
@@ -110,9 +89,9 @@ function Notifcation() {
                 'Content-Type': 'application/json; charset=utf-8'
             }
         })
-        var res = await response;
-        console.log(JSON.stringify(res))
-        //if (res.error )
+        var res = await response.json();
+        console.log("delete ",res)
+        alert(res.Status)
     }
 
     async function listNotifications() {
@@ -124,7 +103,8 @@ function Notifcation() {
                 'Content-Type': 'application/json; charset=utf-8'
             }
         })
-
+        var reslist = await response;
+        setSavedList(reslist)
     }
 
     const headerstyle = {
@@ -135,17 +115,18 @@ function Notifcation() {
         fontFamily: "Geneva"
     };
 
-    const eastyle = {
-        color: "grey",
-        backgroundColor: "white",
-        padding: "5px",
-        marginLeft: 160,
-        fontFamily: "system-ui"
-    };
-
     const liststyle = {
         marginTop: "20px",
-        color: "darkblue",
+        color: "green",
+        backgroundColor: "transparent",
+        padding: "5px",
+        marginLeft: 120,
+        fontFamily: "Geneva"
+    };
+
+    const sliststyle = {
+        marginTop: "10px",
+        color: "blue",
         backgroundColor: "transparent",
         padding: "5px",
         marginLeft: 120,
@@ -155,8 +136,6 @@ function Notifcation() {
     const buttonstyle = {
         marginTop: "10px",
     };
-
-
 
     return (
         <div className="formCenter">
@@ -169,8 +148,19 @@ function Notifcation() {
                     name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </form>
 
+            <button type="button" onClick={listN} className="formFieldButton" style={buttonstyle}>Submit</button>
+
             <header className="formFieldHeader" style={headerstyle} >
-                Notifications Created
+                Notifications in Account
+            </header>
+            {
+                savedlist.map((b) => <div>
+                    <li style={sliststyle}> When {b.ea} is {b.mode} than {b.threshold} in {b.region}</li>
+                </div>)
+            }
+
+            <header className="formFieldHeader" style={headerstyle} >
+                Created Notifications
             </header>
             {
                 displaylist.map((a) => <div>
@@ -195,11 +185,12 @@ function Notifcation() {
                     </select>
                     <select id="ea" name="ea" className="formFieldInput" value={ea} onChange={(e) => setEA(e.target.value)}>
                         <option value="">Select Environmental Activity</option>
-                        <option value="Temperature">Temperature</option>
-                        <option value="Sea Level">Sea Level</option>
-                        <option value="Humidity">Humidity</option>
-                        <option value="CO2">Carbon Dioxide (CO2)</option>
-                        <option value="NO2">Nitrogen Dioxide (NO2)</option>
+                        <option value="Temperature">Temperature (F)</option>
+                        <option value="Sea Level">Sea Level (hPa)</option>
+                        <option value="Humidity">Humidity (%)</option>
+                        <option value="CO2">Carbon Dioxide (gCO2eq/kWh)</option>
+                        <option value="NO2">Nitrogen Dioxide (ppb)</option>
+                        <option value="Ozone">Ozone (ppb)</option>
                     </select>
                     <input type="number" id="val" className="formFieldInput" placeholder="Enter Threshold"
                         name="val" value={val} onChange={(e) => setVal(e.target.value)} />
@@ -233,11 +224,12 @@ function Notifcation() {
 
                     <select id="removedEA" name="removedEA" className="formFieldInput" value={removeea} onChange={(e) => setRemoveEA(e.target.value)}>
                         <option value="">Select Environmental Activity</option>
-                        <option value="Temperature">Temperature</option>
-                        <option value="Sea Level">Sea Level</option>
-                        <option value="Humidity">Humidity</option>
-                        <option value="CO2">Carbon Dioxide (CO2)</option>
-                        <option value="NO2">Nitrogen Dioxide (NO2)</option>
+                        <option value="Temperature">Temperature (F)</option>
+                        <option value="Sea Level">Sea Level (hPa)</option>
+                        <option value="Humidity">Humidity (%)</option>
+                        <option value="CO2">Carbon Dioxide (gCO2eq/kWh)</option>
+                        <option value="NO2">Nitrogen Dioxide (ppb)</option>
+                        <option value="Ozone">Ozone (ppb)</option>
                     </select>
 
                     <input type="number" id="removedEAValue" className="formFieldInput" placeholder="Enter Threshold"
