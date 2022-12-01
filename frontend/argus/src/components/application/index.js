@@ -61,10 +61,6 @@ const Search = (props) => {
   const map = useMap()
   const { provider } = props
 
-  const [co2Value, setCo2Value] = useState("")
-  const [no2Value, setNo2Value] = useState("")
-  const [ozoneValue, setOzoneValue] = useState("")
-
   useEffect(() => {
     Fetchdata();
   }, [x, y, ea])
