@@ -181,6 +181,7 @@ const Choropleth = (props) => {
 
     const [legendToggle, setLegendToggle] = useState(false)
     const [geoData, setGeoData] = useState(null)
+    const [queryDate, setQueryDate] = useState(null)
     // useEffect(() => {
     //   fetchGeoData()
     // })
@@ -191,6 +192,7 @@ const Choropleth = (props) => {
       console.log(props.timeframe)
       date.setHours(date.getHours() - props.timeframe)
       date = date.toISOString().split('.')[0]
+      setQueryDate(date)
       const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
         method: 'POST',
         body: JSON.stringify({ 'ea': props.ea_type, 'datetime': date }),
@@ -220,7 +222,7 @@ const Choropleth = (props) => {
       console.log("onEachFeature", feature)
       const name = feature.properties.ADMIN
       const value = feature.properties.value
-      layer.bindPopup(`<strong>name: ${name} <br/> ${props.ea_type}: ${value} <br/> time: ${props.timeframe}</strong>`)
+      layer.bindPopup(`<strong>name: ${name} <br/> ${props.ea_type}: ${value} <br/> Date: ${queryDate}</strong>`)
       layer.on({
         mouseover: highlightChloropleth,
         mouseout: resetHighlight,
