@@ -148,7 +148,7 @@ def api_home(request, *args, **kwargs):
     GHG = 0
     sea = 0
     if request.method == 'GET':
-        return JsonResponse({"error": "only send latitude/longitude, EA, and date post requests to this URL"})
+        return JsonResponse({"error": "only send JSON with format {'latitude': float, 'longitude': float, 'date': string, 'EA': string} to this URL"})
     if request.method == 'POST':
         lat = request.data.get('latitude')
         lon = request.data.get('longitude')
@@ -161,6 +161,24 @@ def api_home(request, *args, **kwargs):
         print("found " + str(value) + " at date: " + str(date))
         return JsonResponse({"Date": date, EA: value})
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
+
+
+@api_view(["GET", "POST"])
+@csrf_exempt
+def date_range_home(request, *args, **kwargs):
+    if request.method == "GET":
+        return JsonResponse({"error": "only send JSON with format {'latitude': float, 'longitude': float, 'start_date': string, 'end_date': string, 'EA': string} to this URL"})
+    if request.method == "POST":
+        lat = request.data.get('latitude')
+        lon = request.data.get('longitude')
+        start_date = request.data.get('start_date')
+        end_date = request.data.get('end_date')
+        EA = request.data.get('EA')
+        valid_eas = ['temperature', 'humidity', 'sea level', 'co2', 'no2', 'ozone']
+        if EA not in valid_eas:
+            return JsonResponse({"error": EA + " is not a valid environmental activity, must be one of: " + str(valid_eas)})
+        avg_value = latlon_to_avg_value(lat, lon, start_date, end_date, EA)
+
 
 @api_view(["GET", "POST"])
 @csrf_exempt
@@ -307,7 +325,10 @@ def latlon_to_value(lat, lon, date, ea):
     except:
         return {'error': 'region not tracked in database'}
     try:
-        datetime_str = date + " 23:59:59"
+        if len(date) != 10 and len(date) < 19:
+            return JsonResponse({"error": "date format must be 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS"})
+        if len(date) == 10:
+            datetime_str = date + " 23:59:59"
         reference_datetime = datetime.datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S")
         db_ea = EnvironmentalActivity.objects.get(ea_name=ea)
         filtered = Datapoint.objects.filter(region=reg, ea=db_ea, is_future=0, dp_datetime__lte=reference_datetime)
@@ -317,6 +338,41 @@ def latlon_to_value(lat, lon, date, ea):
         return {'error': 'no ' + ea + ' data for the given region at this date'}
     return {country: datapoint}  # temperature:value
 
+
+def latlon_to_avg_value(lat, lon, start_date, end_date, ea):
+    if validate_latlon(lat, lon) is not None: return validate_latlon(lat, lon)
+    coordinates = (lat, lon),
+    loc = reverse_geocode.search(coordinates)
+    country = loc[0]['country']
+    try:
+        country = country_name_to_country_alpha2(country)
+        country = country_alpha2_to_continent_code(country)
+        country = cont_alpha2_to_name(country)
+    except:
+        country = "Antarctica"
+    try:
+        reg = Region.objects.get(region_name=country)
+    except:
+        return {"error": "region not tracked in database"}
+    try:
+        if (len(start_date) != 10 and len(start_date) < 19) or (len(end_date) != 10 and len(end_date) < 19):
+            return JsonResponse({"error": "date format must be 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS"})
+        if len(start_date) == 10:
+            start_dt_str = start_date + " 00:00:00"
+        else:
+            start_dt_str = start_date
+        if len(end_date) == 10:
+            end_dt_str = end_date + " 00:00:00"
+        else:
+            end_dt_str = end_date
+        start_datetime = datetime.datetime.strptime(start_dt_str, "%Y-%m-%d %H:%M:%S")
+        end_datetime = datetime.datetime.strptime(end_dt_str, "%Y-%m-%d %H:%M:%S")
+        db_ea = EnvironmentalActivity.objects.get(ea_name=ea)
+        filtered = Datapoint.objects.filter(region=reg, ea=db_ea, is_future=0, dp_datetime__lte=end_datetime, dp_datetime__gte=start_datetime)
+        avg = sum([obj.value for obj in filtered]) / float(len(filtered))
+    except:
+        return {"error": "no " + ea + " data for the given region between these dates"}
+    return {country: avg}
 
 def validate_latlon(lat, lon):
     if lat is None:

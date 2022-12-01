@@ -73,6 +73,11 @@ class SignInForm extends Component {
     this.setState({token : res})
   }
 
+// if !sessionStorage.itemExists("email"):
+//    alert(need to be signed in)
+// else:
+//    email = sessionStorage.getItem("email")
+
   render() {
     return (
       <div className="formCenter">
