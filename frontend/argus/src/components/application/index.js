@@ -67,6 +67,7 @@ const Search = (props) => {
 
   useEffect(() => {
     Fetchdata();
+    console.log(x + " " + y)
   }, [x, y, ea])
 
   //retrieve the EA data when user searched location
@@ -93,9 +94,9 @@ const Search = (props) => {
       var measurement = null
       if (window.choice == "temperature") {
         measurement = "°C"
-      } else if (window.choice == "humid") {
+      } else if (window.choice == "humidity") {
         measurement = "%"
-      } else if (window.choice == "sea") {
+      } else if (window.choice == "sea level") {
         measurement = "inch"
       } else {
         measurement = " (tons)"
@@ -481,8 +482,8 @@ const Application = () => {
             <div>
               <select style={{ width: 100 }} onChange={(event) => window.choice = event.target.value}>
                 <option value="temperature">Temperature</option>
-                <option value="sea">Sea Level</option>
-                <option value="humid">Humidity</option>
+                <option value="sea level">Sea Level</option>
+                <option value="humidity">Humidity</option>
                 <option value="co2">CO2</option>
                 <option value="no2">NO2</option>
                 <option value="ozone">Ozone</option>

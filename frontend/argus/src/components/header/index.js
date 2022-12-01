@@ -22,7 +22,7 @@ const Head = () => {
         navigate("/notification")
     }
     const logout = () => {
-        // localStorage.removeItem('user')
+        localStorage.removeItem('user')
         alert('Successfully signed out')
         window.location.reload(false)
     }

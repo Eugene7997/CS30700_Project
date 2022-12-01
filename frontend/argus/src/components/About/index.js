@@ -1,13 +1,32 @@
 import React from 'react'
 
 import Head from '../header'
-import {FadeOut,ZoomOut,MoveIn, Move, StickyIn, FadeIn, ZoomIn,MoveOut, Animator, ScrollContainer, ScrollPage, Sticky, Zoom, Fade, batch} from 'react-scroll-motion'
+import {Animation, FadeOut,ZoomOut,MoveIn, Move, StickyIn, FadeIn, ZoomIn,MoveOut, Animator, ScrollContainer, ScrollPage, Sticky, Zoom, Fade, batch} from 'react-scroll-motion'
 import '../../App.css'
 
 
 
 const ZoomInScrollOut = batch(StickyIn(), FadeIn(), ZoomIn());
 const FadeUp = batch(Fade(), Sticky(70), Move())
+const Spin = (cycle) =>
+  ({
+    in: {
+      style: {
+        // `p` is number (0~1)
+        // When just before this page appear, `p` will be 0
+        // When this page filled your screen, `p` will be 1
+        transform: (p) => `rotate(${p * 360 * cycle}deg)`,
+      },
+    },
+    out: {
+      style: {
+        // `p` is number (0~1)
+        // When this page filled your screen, `p` will be 0
+        // When just after this page disappear, `p` will be 1
+        transform: (p) => `rotate(${p * 360 * cycle}deg)`,
+      },
+    },
+  });
 
 const About = () => {
   return (
@@ -103,6 +122,33 @@ const About = () => {
             <div className="page3">
               <Animator animation={batch(Fade(), Sticky(), Move(0, 60))}>
                 <h1>Finally, Argus supports humidity monitoring</h1>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={8}>
+            <div className="pages">
+              <Animator animation={batch(Sticky(50,15), Fade(), Spin(3))}>
+                <div style={{fontSize: 54, textDecorationLine: 'underline'}}>Argus Team 19</div>
+              </Animator>
+              <Animator animation={batch(Fade(), MoveIn(1000,300),Sticky(50,30))}>
+                <div style={{fontSize: 30, textAlign: 'center'}}>Adam Rutledge</div>
+                <div style={{fontSize: 25, textAlign: 'center'}}>(rutledgea20@gmail.com)</div>
+              </Animator>
+              <Animator animation={batch(Fade(), MoveIn(-1000,300),Sticky(50,42))}>
+                <div style={{fontSize: 30, textAlign: 'center'}}>Bhavik Sardar</div>
+                <div style={{fontSize: 25, textAlign: 'center'}}>(bhaviksardar@gmail.com)</div>
+              </Animator>
+              <Animator animation={batch(Fade(), MoveIn(300, 1000),Sticky(50,54))}>
+                <div style={{fontSize: 30, textAlign: 'center'}}>Eugene Poh</div>
+                <div style={{fontSize: 25, textAlign: 'center'}}>(eugenepoh999@gmail.com)</div>
+              </Animator>
+              <Animator animation={batch(Fade(), MoveIn(300, -1000),Sticky(50,66))}>
+                <div style={{fontSize: 30, textAlign: 'center'}}>Ji Woong Park</div>
+                <div style={{fontSize: 25, textAlign: 'center'}}>(qkrwldnd97@gmail.com)</div>
+              </Animator>
+              <Animator animation={batch(Fade(), MoveIn(-300,-1000), Sticky(50,78))}>
+                <div style={{fontSize: 30, textAlign: 'center'}}>Sahithi Tummala</div>
+                <div style={{fontSize: 25, textAlign: 'center'}}>(sahithi.tummala1@gmail.com)</div>
               </Animator>
             </div>
           </ScrollPage>
