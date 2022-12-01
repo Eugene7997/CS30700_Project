@@ -87,7 +87,7 @@ const Search = (props) => {
     if (x != 0 && y != 0) {
       // console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
       var date = new Date()
-      date.setHours(date.getHours() - window.time)
+      date.setHours(date.getHours() + window.time)
       var measurement = null
       if (window.choice == "temperature") {
         measurement = "°C"
@@ -187,8 +187,7 @@ const Choropleth = (props) => {
     const fetchGeoData = async () => {
       setGeoData(null)
       var date = new Date()
-      console.log(props.timeframe)
-      date.setHours(date.getHours() - props.timeframe)
+      date.setHours(date.getHours() + props.timeframe)
       setQueryDate(date)
       date = date.toISOString().split('.')[0]
       const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
