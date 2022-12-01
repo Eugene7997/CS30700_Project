@@ -217,6 +217,9 @@ const Choropleth = (props) => {
     // })
 
     const fetchGeoData = async () => {
+      if (props.ea_type === 'none') {
+        return
+      }
       setGeoData(null)
       var date = new Date()
       date.setHours(date.getHours() + props.timeframe)
@@ -233,12 +236,7 @@ const Choropleth = (props) => {
           }
         })
         const res = await response.json();
-        if ("error" in res) {
-          
-        }
-        else {
-          setGeoData(res)
-        }
+        setGeoData(res)
       }
       else {
         const response = await fetch('http://127.0.0.1:8000/arg/geojson/', {
@@ -319,7 +317,7 @@ const Choropleth = (props) => {
                   ? '#94F3EF'
                   : '#CFFCFA';
       }
-      else if (props.ea_type === "GHG") {
+      else if (props.ea_type === "co2") {
         return value > 10
           ? '#006834'
           : value > 5
