@@ -59,9 +59,11 @@ function Calendars(use_range) {
   if(use_range) {
     document.getElementById("singlemode").style.display = "none";
     document.getElementById("rangemode").style.display = "inline";
+    document.getElementById("asd").style.display = "none";
   } else {
     document.getElementById("singlemode").style.display = "inline";
     document.getElementById("rangemode").style.display = "none";
+    document.getElementById("asd").style.display = "inline";
   }
 }
 
@@ -170,7 +172,7 @@ const CurrentLocation = () => {
   )
 }
 
-const TimeDependentComponents = () => {
+const TimeDependentComponents = (props) => {
   const [windowTime, setWindowTime] = useState(window.time)
 
   const handleTimeFrameChange = (updatedTimeFrameValue) => {
@@ -180,7 +182,9 @@ const TimeDependentComponents = () => {
 
   return (
     <div>
-      <SliderForTimeFrame onchangeTimeFrame={handleTimeFrameChange} timeframe={windowTime} />
+      <span id="asd" style={{display: "inline"}}>
+        <SliderForTimeFrame id="asd" onchangeTimeFrame={handleTimeFrameChange} timeframe={windowTime} />
+      </span>
       <Choropleth timeframe={windowTime} />
     </div>
   )
@@ -542,7 +546,7 @@ const Application = () => {
           </LayersControl>
           {/* <SliderForTimeFrame />
           <Choropleth /> */}
-          <TimeDependentComponents />
+          <TimeDependentComponents useDateRange={window.checked}/>
           <Earthquake />
           <Search provider={new OpenStreetMapProvider()} />
           <CurrentLocation />
