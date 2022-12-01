@@ -83,20 +83,35 @@ const Search = (props) => {
   //retrieve the EA data when user searched location
   const Fetchdata = async () => {
     let name = "test"
-    const response = await fetch('http://127.0.0.1:8000/arg/api/', {
-      method: 'POST',
-      body: JSON.stringify({ 'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date, 'time': window.time }),
-      headers: {
-        'Accept': 'application/json, text/plain',
-        'Content-Type': 'application/json; charset=utf-8'
-      }
-    })
+    var response = null
+    var res = null
+    if (window.checked === true) {
+      response = await fetch('http://127.0.0.1:8000/arg/avg_api/', {
+        method: 'POST',
+        body: JSON.stringify({ 'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date, 'time': window.time }),
+        headers: {
+          'Accept': 'application/json, text/plain',
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+      
+    }
+    else {
+      response = await fetch('http://127.0.0.1:8000/arg/api/', {
+        method: 'POST',
+        body: JSON.stringify({ 'latitude': y, 'longitude': x, 'EA': window.choice, 'date': window.date, 'time': window.time }),
+        headers: {
+          'Accept': 'application/json, text/plain',
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })    
+    }
+    res = await response.json();
     const cookies = new Cookies();
     cookies.set('EA', window.choice, { path: '/' });
     cookies.set('date', window.date, { path: '/' });
     console.log(cookies.get('EA'));
     console.log(cookies.get('date')); 
-    const res = await response.json();
     //res.cookie('sky', 'blue')
 
     if (x != 0 && y != 0) {
