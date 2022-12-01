@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl, GeoJSON,
 import '../../App.css';
 import React, { useEffect, useState, Component } from 'react'
 import Head from '../header'
-import L, { circle, latLng, latLngBounds, map } from "leaflet";
+import L, { circle, icon, latLng, latLngBounds, map } from "leaflet";
 import img from "./bg.jpg"
 import streetMapTileIcon from "./streetMapImg.jpg"
 import satelliteMapTileIcon from "./satelliteMapImg.png"
@@ -102,7 +102,7 @@ const Search = (props) => {
       }
       var temp_data = JSON.stringify(res).replaceAll("{", "").replaceAll("\"", "").replaceAll("}", "").replace(":", ": ").split(',')
       var button = `<button class="remove" type="button">Remove me</button>`
-      L.marker([y, x]).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
+      L.marker([y, x], {icon: GetIcon(40)}).bindPopup(Date().toLocaleString().substring(0, 24) + " + " + window.time + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
       markers.addTo(map)
     }
   }
