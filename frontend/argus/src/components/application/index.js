@@ -338,15 +338,41 @@ const Choropleth = (props) => {
                   : '#CFFCFA';
       }
       else if (props.ea_type === "co2") {
-        return value > 10
+        return value > 80
           ? '#006834'
-          : value > 5
+          : value > 60
             ? '#009149'
-            : value > 4
+            : value > 50
               ? '#00BE60'
-              : value > 3
+              : value > 40
+                ? '#00DA6F'
+                : value > 30
+                  ? '#A4ECC8'
+                  : '#C9EEDC';
+      }
+      else if (props.ea_type === "no2") {
+        return value > 20
+          ? '#006834'
+          : value > 15
+            ? '#009149'
+            : value > 10
+              ? '#00BE60'
+              : value > 5
                 ? '#00DA6F'
                 : value > 2
+                  ? '#A4ECC8'
+                  : '#C9EEDC';
+      }
+      else if (props.ea_type === "ozone") {
+        return value > 40
+          ? '#006834'
+          : value > 30
+            ? '#009149'
+            : value > 20
+              ? '#00BE60'
+              : value > 10
+                ? '#00DA6F'
+                : value > 5
                   ? '#A4ECC8'
                   : '#C9EEDC';
       }
