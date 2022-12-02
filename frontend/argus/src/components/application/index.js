@@ -22,8 +22,8 @@ import Cookies from 'universal-cookie';
 window.choice = "temperature"
 // window.date = moment().format('YYYY-MM-DD')
 window.date = moment().toISOString()
-window.start_date = moment().format('YYYY-MM-DD')
-window.end_date = moment().format('YYYY-MM-DD')
+window.start_date = moment().toISOString()
+window.end_date = moment().toISOString()
 window.time = 0
 window.checked = false
 
@@ -247,7 +247,6 @@ const Choropleth = (props) => {
       setQueryDate(date)
       date = date.toISOString().split('.')[0]
       if (window.checked === true) {
-        var date = new Date()
         const response = await fetch('http://127.0.0.1:8000/arg/avg_geojson/', {
           method: 'POST',
           body: JSON.stringify({ 'ea': props.ea_type, 'start_datetime':window.start_date, 'end_datetime': window.end_date }),
@@ -606,13 +605,13 @@ const Application = () => {
               <br/>
               <span id="singlemode" style={{display: "inline"}}>
               <label style={{color:'white'}}>&nbsp;Date:</label>
-                <input id="singlecalendar" type="date" onChange={e => window.date = e.target.value} max={moment().add(3, 'month').format("YYYY-MM-DD")} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.date} />
+                <input id="singlecalendar" type="date" onChange={e => window.date = new Date(e.target.value.concat('T00:00:00'))} max={moment().add(3, 'month').toISOString()} min={moment().subtract(3, 'month').toISOString()} defaultValue={window.date} />
               </span>
               <span id="rangemode" style={{display: "none"}}>
                 <label style={{color:'white'}}>&nbsp;Start Date:</label>
-                <input id="startcalendar" type="date" onChange={e => window.start_date = e.target.value} max={moment().add(2, 'month').format("YYYY-MM-DD")} min={moment().subtract(5, 'year').format("YYYY-MM-DD")} defaultValue={window.start_date} />
+                <input id="startcalendar" type="date" onChange={e => window.start_date = new Date(e.target.value.concat('T00:00:00'))} max={moment().add(2, 'month').toISOString()} min={moment().subtract(5, 'year').toISOString()} defaultValue={window.start_date} />
                 <label style={{color:'white'}}>&nbsp;End Date:</label>
-                <input id="endcalendar" type="date" onChange={e => window.end_date = e.target.value} max={moment().add(2, 'month').format("YYYY-MM-DD")} min={moment().subtract(5, 'year').format("YYYY-MM-DD")} defaultValue={window.end_date} />
+                <input id="endcalendar" type="date" onChange={e => window.end_date = new Date(e.target.value.concat('T00:00:00'))} max={moment().add(2, 'month').toISOString()} min={moment().subtract(5, 'year').toISOString()} defaultValue={window.end_date} />
               </span>
             </div>
             <div />
