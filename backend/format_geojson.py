@@ -74,6 +74,9 @@ def get_world_data(ea, time, end_time=None):
             cursor.execute(query, vals)
             responses = cursor.fetchall()
             if len(responses) == 0:
+                if continent_code == 'AQ':
+                    values[continent_code] = 0
+                    continue
                 return None
             row = responses[0]
             value = row[3]

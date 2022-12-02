@@ -294,9 +294,10 @@ def generate_future_predictions():
                     future_dates, future_vals = pred.predict_future_data(input_dates, input_values)
                     future_vals = [min(max(future_val, valid_values[ea][0]), valid_values[ea][1]) for future_val in future_vals]
                     date_format = "%Y-%m-%d %H:%M:%S"
-                    first_date = datetime.datetime.strptime(future_dates[0], date_format)
+
+                    first_date = datetime.datetime.strptime(future_dates[0][:19], date_format)
                     delta = input_dates[-1] - first_date + datetime.timedelta(hours=1)
-                    future_datetimes = [datetime.datetime.strptime(future_date, date_format) + delta for future_date in future_dates]
+                    future_datetimes = [datetime.datetime.strptime(future_date[0:19], date_format) + delta for future_date in future_dates]
                     for i in range(len(future_datetimes)):
                         future_val = future_vals[i]
                         future_datetime = future_datetimes[i]
