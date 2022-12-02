@@ -176,6 +176,7 @@ def date_range_home(request, *args, **kwargs):
         lon = request.data.get('longitude')
         start_date = request.data.get('start_date')
         end_date = request.data.get('end_date')
+
         EA = request.data.get('EA')
         valid_eas = ['temperature', 'humidity', 'sea level', 'co2', 'no2', 'ozone']
         if EA not in valid_eas:
@@ -214,9 +215,9 @@ def date_range_geojson(request, *arks, **kwargs):
 
     if request.method == 'POST':
         ea = request.data.get('ea')
-        start_dt = datetime.datetime.strptime(request.data.get('start_datetime'), '%Y-%m-%d')
+        start_dt = datetime.datetime.strptime(request.data.get('start_datetime')[0:19], '%Y-%m-%dT%H:%M:%S')
         print(start_dt)
-        end_dt = datetime.datetime.strptime(request.data.get('end_datetime'), '%Y-%m-%d')
+        end_dt = datetime.datetime.strptime(request.data.get('end_datetime')[0:19], '%Y-%m-%dT%H:%M:%S')
         print(end_dt)
         data = format_geojson.get_world_data(ea, start_dt, end_dt)
         geojson = format_geojson.populate_geojson(data)
@@ -354,15 +355,16 @@ def latlon_to_value(lat, lon, date, ea):
         return {'error': 'region not tracked in database'}
     try:
         if len(date) != 10 and len(date) < 19:
-            return JsonResponse({"error": "date format must be 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS"})
+            return JsonResponse({"error": "date format must be 'YYYY-MM-DD' or 'YYYY-MM-DDTHH:MM:SS"})
         if len(date) == 10:
-            datetime_str = date + " 23:59:59"
-        reference_datetime = datetime.datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S")
+            date = date + " 23:59:59"
+        reference_datetime = datetime.datetime.strptime(date[0:19], "%Y-%m-%dT%H:%M:%S")
         db_ea = EnvironmentalActivity.objects.get(ea_name=ea)
         filtered = Datapoint.objects.filter(region=reg, ea=db_ea, is_future=0, dp_datetime__lte=reference_datetime)
         date_of_most_recent = filtered.aggregate(Max('dp_datetime'))['dp_datetime__max']
         datapoint = Datapoint.objects.get(region=reg, ea=db_ea, is_future=0, dp_datetime=date_of_most_recent).value
-    except:
+    except Exception as e:
+        print(e)
         return {'error': 'no ' + ea + ' data for the given region at this date'}
     return {country: datapoint}  # temperature:value
 
@@ -383,22 +385,31 @@ def latlon_to_avg_value(lat, lon, start_date, end_date, ea):
     except:
         return {"error": "region not tracked in database"}
     try:
+        print("got here 0")
         if (len(start_date) != 10 and len(start_date) < 19) or (len(end_date) != 10 and len(end_date) < 19):
-            return JsonResponse({"error": "date format must be 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS"})
+            return JsonResponse({"error": "date format must be 'YYYY-MM-DD' or 'YYYY-MM-DDTHH:MM:SS"})
         if len(start_date) == 10:
             start_dt_str = start_date + " 00:00:00"
         else:
-            start_dt_str = start_date
+            start_dt_str = start_date[0:19]
         if len(end_date) == 10:
             end_dt_str = end_date + " 00:00:00"
         else:
-            end_dt_str = end_date
-        start_datetime = datetime.datetime.strptime(start_dt_str, "%Y-%m-%d %H:%M:%S")
-        end_datetime = datetime.datetime.strptime(end_dt_str, "%Y-%m-%d %H:%M:%S")
+            end_dt_str = end_date[0:19]
+        print("got here 1")
+        start_datetime = datetime.datetime.strptime(start_dt_str, "%Y-%m-%dT%H:%M:%S")
+        end_datetime = datetime.datetime.strptime(end_dt_str, "%Y-%m-%dT%H:%M:%S")
+        print("start:")
+        print(start_datetime)
+        print("end:")
+        print(end_datetime)
+        if start_datetime >= end_datetime:
+            return {"error": "End date must be after start date!"}
         db_ea = EnvironmentalActivity.objects.get(ea_name=ea)
         filtered = Datapoint.objects.filter(region=reg, ea=db_ea, is_future=0, dp_datetime__lte=end_datetime, dp_datetime__gte=start_datetime)
         avg = sum([obj.value for obj in filtered]) / float(len(filtered))
-    except:
+    except Exception as e:
+        print(e)
         return {"error": "no " + ea + " data for the given region between these dates"}
     return {country: avg}
 

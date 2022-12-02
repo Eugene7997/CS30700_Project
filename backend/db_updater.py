@@ -73,7 +73,7 @@ def send_notifications(region, ea, value):
     for notification in notifications:
         mode = notification[5]
         threshold = notification[1]
-        if (mode == 'greater' and value > threshold) or (mode == 'less' and value < threshold):
+        if (mode.lower() == 'greater' and value > threshold) or (mode.lower() == 'less' and value < threshold):
             msg = email.message.Message()
             from_email = "thearguswebsite@gmail.com"
             to_email = notification[3]
