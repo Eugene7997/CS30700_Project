@@ -284,11 +284,11 @@ def list_notifications(request, *args, **kwargs):
         response_notifications = []
         for notif_object in user_notifications:
             response_notifications.append({"notification_id": notif_object.notification_id, 
-                                           "ea": notif_object.ea,
-                                           "region": notif_object.region,
+                                           "ea": notif_object.ea.ea_name,
+                                           "region": notif_object.region.region_name,
                                            "mode": notif_object.mode,
                                            "threshold": notif_object.threshold})
-        return JsonResponse(response_notifications)
+        return JsonResponse(response_notifications, safe=False)
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 
