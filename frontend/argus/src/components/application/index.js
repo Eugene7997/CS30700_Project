@@ -25,15 +25,19 @@ window.start_date = moment().format('YYYY-MM-DD')
 window.end_date = moment().format('YYYY-MM-DD')
 window.time = 0
 window.checked = false
+
+window.x = 0
+window.y = 0
+
 var markers = L.layerGroup()
 
 function GetIcon(_iconSize){
   var icon = ''
   if(window.choice === "temperature"){
     icon = require("./icons/temperature.png")
-  }else if(window.choice === "humid"){
+  }else if(window.choice === "humidity"){
     icon = require("./icons/humid.png")
-  }else if(window.choice === "sea"){
+  }else if(window.choice === "sea level"){
     icon = require("./icons/sealevel.png")
   }else if(window.choice === "co2"){
     icon = require("./icons/co2.png")
@@ -131,13 +135,15 @@ const Search = (props) => {
       }
       var temp_data = JSON.stringify(res).replaceAll("{", "").replaceAll("\"", "").replaceAll("}", "").replace(":", ": ").split(',')
       var button = `<button class="remove" type="button">Remove me</button>`
-      L.marker([y, x],{icon: GetIcon(40)}).bindPopup(date.toLocaleString().substring(0, 24) + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[0] + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>" + button).on("popupopen", removeMarker).addTo(markers)
+      var temp_dd = date.toLocaleString().substring(0, 24) + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>"
+      localStorage.setItem("data", temp_dd)
+      L.marker([y, x],{icon: GetIcon(40)}).bindPopup(temp_dd + button).on("popupopen", removeMarker).addTo(markers)
       markers.addTo(map)
     }
   }
 
   
-
+ 
   //search the location by location_label
   useEffect(() => {
     const searchControl = new GeoSearchControl({
@@ -148,6 +154,8 @@ const Search = (props) => {
       popupFormat: ({ query, result }) => {
         setX(result.x);
         setY(result.y);
+        localStorage.setItem("x", result.x)
+        localStorage.setItem("y", result.y)
         setLabel(result.label);
         return result.label;
       }
@@ -165,14 +173,12 @@ const CurrentLocation = () => {
   const map = useMap()
 
   useEffect(() => {
-    map.locate().on("locationfound", function (e) {
-      setPosition(e.latlng)
-      map.flyTo(e.latlng, map.getZoom());
-      const radius = e.accuracy
-      const circle = L.circle(e.latlng, radius)
-      circle.addTo(map)
-      setBbox(e.bounds.toBBoxString().split(","))
-    });
+      map.locate().on("locationfound", function (e) {
+        setPosition(e.latlng)
+        console.log(e.latlng)
+        map.flyTo(e.latlng, map.getZoom());
+        setBbox(e.bounds.toBBoxString().split(","))
+      });
   }, [map])
 
   return position === null ? null : (
@@ -186,6 +192,20 @@ const CurrentLocation = () => {
       </Popup>
     </Marker>
   )
+}
+
+const PreviousLocation = () => {
+  const map = useMap()
+  window.y = localStorage.getItem("y")
+  window.x = localStorage.getItem("x")
+  useEffect(() => {
+      map.setView([window.y, window.x])
+  }, [])
+  const temp_data = localStorage.getItem("data")
+  var button = `<button class="remove" type="button">Remove me</button>`
+  L.marker([window.y, window.x],{icon: GetIcon(40)}).bindPopup(temp_data + button).on("popupopen", removeMarker).addTo(markers)
+  markers.addTo(map)
+  return null;
 }
 
 const TimeDependentComponents = (props) => {
@@ -505,7 +525,13 @@ const Application = () => {
     console.log(window.checked)
     Calendars(window.checked)
   }
-
+  useEffect(() => {
+    console.log(localStorage.getItem("x"))
+    if(localStorage.getItem("x") != null && localStorage.getItem("y") != null){
+      window.x = localStorage.getItem("x")
+      window.y = localStorage.getItem("y")
+    }  
+  })
   return (
     <div style={{
       backgroundImage: `url(${img})`,
@@ -581,7 +607,7 @@ const Application = () => {
           <TimeDependentComponents useDateRange={window.checked}/>
           <Earthquake />
           <Search provider={new OpenStreetMapProvider()} />
-          <CurrentLocation />
+          {(localStorage.getItem("x") === null && localStorage.getItem("y") === null) ? <CurrentLocation /> : <PreviousLocation />}
         </MapContainer>
       </div>
     </div>
