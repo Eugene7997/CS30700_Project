@@ -134,7 +134,7 @@ const Search = (props) => {
       }
       var temp_data = JSON.stringify(res).replaceAll("{", "").replaceAll("\"", "").replaceAll("}", "").replace(":", ": ").split(',')
       var button = `<button class="remove" type="button">Remove me</button>`
-      var temp_dd = date.toLocaleString().substring(0, 24) + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>"
+      var temp_dd = window.date +" "+ date.toLocaleString().substring(10, 24) + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>"
       localStorage.setItem("data", temp_dd)
       L.marker([y, x],{icon: GetIcon(40)}).bindPopup(temp_dd + button).on("popupopen", removeMarker).addTo(markers)
       markers.addTo(map)

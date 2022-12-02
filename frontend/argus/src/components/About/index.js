@@ -125,7 +125,103 @@ const About = () => {
               </Animator>
             </div>
           </ScrollPage>
-          <ScrollPage page={8}>
+          <ScrollPage page={9}>
+            <div className='pages'>
+              <Animator animation={batch(Fade(), Sticky(), Move())}>
+                <h1>Instructions on how to use our application</h1>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={10}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <h1>This is our home page</h1>
+                <img src={require('./Instructions/1-1.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={11}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <h1>You can sign-in here</h1>
+                <img src={require('./Instructions/1-2.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={12}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <h1>You can sign-up here</h1>
+                <img src={require('./Instructions/1-3.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={13}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <h1>This is the initial screen when you run the application</h1>
+                <img src={require('./Instructions/2.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={14}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <img src={require('./Instructions/2-1.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={15}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <img src={require('./Instructions/2-2.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={16}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <img src={require('./Instructions/2-3.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={17}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <img src={require('./Instructions/2-4.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={18}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <img src={require('./Instructions/2-5.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={19}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <img src={require('./Instructions/2-6.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={20}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <img src={require('./Instructions/6.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          <ScrollPage page={21}>
+            <div className='pages'>
+              <Animator animation={batch(Sticky(), Fade())}>
+                <img src={require('./Instructions/7.png')} width="1200" heigth="1600"/>
+              </Animator>
+            </div>
+          </ScrollPage>
+          
+          <ScrollPage page={22}>
             <div className="pages">
               <Animator animation={batch(Sticky(50,15), Fade(), Spin(3))}>
                 <div style={{fontSize: 54, textDecorationLine: 'underline'}}>Argus Team 19</div>
