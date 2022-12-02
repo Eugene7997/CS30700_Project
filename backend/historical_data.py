@@ -44,7 +44,7 @@ def process_noaa_temp(df):
         lat = df['LATITUDE'][ind]
         lon = df['LONGITUDE'][ind]
         row_date = datetime.datetime.strptime(df['DATE'][ind], '%Y-%m-%d')
-        temperature = df['TAVG'][ind]
+        temperature = round(float(df['TAVG'][ind] - 32.0) * (5.0/9.0), 2)
         coordinates = (lat, lon),
         loc = reverse_geocode.search(coordinates)
         country = loc[0]['country']

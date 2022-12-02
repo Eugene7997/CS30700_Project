@@ -200,6 +200,7 @@ def geojson_home(request, *args, **kwargs):
         dt = datetime.datetime.strptime(request.data.get('datetime'), '%Y-%m-%dT%H:%M:%S')
         data = format_geojson.get_world_data(ea, dt)
         geojson = format_geojson.populate_geojson(data)
+        print(geojson)
         return JsonResponse(geojson)
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
