@@ -169,6 +169,9 @@ def date_range_home(request, *args, **kwargs):
     if request.method == "GET":
         return JsonResponse({"error": "only send JSON with format {'latitude': float, 'longitude': float, 'start_date': string, 'end_date': string, 'EA': string} to this URL"})
     if request.method == "POST":
+        print("test")
+        print(request.data)
+        print("endtest")
         lat = request.data.get('latitude')
         lon = request.data.get('longitude')
         start_date = request.data.get('start_date')
@@ -178,6 +181,8 @@ def date_range_home(request, *args, **kwargs):
         if EA not in valid_eas:
             return JsonResponse({"error": EA + " is not a valid environmental activity, must be one of: " + str(valid_eas)})
         avg_value = latlon_to_avg_value(lat, lon, start_date, end_date, EA)
+        return JsonResponse({"Date": end_date, EA: avg_value})
+    return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 
 @api_view(["GET", "POST"])
@@ -188,6 +193,9 @@ def geojson_home(request, *args, **kwargs):
         return JsonResponse({"error": "Only send post requests with json data in format {'ea': 'humidity', 'datetime': '2014-09-23T05:46:12'} to this URL"})
     
     if request.method == 'POST':
+        print("test")
+        print(request.data)
+        print("test end")
         ea = request.data.get('ea')
         dt = datetime.datetime.strptime(request.data.get('datetime'), '%Y-%m-%dT%H:%M:%S')
         data = format_geojson.get_world_data(ea, dt)
@@ -205,10 +213,13 @@ def date_range_geojson(request, *arks, **kwargs):
 
     if request.method == 'POST':
         ea = request.data.get('ea')
-        start_dt = datetime.datetime.strptime(request.data.get('start_datetime'), '%Y-%m-%dT%H:%M:%S')
-        end_dt = datetime.datetime.strptime(request.data.get('end_datetime'), '%Y-%m-%dT%H:%M:%S')
+        start_dt = datetime.datetime.strptime(request.data.get('start_datetime'), '%Y-%m-%d')
+        print(start_dt)
+        end_dt = datetime.datetime.strptime(request.data.get('end_datetime'), '%Y-%m-%d')
+        print(end_dt)
         data = format_geojson.get_world_data(ea, start_dt, end_dt)
         geojson = format_geojson.populate_geojson(data)
+        print(geojson)
         return JsonResponse(geojson)
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
@@ -240,7 +251,7 @@ def notifications_home(request, *args, **kwargs):
     return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 # use this command to test /arg/notifications/, will require an entry in the User table with email set to "test@mail.com"
-#curl -X POST -H "Content-Type: application/json" -d '{"email": "test@gmail.com", "ea": "temperature", "region": "Africa", "threshold": 100.5, "mode": "less"}' http://127.0.0.1:8000/arg/notifications/
+#curl -X POST -H "Content-Type: application/json" -d '{"email": "rutledgea20@gmail.com", "ea": "temperature", "region": "Africa", "threshold": 100.5, "mode": "less"}' http://127.0.0.1:8000/arg/notifications/
 
 @api_view(["GET", "POST"])
 def delete_notification(request, *args, **kwargs):
