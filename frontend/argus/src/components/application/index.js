@@ -20,7 +20,8 @@ import moment from 'moment'
 import Cookies from 'universal-cookie';
 
 window.choice = "temperature"
-window.date = moment().format('YYYY-MM-DD')
+// window.date = moment().format('YYYY-MM-DD')
+window.date = moment().toISOString()
 window.start_date = moment().format('YYYY-MM-DD')
 window.end_date = moment().format('YYYY-MM-DD')
 window.time = 0
@@ -120,7 +121,7 @@ const Search = (props) => {
 
     if (x != 0 && y != 0) {
       // console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
-      var date = new Date()
+      var date = new Date(window.date)
       date.setHours(date.getHours() + window.time)
       var measurement = null
       if (window.choice == "temperature") {
@@ -241,7 +242,7 @@ const Choropleth = (props) => {
         return
       }
       setGeoData(null)
-      var date = new Date()
+      var date = new Date(window.date)
       date.setHours(date.getHours() + props.timeframe)
       setQueryDate(date)
       date = date.toISOString().split('.')[0]
@@ -632,6 +633,7 @@ const Application = () => {
           </LayersControl>
           {/* <SliderForTimeFrame />
           <Choropleth /> */}
+          {console.log("ww", window.date)}
           <TimeDependentComponents useDateRange={window.checked}/>
           <Earthquake />
           <Search provider={new OpenStreetMapProvider()} />
