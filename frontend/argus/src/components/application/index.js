@@ -605,13 +605,13 @@ const Application = () => {
               <br/>
               <span id="singlemode" style={{display: "inline"}}>
               <label style={{color:'white'}}>&nbsp;Date:</label>
-                <input id="singlecalendar" type="date" onChange={e => window.date = new Date(e.target.value.concat('T00:00:00'))} max={moment().add(3, 'month').toISOString()} min={moment().subtract(3, 'month').toISOString()} defaultValue={window.date} />
+                <input id="singlecalendar" type="date" onChange={e => window.date = new Date(e.target.value.concat('T00:00:00'))} max={moment().add(3, 'month').format('YYYY-MM-DD')} min={moment().subtract(3, 'month').format("YYYY-MM-DD")} defaultValue={window.date} />
               </span>
               <span id="rangemode" style={{display: "none"}}>
                 <label style={{color:'white'}}>&nbsp;Start Date:</label>
-                <input id="startcalendar" type="date" onChange={e => window.start_date = new Date(e.target.value.concat('T00:00:00'))} max={moment().add(2, 'month').toISOString()} min={moment().subtract(5, 'year').toISOString()} defaultValue={window.start_date} />
+                <input id="startcalendar" type="date" onChange={e => window.start_date = new Date(e.target.value.concat('T00:00:00'))} max={moment().add(2, 'month').format("YYYY-MM-DD")} min={moment().subtract(5, 'year').format("YYYY-MM-DD")} defaultValue={window.start_date} />
                 <label style={{color:'white'}}>&nbsp;End Date:</label>
-                <input id="endcalendar" type="date" onChange={e => window.end_date = new Date(e.target.value.concat('T00:00:00'))} max={moment().add(2, 'month').toISOString()} min={moment().subtract(5, 'year').toISOString()} defaultValue={window.end_date} />
+                <input id="endcalendar" type="date" onChange={e => window.end_date = new Date(e.target.value.concat('T00:00:00'))} max={moment().add(2, 'month').format("YYYY-MM-DD")} min={moment().subtract(5, 'year').format("YYYY-MM-DD")} defaultValue={window.end_date} />
               </span>
             </div>
             <div />
