@@ -169,6 +169,9 @@ def date_range_home(request, *args, **kwargs):
     if request.method == "GET":
         return JsonResponse({"error": "only send JSON with format {'latitude': float, 'longitude': float, 'start_date': string, 'end_date': string, 'EA': string} to this URL"})
     if request.method == "POST":
+        print("test")
+        print(request.data)
+        print("endtest")
         lat = request.data.get('latitude')
         lon = request.data.get('longitude')
         start_date = request.data.get('start_date')
@@ -178,6 +181,8 @@ def date_range_home(request, *args, **kwargs):
         if EA not in valid_eas:
             return JsonResponse({"error": EA + " is not a valid environmental activity, must be one of: " + str(valid_eas)})
         avg_value = latlon_to_avg_value(lat, lon, start_date, end_date, EA)
+        return JsonResponse({"Date": end_date, EA: avg_value})
+    return JsonResponse({"error": request.method + " is not a valid request method for this URL. Use POST or GET."})
 
 
 @api_view(["GET", "POST"])
