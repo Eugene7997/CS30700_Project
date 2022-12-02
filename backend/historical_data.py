@@ -170,8 +170,7 @@ def generate_placeholder_historical_data(year):
     start_date = str(year) + "-01-01 23:59:59"
     current_dt = datetime.datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
     previous_dt = current_dt - datetime.timedelta(days=1)
-    end_date = "2022-12-01"
-    end_dt = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+    end_dt = datetime.datetime.now()
     days_passed = 0
     while current_dt < end_dt:
         for region in ranges.keys():
