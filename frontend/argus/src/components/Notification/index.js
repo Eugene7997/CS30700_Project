@@ -5,7 +5,7 @@ import Head from '../header'
 
 function Notifcation() {
 
-    const [email, setEmail] = useState(null);
+    var [email, setEmail] = useState(null);
 
     const [removeea, setRemoveEA] = useState(null);
     const [removeeavalue, setRemoveEAValue] = useState(null);
@@ -20,35 +20,17 @@ function Notifcation() {
     const [displaylist, setDisplayList] = useState([])
     const [savedlist, setSavedList] = useState([])
 
-    function handleAdd() {
-        var add = true
+    const hClick = m => {
+        submitNotification()
+    }
 
-        for (var l in displaylist) {
-            if (displaylist[l].ea == ea && displaylist[l].region == region && displaylist[l].val == val && displaylist[l].mode == mode) {
-                add = false
-            }
-        }
-
-        if (add) {
-            const d = { ea, mode, val, region }
-            if (ea && mode && val && region) {
-                setDisplayList((ls) => [...ls, d])
-                setEA("")
-                setMode("")
-                setVal("")
-                setRegion("")
-            }
+    const lhit = a => {
+        if (email == null) {
+            alert("Enter your email")
         }
         else {
-            alert("Notification already added")
+            listNotifications()
         }
-        
-    }
-    console.log("submit notifications: ", savedlist)
-
-    const hClick = m => {
-        handleAdd()
-        submitNotification()
     }
 
     function handleRemove() {
@@ -62,10 +44,6 @@ function Notifcation() {
         deleteNotification()
     }
 
-    const listN = f => {
-        listNotifications()
-    }
-
     async function submitNotification() {
         const response = await fetch('http://127.0.0.1:8000/arg/notifications/', {
             method: 'POST',
@@ -76,8 +54,19 @@ function Notifcation() {
             }
         })
         var res = await response.json();
-        console.log("submit ",res)
-        alert(res.Status)
+        if (res.Status[0] == "F") {
+            alert(res.Status)
+        }
+        else {
+            const d = { ea, mode, val, region }
+            if (ea && mode && val && region) {
+                setDisplayList((ls) => [...ls, d])
+                setEA("")
+                setMode("")
+                setVal("")
+                setRegion("")
+            }
+        }
     }
 
     async function deleteNotification() {
@@ -90,7 +79,7 @@ function Notifcation() {
             }
         })
         var res = await response.json();
-        console.log("delete ",res)
+        console.log("delete ", res)
         alert(res.Status)
     }
 
@@ -103,7 +92,7 @@ function Notifcation() {
                 'Content-Type': 'application/json; charset=utf-8'
             }
         })
-        var reslist = await response;
+        var reslist = await response.json();
         setSavedList(reslist)
     }
 
@@ -140,6 +129,7 @@ function Notifcation() {
     return (
         <div className="formCenter">
             <Head />
+
             <form className="formFields" >
                 <header className="formFieldHeader" style={headerstyle} >
                     Email
@@ -148,7 +138,7 @@ function Notifcation() {
                     name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </form>
 
-            <button type="button" onClick={listN} className="formFieldButton" style={buttonstyle}>Submit</button>
+            <button type="button" onClick={lhit} className="formFieldButton" style={buttonstyle}>List</button>
 
             <header className="formFieldHeader" style={headerstyle} >
                 Notifications in Account
@@ -185,12 +175,12 @@ function Notifcation() {
                     </select>
                     <select id="ea" name="ea" className="formFieldInput" value={ea} onChange={(e) => setEA(e.target.value)}>
                         <option value="">Select Environmental Activity</option>
-                        <option value="Temperature">Temperature (F)</option>
-                        <option value="Sea Level">Sea Level (hPa)</option>
-                        <option value="Humidity">Humidity (%)</option>
-                        <option value="CO2">Carbon Dioxide (gCO2eq/kWh)</option>
-                        <option value="NO2">Nitrogen Dioxide (ppb)</option>
-                        <option value="Ozone">Ozone (ppb)</option>
+                        <option value="temperature">Temperature (C)</option>
+                        <option value="sea level">Sea Level (in.)</option>
+                        <option value="humidity">Humidity (%)</option>
+                        <option value="co2">Carbon Dioxide (tonnes)</option>
+                        <option value="no2">Nitrogen Dioxide (tonnes)</option>
+                        <option value="ozone">Ozone (tonnes)</option>
                     </select>
                     <input type="number" id="val" className="formFieldInput" placeholder="Enter Threshold"
                         name="val" value={val} onChange={(e) => setVal(e.target.value)} />
@@ -224,12 +214,12 @@ function Notifcation() {
 
                     <select id="removedEA" name="removedEA" className="formFieldInput" value={removeea} onChange={(e) => setRemoveEA(e.target.value)}>
                         <option value="">Select Environmental Activity</option>
-                        <option value="Temperature">Temperature (F)</option>
-                        <option value="Sea Level">Sea Level (hPa)</option>
-                        <option value="Humidity">Humidity (%)</option>
-                        <option value="CO2">Carbon Dioxide (gCO2eq/kWh)</option>
-                        <option value="NO2">Nitrogen Dioxide (ppb)</option>
-                        <option value="Ozone">Ozone (ppb)</option>
+                        <option value="temperature">Temperature (C)</option>
+                        <option value="sea level">Sea Level (in.)</option>
+                        <option value="humidity">Humidity (%)</option>
+                        <option value="co2">Carbon Dioxide (tonnes)</option>
+                        <option value="no2">Nitrogen Dioxide (tonnes)</option>
+                        <option value="ozone">Ozone (tonnes)</option>
                     </select>
 
                     <input type="number" id="removedEAValue" className="formFieldInput" placeholder="Enter Threshold"
