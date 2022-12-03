@@ -452,7 +452,8 @@ const SliderForTimeFrame = (props) => {
     max = timeLeftInTheDay - 1
   }
   else {
-    max = today.getHours() + 4 - 1
+    console.log("max is 4")
+    max = 4
     
   }
   max = '' + max
