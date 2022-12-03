@@ -20,7 +20,6 @@ import moment from 'moment'
 import Cookies from 'universal-cookie';
 
 window.choice = "temperature"
-// window.date = moment().format('YYYY-MM-DD')
 window.date = moment().toISOString()
 window.start_date = moment().toISOString()
 window.end_date = moment().toISOString()
@@ -83,7 +82,6 @@ const Search = (props) => {
 
   useEffect(() => {
     Fetchdata();
-    console.log(x + " " + y)
   }, [x, y, ea])
 
   //retrieve the EA data when user searched location
@@ -117,10 +115,8 @@ const Search = (props) => {
     cookies.set('date', window.date, { path: '/' });
     console.log(cookies.get('EA'));
     console.log(cookies.get('date')); 
-    //res.cookie('sky', 'blue')
 
     if (x != 0 && y != 0) {
-      // console.log(Date().toLocaleString()+ "\n"  +"Coordinate: " +x + ", " + y + "\n" + JSON.stringify(res))
       var date = new Date(window.date)
       date.setHours(date.getHours() + window.time)
       var measurement = null
@@ -212,7 +208,6 @@ const TimeDependentComponents = (props) => {
   const [windowTime, setWindowTime] = useState(window.time)
 
   const handleTimeFrameChange = (updatedTimeFrameValue) => {
-    console.log("onchangeTimeFrameonchangeTimeFrame", updatedTimeFrameValue)
     setWindowTime(updatedTimeFrameValue)
   }
 
@@ -233,9 +228,6 @@ const Choropleth = (props) => {
     const [legendToggle, setLegendToggle] = useState(false)
     const [geoData, setGeoData] = useState(null)
     const [queryDate, setQueryDate] = useState(null)
-    // useEffect(() => {
-    //   fetchGeoData()
-    // })
 
     const fetchGeoData = async () => {
       if (props.ea_type === 'none') {
@@ -256,7 +248,6 @@ const Choropleth = (props) => {
           }
         })
         const res = await response.json();
-        console.log(res)
         setGeoData(res)
       }
       else {
@@ -269,7 +260,6 @@ const Choropleth = (props) => {
           }
         })
         const res = await response.json();
-        console.log(res)
         setGeoData(res)
       }
       
@@ -289,7 +279,6 @@ const Choropleth = (props) => {
     })
 
     const onEachFeature = (feature, layer) => {
-      console.log("onEachFeature", feature)
       const name = feature.properties.ADMIN
       const value = feature.properties.value
       layer.bindPopup(`<strong>name: ${name} <br/> ${props.ea_type}: ${value} <br/> Date: ${queryDate.toLocaleString().substring(0, 24)}</strong>`)
@@ -440,19 +429,12 @@ const SliderForTimeFrame = (props) => {
 
   var today = new Date()
   var min = today.getHours() * -1
-  console.log("min",today.getHours())
-
-  // var max = 24 - today.getHours() - 1
-  // max = '' + max
-
   var max = 0
   var timeLeftInTheDay = 24 - today.getHours()
   if (timeLeftInTheDay < 4) {
-    console.log("timeLeftInTheDay", timeLeftInTheDay)
     max = timeLeftInTheDay - 1
   }
   else {
-    console.log("max is 4")
     max = 4
     
   }
@@ -476,7 +458,6 @@ const SliderForTimeFrame = (props) => {
         }
         onChange={
           (e) => {
-            console.log("Timeframe changed:", e.target.valueAsNumber)
             window.time = e.target.valueAsNumber
             map.removeLayer(markers)
             markers.clearLayers()
@@ -515,7 +496,6 @@ const Earthquake = () => {
   const onEachFeature = (feature, layer) => {
     const lat = feature.geometry.coordinates[1]
     const long = feature.geometry.coordinates[0]
-    // console.log([feature.geometry.coordinates[1], feature.geometry.coordinates[0]])
     const tsunamicheck = feature.properties.tsunami
     const mag = feature.properties.mag
     const place = feature.properties.place
@@ -559,15 +539,11 @@ const Application = () => {
     margin: '0 auto',
   }
 
-  const handleChange = (e) => {
-    console.log(e.target.value)
-  }
-
   const handleCheckbox = () => {
     window.checked = !window.checked
-    console.log(window.checked)
     Calendars(window.checked)
   }
+
   useEffect(() => {
     console.log(localStorage.getItem("x"))
     if(localStorage.getItem("x") != null && localStorage.getItem("y") != null){
@@ -645,9 +621,6 @@ const Application = () => {
               />
             </BaseLayer>
           </LayersControl>
-          {/* <SliderForTimeFrame />
-          <Choropleth /> */}
-          {console.log("ww", window.date)}
           <TimeDependentComponents useDateRange={window.checked}/>
           <Earthquake />
           <Search provider={new OpenStreetMapProvider()} />
