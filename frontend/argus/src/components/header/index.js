@@ -62,7 +62,7 @@ const Head = () => {
             <div style={{ marginTop: 10, display: 'flex', flexDirection: 'row', aliggItems: 'center', justifyContent: 'center' }}>
                 {localStorage.getItem('user') != null ?
                     <div style={{ marginRight: 20 }}>
-                        <Button onClick={() => logout()}>{localStorage.getItem('user').split(' ')[0]}</Button>
+                        <Button onClick={() => logout()}>Sign Out</Button>
                     </div> :
                     <div style={{ marginRight: 20 }}>
                         <Button onClick={() => toSignin()}>{name}</Button>
