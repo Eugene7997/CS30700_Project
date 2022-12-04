@@ -18,7 +18,7 @@ import ETlegendtest from '../earthquake_plot/etlegend';
 import moment from 'moment'
 import Cookies from 'universal-cookie';
 
-window.choice = localStorage.getItem("ea")
+window.choice = localStorage.getItem("ea") == null ? "temperature" : localStorage.getItem("ea")
 window.date = moment().toISOString()
 window.start_date = moment().toISOString()
 window.end_date = moment().toISOString()
@@ -576,7 +576,7 @@ const Application = () => {
 
           }}>
             <div>
-              <select style={{ width: 100 }} onChange={(event) => window.choice = event.target.value}>
+              <select defaultValue={window.choice} style={{ width: 100 }} onChange={(event) => window.choice = event.target.value}>
                 <option value="temperature">Temperature</option>
                 <option value="sea level">Sea Level</option>
                 <option value="humidity">Humidity</option>
