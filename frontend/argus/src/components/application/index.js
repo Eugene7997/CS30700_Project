@@ -1,4 +1,3 @@
-
 // react-learn JS libraries
 import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl, GeoJSON, LayerGroup, Circle, CircleMarker } from 'react-leaflet'
 import '../../App.css';
@@ -19,7 +18,7 @@ import ETlegendtest from '../earthquake_plot/etlegend';
 import moment from 'moment'
 import Cookies from 'universal-cookie';
 
-window.choice = "temperature"
+window.choice = localStorage.getItem("ea")
 window.date = moment().toISOString()
 window.start_date = moment().toISOString()
 window.end_date = moment().toISOString()
@@ -30,6 +29,8 @@ window.x = 0
 window.y = 0
 
 var markers = L.layerGroup()
+
+var cookies = new Cookies();
 
 function GetIcon(_iconSize){
   var icon = ''
@@ -110,11 +111,10 @@ const Search = (props) => {
       })    
     }
     res = await response.json();
-    const cookies = new Cookies();
+    
     cookies.set('EA', window.choice, { path: '/' });
-    cookies.set('date', window.date, { path: '/' });
+    localStorage.setItem("ea", window.choice);
     console.log(cookies.get('EA'));
-    console.log(cookies.get('date')); 
 
     if (x != 0 && y != 0) {
       var date = new Date(window.date)
@@ -133,6 +133,7 @@ const Search = (props) => {
       var button = `<button class="remove" type="button">Remove me</button>`
       var temp_dd = date.toLocaleString() + "<br>" + "Coordinate: " + x + ", " + y + "<br>" + temp_data[1].replace(":", " (").replace(":", "): ") + measurement + "<br>"
       localStorage.setItem("data", temp_dd)
+      var first = temp_dd.split(":")[1]
       L.marker([y, x],{icon: GetIcon(40)}).bindPopup(temp_dd + button).on("popupopen", removeMarker).addTo(markers)
       markers.addTo(map)
     }
@@ -194,10 +195,15 @@ const PreviousLocation = () => {
   const map = useMap()
   window.y = localStorage.getItem("y")
   window.x = localStorage.getItem("x")
+  window.choice = localStorage.getItem("ea")
+  //console.log(window.y)
+  //console.log(window.x)
+  console.log(window.choice)
   useEffect(() => {
       map.setView([window.y, window.x])
   }, [])
   const temp_data = localStorage.getItem("data")
+  //console.log(temp_data)
   var button = `<button class="remove" type="button">Remove me</button>`
   L.marker([window.y, window.x],{icon: GetIcon(40)}).bindPopup(temp_data + button).on("popupopen", removeMarker).addTo(markers)
   markers.addTo(map)
