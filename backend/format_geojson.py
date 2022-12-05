@@ -19,6 +19,8 @@ continent_dict = {
 
 
 def populate_geojson(data):
+    if data is None:
+        return {"error": "no values for the date selection"}
     f = open('countries.geojson')
     template = json.load(f)
     for i in range(len(template['features'])):
@@ -53,7 +55,7 @@ def populate_geojson(data):
 
 
 
-def get_world_data(ea, time):
+def get_world_data(ea, time, end_time=None):
     try:
         connection = mysql.connector.connect(host='localhost',
                                              database='djangodatabase',
@@ -65,12 +67,33 @@ def get_world_data(ea, time):
     
     values = {}
     cursor = connection.cursor()
-    for continent_code in continent_dict.keys():
-        query = "SELECT * FROM arg_datapoint WHERE is_future = 0 AND region_id = %s AND ea_id = %s AND dp_datetime < %s ORDER BY arg_datapoint.dp_datetime DESC LIMIT 1;"
-        vals = [continent_dict[continent_code], ea, time]
-        cursor.execute(query, vals)
-        row = cursor.fetchall()[0]
-        value = row[3]
-        values[continent_code] = value
+    if end_time is None:
+        for continent_code in continent_dict.keys():
+            query = "SELECT * FROM arg_datapoint WHERE is_future = 0 AND region_id = %s AND ea_id = %s AND dp_datetime < %s ORDER BY arg_datapoint.dp_datetime DESC LIMIT 1;"
+            vals = [continent_dict[continent_code], ea, time]
+            cursor.execute(query, vals)
+            responses = cursor.fetchall()
+            if len(responses) == 0:
+                if continent_code == 'AQ':
+                    values[continent_code] = 0
+                    continue
+                return None
+            row = responses[0]
+            value = row[3]
+            values[continent_code] = value
+    else:
+        for continent_code in continent_dict.keys():
+            query = "SELECT * FROM arg_datapoint WHERE is_future = 0 AND region_id = %s AND ea_id = %s AND dp_datetime < %s AND dp_datetime > %s;"
+            vals = [continent_dict[continent_code], ea, end_time, time]
+            cursor.execute(query, vals)
+            responses = cursor.fetchall()
+            if len(responses) == 0:
+                if continent_code == 'AQ':
+                    values[continent_code] = 0
+                    continue
+                else:
+                    return None
+            avg = sum([response[3] for response in responses]) / len(responses)
+            values[continent_code] = avg
     connection.close()
     return values

@@ -1,8 +1,9 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import Arugslogo from './logo.png'
 import { useNavigate } from "react-router-dom";
 import ProgressButton from 'react-progress-button'
 import styled from 'styled-components'
+import zIndex from '@mui/material/styles/zIndex';
 
 
 const Head = () => {
@@ -14,8 +15,11 @@ const Head = () => {
     const toMain = () => {
         navigate('/')
     }
-    const toSignin  = () => {
+    const toSignin = () => {
         navigate("/signin")
+    }
+    const toNoti = () => {
+        navigate("/notification")
     }
     const logout = () => {
         localStorage.removeItem('user')
@@ -32,45 +36,50 @@ const Head = () => {
         margin: 10px 0px;
         cursor: pointer;
     `;
-  return (
-    <div style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingBottom: 10,
-        backgroundColor: 'navy'
-        
-    }}>
+    return (
         <div style={{
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: '10px',
-            marginLeft: '20px'
+            justifyContent: 'space-between',
+            paddingBottom: 10,
+            backgroundColor: 'navy',
+            
         }}>
-            <div style={{display: 'flex'}} onClick={() => toMain()}>
-                <img src={Arugslogo} alt="Logo" height={60} width={60} />
-                <h1 style={{marginLeft: '8px', color: 'white', marginTop: '10px'}}>Argus</h1>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: '10px',
+                marginLeft: '20px'
+            }}>
+                <div style={{ display: 'flex' }} onClick={() => toMain()}>
+                    <img src={Arugslogo} alt="Logo" height={60} width={60} />
+                    <h1 style={{ marginLeft: '8px', color: 'white', marginTop: '10px' }}>Argus</h1>
+                </div>
             </div>
+            <div style={{ marginTop: 10, display: 'flex', flexDirection: 'row', aliggItems: 'center', justifyContent: 'center' }}>
+                {localStorage.getItem('user') != null ?
+                    <div style={{ marginRight: 20 }}>
+                        <Button onClick={() => logout()}>Sign Out</Button>
+                    </div> :
+                    <div style={{ marginRight: 20 }}>
+                        <Button onClick={() => toSignin()}>{name}</Button>
+                    </div>
+                }
+                {localStorage.getItem('user') != null &&
+                    <div style={{ marginRight: 20 }}>
+                        <Button onClick={() => toNoti()}>Notifications</Button>
+                    </div>
+                }
+                <div style={{ marginRight: 20 }}>
+                    <Button onClick={() => toAbout()}>About us</Button>
+                </div>
+            </div>
+
         </div>
-        <div style={{marginTop: 10, display: 'flex', flexDirection: 'row', aliggItems: 'center', justifyContent: 'center'}}>
-            {localStorage.getItem('user') != null ? 
-            <div  style={{marginRight: 20}}>
-                <Button onClick={() => logout()}>{localStorage.getItem('user').split(' ')[0]}</Button>
-            </div>:
-            <div  style={{marginRight: 20}}>
-                <Button onClick={() => toSignin()}>{name}</Button>
-            </div>
-            }
-            <div style={{marginRight: 20}}>
-                <Button onClick={() => toAbout()}>About us</Button>
-            </div>
-        </div>
-        
-    </div>
-  )
+    )
 }
 
 export default Head

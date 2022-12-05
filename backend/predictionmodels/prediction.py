@@ -23,7 +23,7 @@ def predict_future_data(date, attribute_data):
     m.fit(df)
     future = m.make_future_dataframe(periods=12, freq="h")
     forecast = m.predict(future)
-    f = forecast.tail(12)
+    f = forecast.tail(5)
     f_ret = f[['ds', 'yhat']]
     
     date_ret = []

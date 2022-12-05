@@ -9,8 +9,21 @@ import random
 from api_calls import *
 import sys
 import predictionmodels.prediction as pred
+import email.message
+import smtplib
+import ssl
 
 LOCAL_UTC_OFFSET = -5
+
+msg_template = """Hello {0},
+
+The current {1} value in {2} is {3}. This is {4} than the threshold you set of {5}. 
+
+You are receiving this message because you set up email notifications on the-argus.com.
+To stop receiving notifications, go to the notifications page on the-argus.com and remove your notifications.
+
+
+Thank you for using The Argus"""
 
 
 # Adds all of the current climate values to the database, plus a few extended
@@ -32,6 +45,7 @@ def update_db(backfill = True):
             region_dict = data[region]
             for ea in region_dict:
                 ea_val = region_dict[ea]
+                send_notifications(region, ea, ea_val)
                 query = "INSERT INTO arg_datapoint (region_id, ea_id, dp_datetime, is_future, value) VALUES (%s, %s, %s, %s, %s);"
                 now = datetime.datetime.now()
                 val = [region, ea, now, 0, ea_val]
@@ -41,6 +55,48 @@ def update_db(backfill = True):
     if backfill and datetime.datetime.now(datetime.timezone.utc).hour == 0:
         fill_gaps()
     generate_future_predictions()
+
+
+def send_notifications(region, ea, value):
+    try:
+        connection = mysql.connector.connect(host='localhost',
+                                             database='djangodatabase',
+                                             user='dbadmin',
+                                             password='password12345')
+    except Exception as e:
+        print("error while connecting to MySQL: " + str(e))
+        return
+    cursor = connection.cursor()
+    query = "SELECT * FROM arg_notification WHERE region_id = %s AND ea_id = %s;"
+    cursor.execute(query, [region, ea])
+    notifications = cursor.fetchall()
+    for notification in notifications:
+        mode = notification[5]
+        threshold = notification[1]
+        if (mode.lower() == 'greater' and value > threshold) or (mode.lower() == 'less' and value < threshold):
+            msg = email.message.Message()
+            from_email = "thearguswebsite@gmail.com"
+            to_email = notification[3]
+            recepient_username = to_email[0:to_email.index('@')]
+            server = "smtp.gmail.com"
+            port = 587
+            smtp_password = "saygdrmykwexunhf"
+            msg_body = msg_template.format(recepient_username, ea, region, str(value), mode, str(threshold))
+
+            msg['Subject'] = "The " + ea + " in " + region + " is currently " + mode + " than your set threshold value."
+            msg['From'] = from_email
+            msg['To'] = to_email
+            msg.add_header('Content-Type', 'text/plain')
+            msg.set_payload(msg_body)
+
+            s = smtplib.SMTP(server, port)
+            s.connect(server, port)
+            s.ehlo()
+            s.starttls()
+            s.ehlo()
+            s.login(from_email, smtp_password)
+            s.sendmail(from_email, to_email, msg.as_string())
+            s.quit()
 
 
 # fetches all of the current values for every ea in every region
@@ -238,9 +294,10 @@ def generate_future_predictions():
                     future_dates, future_vals = pred.predict_future_data(input_dates, input_values)
                     future_vals = [min(max(future_val, valid_values[ea][0]), valid_values[ea][1]) for future_val in future_vals]
                     date_format = "%Y-%m-%d %H:%M:%S"
-                    first_date = datetime.datetime.strptime(future_dates[0], date_format)
+
+                    first_date = datetime.datetime.strptime(future_dates[0][:19], date_format)
                     delta = input_dates[-1] - first_date + datetime.timedelta(hours=1)
-                    future_datetimes = [datetime.datetime.strptime(future_date, date_format) + delta for future_date in future_dates]
+                    future_datetimes = [datetime.datetime.strptime(future_date[0:19], date_format) + delta for future_date in future_dates]
                     for i in range(len(future_datetimes)):
                         future_val = future_vals[i]
                         future_datetime = future_datetimes[i]
@@ -260,7 +317,7 @@ def remove_past_futures():
     except Exception as e:
         print("error while connecting to MySQL: " + str(e))
         return
-    if connection.is_connectted():
+    if connection.is_connected():
         cursor = connection.cursor()
         query = "DELETE FROM arg_datapoint WHERE dp_datetime < %s AND is_future = 1;"
         n = datetime.datetime.now()
@@ -316,6 +373,8 @@ elif mode == 'hourly':
     while True:
         schedule.run_pending()
         time.sleep(1)
+elif mode == 'emailtest':
+    send_notifications(region='Africa', ea='temperature', value=80.0)
 else:
     print("mode \"" + mode + "\" is not recognized.")
     print("Run \"db_updater.py help\" for a list of modes")
